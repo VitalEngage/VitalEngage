@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">VitalConnect_dev</string>
+    <string name="no_internet_connection">No internet connection</string>
+    <string name="splash_signing_in">Signing in</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="sign_in">Sign-in</string>
+    <string name="settings">Settings</string>
+
+    <!-- Login Errors -->
+    <string name="enter_username">Enter a username to sign in</string>
+    <string name="enter_password">Enter a password to sign in</string>
+    <string name="token_access_denied">The username and password combination do not match our records, please re-enter
+        your username or password and sign in again.</string>
+    <string name="sign_in_error">Sign in failed. Try again</string>
+    <string name="no_internet_dialog_title">No internet connection</string>
+    <string name="no_internet_dialog_message">Please check you are connected to wifi or have cellular signal</string>
+    <string name="sign_out_succeeded">Successfully signed out</string>
+    <string name="product">Product</string>
+    <string name="baseurl">BaseURL</string>
+    <string name="tenantCode">Tenant Code</string>
+    <string name="save">Save</string>
+
+    <!--    Dropdown menu-->
+    <string-array name="productapp">
+        <item>e-servicetech</item>
+        <item>e-logistics</item>
+        <item>e-serviceplus</item>
+    </string-array>
+</resources>
