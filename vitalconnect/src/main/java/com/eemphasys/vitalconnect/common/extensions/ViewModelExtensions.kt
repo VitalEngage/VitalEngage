@@ -35,4 +35,5 @@ class BaseViewModelFactory<T>(val creator: () -> T) : ViewModelProvider.Factory 
         @Suppress("UNCHECKED_CAST")
         return creator() as T
     }
+<<<<<<< HEAD
 }
