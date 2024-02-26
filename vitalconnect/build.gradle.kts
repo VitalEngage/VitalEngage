@@ -62,6 +62,9 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("com.google.android.material:material:1.4.0")
+    implementation("androidx.room:room-common:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    implementation("androidx.paging:paging-common-ktx:3.2.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -69,4 +72,16 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+    // Android
+    implementation("androidx.appcompat:appcompat:1.3.1")
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+
+    //Twilio
+    implementation("com.twilio:conversations-android:6.0.4")
+
+    //Kotlin
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.2.1")
+
+    // Gson
+    implementation("com.google.code.gson:gson:2.8.6")
 }
