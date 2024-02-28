@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.FileNotFoundException
 import java.net.URL
-
+import com.eemphasys.vitalconnect.common.extensions.updateToken
 class ConversationsClientWrapper(private val applicationContext: Context) {
     private var deferredClient = CompletableDeferred<ConversationsClient>()
 
@@ -91,7 +91,7 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
     }
 
     companion object {
-        private const val TOKEN_URL = BuildConfig.ACCESS_TOKEN_SERVICE_URL
+        private const val TOKEN_URL = "" //BuildConfig.ACCESS_TOKEN_SERVICE_URL
         private const val QUERY_IDENTITY = "identity"
         private const val QUERY_PASSWORD = "password"
 
