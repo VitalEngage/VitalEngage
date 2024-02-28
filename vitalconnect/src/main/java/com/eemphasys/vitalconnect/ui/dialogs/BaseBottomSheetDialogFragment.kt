@@ -4,7 +4,7 @@ import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class BaseBottomSheetDialogFragment: BottomSheetDialogFragment() {
+open class BaseBottomSheetDialogFragment: BottomSheetDialogFragment() {
     override fun onStart() {
         super.onStart()
 

@@ -63,6 +63,10 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("com.google.android.material:material:1.4.0")
+    implementation("androidx.room:room-common:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    //implementation("androidx.paging:paging-common-ktx:3.2.1")
+    implementation("androidx.paging:paging-runtime-ktx:2.1.2")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -76,9 +80,28 @@ dependencies {
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
 
 // GSON
+    // Android
+    implementation("androidx.appcompat:appcompat:1.3.1")
+    implementation("androidx.core:core-ktx:1.6.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.1")
+    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.4.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0")
 
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+
+    //Twilio
+    implementation("com.twilio:conversations-android:6.0.3")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
 
+    //Kotlin
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.2.1")
+    //implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.20")
+    //implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinx_coroutines_version")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    //implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinx_coroutines_version")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 // coroutine
 
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")

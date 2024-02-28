@@ -4,7 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.eemphasys.vitalconnect.R
+import com.eemphasys.vitalconnect.common.extensions.applicationContext
+import com.eemphasys.vitalconnect.common.extensions.enableErrorResettingOnTextChanged
 import com.eemphasys.vitalconnect.common.extensions.lazyActivityViewModel
+import com.eemphasys.vitalconnect.common.extensions.onSubmit
+import com.eemphasys.vitalconnect.common.injector
+import com.eemphasys.vitalconnect.databinding.DialogNewConversationBinding
 
 class NewConversationDialog: BaseBottomSheetDialogFragment() {
     lateinit var binding: DialogNewConversationBinding

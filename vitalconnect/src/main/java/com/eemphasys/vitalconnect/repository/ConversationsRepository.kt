@@ -25,18 +25,52 @@ import kotlinx.coroutines.supervisorScope
 import androidx.paging.PagedList
 import com.eemphasys.vitalconnect.common.DefaultDispatcherProvider
 import com.eemphasys.vitalconnect.common.DispatcherProvider
+import com.eemphasys.vitalconnect.common.asMessageDataItems
 import com.eemphasys.vitalconnect.common.asMessageListViewItems
 import com.eemphasys.vitalconnect.common.asParticipantDataItem
 import com.eemphasys.vitalconnect.common.enums.CrashIn
 import com.eemphasys.vitalconnect.common.toMessageDataItem
+
 import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
 import com.eemphasys.vitalconnect.data.localCache.LocalCacheProvider
 import com.eemphasys.vitalconnect.data.localCache.entity.MessageDataItem
 import com.eemphasys.vitalconnect.data.localCache.entity.ParticipantDataItem
 import com.eemphasys.vitalconnect.data.models.MessageListViewItem
 import com.eemphasys.vitalconnect.data.models.RepositoryRequestStatus
+import com.eemphasys.vitalconnect.data.models.RepositoryRequestStatus.COMPLETE
+import com.eemphasys.vitalconnect.data.models.RepositoryRequestStatus.Error
+import com.eemphasys.vitalconnect.data.models.RepositoryRequestStatus.FETCHING
+import com.eemphasys.vitalconnect.data.models.RepositoryRequestStatus.SUBSCRIBING
 import kotlinx.coroutines.flow.flowOn
+import com.eemphasys.vitalconnect.common.extensions.getAndSubscribeUser
+import com.eemphasys.vitalconnect.common.extensions.getMessageCount
+import com.eemphasys.vitalconnect.common.extensions.getParticipantCount
+import com.eemphasys.vitalconnect.common.extensions.getUnreadMessageCount
+import com.eemphasys.vitalconnect.common.extensions.simulateCrash
+import com.eemphasys.vitalconnect.common.extensions.toConversationsError
+import com.eemphasys.vitalconnect.common.toConversationDataItem
+import com.twilio.conversations.extensions.getConversation
+import com.twilio.conversations.extensions.waitForSynchronization
+import com.eemphasys.vitalconnect.common.toFlow
+import kotlinx.coroutines.flow.onStart
 
+import kotlinx.coroutines.SupervisorJob
+
+import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
+import kotlinx.coroutines.channels.awaitClose
+
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 interface ConversationsRepository {
     fun getUserConversations(): Flow<RepositoryResult<List<ConversationDataItem>>>
     fun getConversation(conversationSid: String): Flow<RepositoryResult<ConversationDataItem?>>
@@ -143,7 +177,7 @@ class ConversationsRepositoryImpl(
     )
 
     private fun launch(block: suspend CoroutineScope.() -> Unit) = repositoryScope.launch(
-        context = CoroutineExceptionHandler { _, e -> Timber.e(e, "Coroutine failed ${e.localizedMessage}") },
+        //context = CoroutineExceptionHandler { _, e -> Timber.e(e, "Coroutine failed ${e.localizedMessage}") },
         block = block
     )
 
@@ -172,7 +206,7 @@ class ConversationsRepositoryImpl(
                 launch {
                     fetchMessages(conversationSid) { getLastMessages(pageSize) }
                         .flowOn(dispatchers.io())
-                        .collect {
+                        .collect {it: RepositoryRequestStatus->
                             requestStatusConversation.send(it)
                         }
                 }
@@ -188,7 +222,7 @@ class ConversationsRepositoryImpl(
                     launch {
                         fetchMessages(conversationSid) { getMessagesBefore(itemAtFront.index - 1, pageSize) }
                             .flowOn(dispatchers.io())
-                            .collect {
+                            .collect {it:RepositoryRequestStatus->
                                 requestStatusConversation.send(it)
                             }
                     }
@@ -197,7 +231,8 @@ class ConversationsRepositoryImpl(
         }
 
         val pagedListFlow = localCache.messagesDao().getMessagesSorted(conversationSid)
-            .mapByPage { it?.asMessageListViewItems() }
+            //.mapByPage { it?.asMessageListViewItems() } //Commeted by Hardik
+            .mapByPage { it.asMessageListViewItems() }
             .toFlow(
                 pageSize = pageSize,
                 boundaryCallback = boundaryCallback
@@ -354,7 +389,7 @@ class ConversationsRepositoryImpl(
             }
             emit(COMPLETE)
         } catch (e: TwilioException) {
-            Timber.d("fetchParticipants error: ${e.errorInfo.message}")
+            //Timber.d("fetchParticipants error: ${e.errorInfo.message}")
             emit(Error(e.toConversationsError()))
         }
     }
