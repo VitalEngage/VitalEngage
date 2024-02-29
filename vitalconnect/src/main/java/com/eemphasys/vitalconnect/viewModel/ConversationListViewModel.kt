@@ -1,6 +1,7 @@
 package com.eemphasys.vitalconnect.viewModel
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
@@ -44,7 +45,7 @@ class ConversationListViewModel(
 
     init {
         //Timber.d("init")
-
+        Log.d("check", "inside init")
         getUserConversations()
 
         unfilteredUserConversationItems.observeForever { updateUserConversationItems() }

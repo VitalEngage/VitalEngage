@@ -17,8 +17,3 @@ interface TwilioApi {
     @GET("Notification/getTwilioToken")
      suspend fun getTwilioToken(@Query("tenantCode") tenantCode : String,@Query("user") user : String, @Query("friendlyName") friendlyName: String) : Response<Token>
 }
-
-//interface TwilioApi {
-//    @POST("api/User/Authenticate")
-//    fun getAuthToken(@Body requestData : RequestToken) : Call<Token>
-//}

@@ -8,6 +8,8 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import androidx.appcompat.app.AppCompatActivity
 import com.eemphasys.vitalconnect.MainActivity
+import com.eemphasys.vitalconnect.data.localCache.LocalCacheProvider
+import com.eemphasys.vitalconnectdev.ChatApplication
 import com.eemphasys.vitalconnectdev.R
 import com.eemphasys.vitalconnectdev.common.enums.ConversationsError
 import com.eemphasys.vitalconnectdev.common.enums.ConversationsError.*
@@ -33,6 +35,7 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
 
         val items = listOf("e-servicetech", "e-logistics", "e-serviceplus")
         val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, items)

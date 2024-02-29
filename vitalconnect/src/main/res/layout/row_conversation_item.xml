@@ -16,7 +16,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/conversationItem"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
     android:focusableInTouchMode="false"
     android:padding="16dp"

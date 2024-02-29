@@ -1,6 +1,8 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
+    kotlin("kapt")
+//    id("com.google.devtools.ksp")
 }
 
 android {
@@ -54,7 +56,7 @@ android {
 
 dependencies {
 
-    implementation ("com.twilio:conversations-android-with-symbols:6.0.3")
+    //implementation ("com.twilio:conversations-android-with-symbols:6.0.3")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.activity:activity-compose:1.8.2")
@@ -65,6 +67,8 @@ dependencies {
     implementation("com.google.android.material:material:1.4.0")
     implementation("androidx.room:room-common:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
+    kapt ("androidx.room:room-compiler:2.6.1")
+//    ksp ("androidx.room:room-compiler:2.6.1")
     //implementation("androidx.paging:paging-common-ktx:3.2.1")
     implementation("androidx.paging:paging-runtime-ktx:2.1.2")
     testImplementation("junit:junit:4.13.2")

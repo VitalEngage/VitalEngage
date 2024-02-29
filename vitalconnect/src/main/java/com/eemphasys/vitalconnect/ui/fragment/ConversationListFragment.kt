@@ -91,7 +91,7 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
 
         binding.conversationRefresh.setOnRefreshListener { conversationListViewModel.getUserConversations() }
         binding.conversationList.adapter = adapter
-        binding.conversationList.addFabExtendingOnScrollListener(binding.newConversationFab)
+        //binding.conversationList.addFabExtendingOnScrollListener(binding.newConversationFab)
 
         val swipeCallback = ConversationListSwipeCallback(requireContext(), adapter)
 
@@ -114,9 +114,9 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
         val itemTouchHelper = ItemTouchHelper(swipeCallback)
         itemTouchHelper.attachToRecyclerView(binding.conversationList)
 
-        binding.newConversationFab.setOnClickListener {
-            NewConversationDialog().showNow(childFragmentManager, null)
-        }
+//        binding.newConversationFab.setOnClickListener {
+//            NewConversationDialog().showNow(childFragmentManager, null)
+//        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

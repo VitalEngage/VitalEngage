@@ -1,12 +1,16 @@
 package com.eemphasys.vitalconnect.common
 
+import android.app.Application
 import android.content.Context
 import androidx.annotation.RestrictTo
 import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
 import com.eemphasys.vitalconnect.manager.ConnectivityMonitorImpl
 import com.eemphasys.vitalconnect.manager.ConversationListManagerImpl
+import com.eemphasys.vitalconnect.manager.MainManager
+import com.eemphasys.vitalconnect.manager.MainManagerImpl
 import com.eemphasys.vitalconnect.repository.ConversationsRepositoryImpl
 import com.eemphasys.vitalconnect.viewModel.ConversationListViewModel
+import com.eemphasys.vitalconnect.viewModel.MainViewModel
 
 var injector = Injector()
     private set
@@ -26,5 +30,15 @@ fun setupTestInjector(testInjector: Injector) {
                 conversationListManager,
                 connectivityMonitor,
             )
+        }
+
+        open fun createMainManager(applicationContext: Context): MainManager = MainManagerImpl(
+            ConversationsClientWrapper.INSTANCE
+        )
+
+        open fun createMainViewModel(application: Application): MainViewModel {
+            val mainManager = createMainManager(application)
+
+            return MainViewModel(mainManager)
         }
     }
