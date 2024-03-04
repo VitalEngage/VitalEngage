@@ -25,4 +25,5 @@
     <color name="participant_background">#aaa</color>
     <color name="divider">#aaa</color>
     <color name="swipe_mute_background">#4B5671</color>
+    <color name="outgoing_msg">#AFBBC6</color>
 </resources>

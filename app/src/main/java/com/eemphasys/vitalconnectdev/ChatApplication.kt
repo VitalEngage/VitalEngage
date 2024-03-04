@@ -2,6 +2,8 @@ package com.eemphasys.vitalconnectdev
 
 import android.app.Application
 import android.content.Context
+import androidx.emoji.bundled.BundledEmojiCompatConfig
+import androidx.emoji.text.EmojiCompat
 import androidx.room.Room
 import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
 import com.eemphasys.vitalconnect.data.localCache.LocalCacheProvider
@@ -29,7 +31,7 @@ class ChatApplication : Application() {
     ConversationsClientWrapper.createInstance(this)
     LocalCacheProvider.createInstance(this)
     ConversationsRepositoryImpl.createInstance(ConversationsClientWrapper.INSTANCE, LocalCacheProvider.INSTANCE)
-
+    EmojiCompat.init(BundledEmojiCompatConfig(this))
 
 }
 

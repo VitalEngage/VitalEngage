@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="4dp"
+    android:layout_marginHorizontal="8dp"
+    android:orientation="horizontal"
+    tools:background="@color/white">
+
+    <androidx.emoji.widget.EmojiTextView
+        android:id="@+id/emoji_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:gravity="center"
+        android:textColor="#000"
+        android:textSize="14sp"
+        tools:text="&#x2764;" />
+
+    <TextView
+        android:id="@+id/emoji_counter"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:layout_marginHorizontal="4dp"
+        android:textSize="12sp"
+        android:textColor="@color/colorPrimary"
+        tools:text="10" />
+
+</LinearLayout>

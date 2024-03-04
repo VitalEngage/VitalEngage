@@ -26,6 +26,7 @@ import com.eemphasys.vitalconnect.common.extensions.onDismissed
 import com.eemphasys.vitalconnect.common.extensions.requireValue
 import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.data.models.ConversationListViewItem
+import com.eemphasys.vitalconnect.ui.activity.MessageListActivity
 import com.eemphasys.vitalconnect.ui.dialogs.NewConversationDialog
 
 class ConversationListFragment:Fragment(), OnConversationEvent {
@@ -151,7 +152,7 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
     }
 
     override fun onConversationClicked(conversationSid: String) {
-        //MessageListActivity.start(requireContext(), conversationSid)
+        MessageListActivity.start(requireContext(), conversationSid)
     }
 
     private fun showLeaveConfirmationDialog(conversationSid: String) {

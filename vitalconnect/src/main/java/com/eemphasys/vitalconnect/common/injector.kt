@@ -8,9 +8,11 @@ import com.eemphasys.vitalconnect.manager.ConnectivityMonitorImpl
 import com.eemphasys.vitalconnect.manager.ConversationListManagerImpl
 import com.eemphasys.vitalconnect.manager.MainManager
 import com.eemphasys.vitalconnect.manager.MainManagerImpl
+import com.eemphasys.vitalconnect.manager.MessageListManagerImpl
 import com.eemphasys.vitalconnect.repository.ConversationsRepositoryImpl
 import com.eemphasys.vitalconnect.viewModel.ConversationListViewModel
 import com.eemphasys.vitalconnect.viewModel.MainViewModel
+import com.eemphasys.vitalconnect.viewModel.MessageListViewModel
 
 var injector = Injector()
     private set
@@ -40,5 +42,19 @@ fun setupTestInjector(testInjector: Injector) {
             val mainManager = createMainManager(application)
 
             return MainViewModel(mainManager)
+        }
+
+        open fun createMessageListViewModel(appContext: Context, conversationSid: String): MessageListViewModel {
+            val messageListManager = MessageListManagerImpl(
+                conversationSid,
+                ConversationsClientWrapper.INSTANCE,
+                ConversationsRepositoryImpl.INSTANCE
+            )
+            return MessageListViewModel(
+                appContext,
+                conversationSid,
+                ConversationsRepositoryImpl.INSTANCE,
+                messageListManager
+            )
         }
     }

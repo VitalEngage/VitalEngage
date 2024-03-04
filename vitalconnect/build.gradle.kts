@@ -67,6 +67,7 @@ dependencies {
     implementation("com.google.android.material:material:1.4.0")
     implementation("androidx.room:room-common:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
+    implementation("androidx.emoji:emoji:1.1.0")
     kapt ("androidx.room:room-compiler:2.6.1")
 //    ksp ("androidx.room:room-compiler:2.6.1")
     //implementation("androidx.paging:paging-common-ktx:3.2.1")
