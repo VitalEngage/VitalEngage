@@ -1,4 +1,4 @@
-package com.eemphasys.vitalconnect.data
+package com.eemphasys.vitalconnect.data.models
 
 data class ParticipantListViewItem(
     val sid: String,

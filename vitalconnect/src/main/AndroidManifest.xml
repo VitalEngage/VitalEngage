@@ -24,6 +24,15 @@
 
 
         </activity>
+        <activity
+            android:name=".ui.activity.ConversationDetailsActivity">
+
+
+        </activity>
+        <activity
+            android:name=".ui.activity.ParticipantListActivity">
+
+        </activity>
 
         <provider
             android:name="androidx.core.content.FileProvider"

@@ -51,15 +51,15 @@ class MessageListActivity: AppCompatActivity() {
             return true
         }
 
-//        override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//            when (item.itemId) {
-//                R.id.show_conversation_details -> ConversationDetailsActivity.start(
-//                    this,
-//                    messageListViewModel.conversationSid
-//                )
-//            }
-//            return super.onOptionsItemSelected(item)
-//        }
+        override fun onOptionsItemSelected(item: MenuItem): Boolean {
+            when (item.itemId) {
+                R.id.show_conversation_details -> ConversationDetailsActivity.start(
+                    this,
+                    messageListViewModel.conversationSid
+                )
+            }
+            return super.onOptionsItemSelected(item)
+        }
 
         private fun initViews() {
             setSupportActionBar(binding.conversationToolbar)

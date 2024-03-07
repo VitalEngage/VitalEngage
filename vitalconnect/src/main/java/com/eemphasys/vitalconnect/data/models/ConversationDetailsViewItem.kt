@@ -1,4 +1,4 @@
-package com.eemphasys.vitalconnect.data
+package com.eemphasys.vitalconnect.data.models
 
 data class ConversationDetailsViewItem(
     val conversationSid: String,

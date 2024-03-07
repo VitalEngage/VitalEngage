@@ -9,10 +9,13 @@ import com.eemphasys.vitalconnect.manager.ConversationListManagerImpl
 import com.eemphasys.vitalconnect.manager.MainManager
 import com.eemphasys.vitalconnect.manager.MainManagerImpl
 import com.eemphasys.vitalconnect.manager.MessageListManagerImpl
+import com.eemphasys.vitalconnect.manager.ParticipantListManagerImpl
 import com.eemphasys.vitalconnect.repository.ConversationsRepositoryImpl
+import com.eemphasys.vitalconnect.viewModel.ConversationDetailsViewModel
 import com.eemphasys.vitalconnect.viewModel.ConversationListViewModel
 import com.eemphasys.vitalconnect.viewModel.MainViewModel
 import com.eemphasys.vitalconnect.viewModel.MessageListViewModel
+import com.eemphasys.vitalconnect.viewModel.ParticipantListViewModel
 
 var injector = Injector()
     private set
@@ -56,5 +59,21 @@ fun setupTestInjector(testInjector: Injector) {
                 ConversationsRepositoryImpl.INSTANCE,
                 messageListManager
             )
+        }
+
+        open fun createConversationDetailsViewModel(conversationSid: String): ConversationDetailsViewModel {
+            val conversationListManager = ConversationListManagerImpl(ConversationsClientWrapper.INSTANCE)
+            val participantListManager = ParticipantListManagerImpl(conversationSid, ConversationsClientWrapper.INSTANCE)
+            return ConversationDetailsViewModel(
+                conversationSid,
+                ConversationsRepositoryImpl.INSTANCE,
+                conversationListManager,
+                participantListManager
+            )
+        }
+
+        open fun createParticipantListViewModel(conversationSid: String): ParticipantListViewModel {
+            val participantListManager = ParticipantListManagerImpl(conversationSid, ConversationsClientWrapper.INSTANCE)
+            return ParticipantListViewModel(conversationSid, ConversationsRepositoryImpl.INSTANCE, participantListManager)
         }
     }

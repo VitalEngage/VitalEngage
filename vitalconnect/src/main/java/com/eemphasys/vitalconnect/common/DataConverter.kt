@@ -18,12 +18,12 @@ import com.eemphasys.vitalconnect.common.extensions.asLastMessageTextColor
 import com.eemphasys.vitalconnect.common.extensions.asMessageCount
 import com.eemphasys.vitalconnect.common.extensions.asMessageDateString
 import com.eemphasys.vitalconnect.common.extensions.firstMedia
-import com.eemphasys.vitalconnect.data.ConversationDetailsViewItem
-import com.eemphasys.vitalconnect.data.ParticipantListViewItem
-import com.eemphasys.vitalconnect.data.UserViewItem
+import com.eemphasys.vitalconnect.data.models.ParticipantListViewItem
+import com.eemphasys.vitalconnect.data.models.UserViewItem
 import com.eemphasys.vitalconnect.data.localCache.entity.ConversationDataItem
 import com.eemphasys.vitalconnect.data.localCache.entity.MessageDataItem
 import com.eemphasys.vitalconnect.data.localCache.entity.ParticipantDataItem
+import com.eemphasys.vitalconnect.data.models.ConversationDetailsViewItem
 import com.eemphasys.vitalconnect.data.models.ConversationListViewItem
 import com.eemphasys.vitalconnect.data.models.MessageListViewItem
 import com.eemphasys.vitalconnect.data.models.ReactionAttributes
