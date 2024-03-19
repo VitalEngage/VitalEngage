@@ -10,4 +10,10 @@
         android:enabled="true"
         android:icon="@drawable/ic_page_conversation_list"
         android:title="@string/page_conversation_list" />
+
+    <item
+        android:id="@+id/page_profile"
+        android:enabled="true"
+        android:icon="@drawable/ic_profile"
+        android:title="@string/page_profile" />
 </menu>

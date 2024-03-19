@@ -8,6 +8,7 @@ import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.databinding.ActivityConversationListBinding
 import com.eemphasys.vitalconnect.ui.fragment.ContactListFragment
 import com.eemphasys.vitalconnect.ui.fragment.ConversationListFragment
+import com.eemphasys.vitalconnect.ui.fragment.ProfileFragment
 
 
 class ConversationListActivity:AppCompatActivity() {
@@ -24,7 +25,7 @@ class ConversationListActivity:AppCompatActivity() {
             when (menuItem.itemId) {
                 R.id.page_contact_list -> replaceFragment(ContactListFragment())
                 R.id.page_conversation_list -> replaceFragment(ConversationListFragment())
-               /* R.id.page_profile -> replaceFragment(ProfileFragment())*/
+                R.id.page_profile -> replaceFragment(ProfileFragment())
 
             }
             return@setOnItemSelectedListener true
