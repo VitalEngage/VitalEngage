@@ -39,10 +39,16 @@ class MessageListActivity: AppCompatActivity() {
 
         override fun onCreate(savedInstanceState: Bundle?) {
             //Timber.d("onCreate")
-            super.onCreate(savedInstanceState)
-            setContentView(binding.root)
+            try{
+                super.onCreate(savedInstanceState)
+                setContentView(binding.root)
 
-            initViews()
+                initViews()}
+            catch(e : Exception){
+                println("${e.message}")
+
+            }
+
         }
 
         override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -254,5 +260,11 @@ class MessageListActivity: AppCompatActivity() {
 
             fun getStartIntent(context: Context, conversationSid: String) =
                 Intent(context, MessageListActivity::class.java).putExtra(EXTRA_CONVERSATION_SID, conversationSid)
+
+            fun startfromFragment(context: Context, conversationSid: String) =
+                context.startActivity(getStartIntentFromFragment(context, conversationSid))
+
+            fun getStartIntentFromFragment(context: Context, conversationSid: String) =
+                Intent(context, MessageListActivity::class.java).putExtra(EXTRA_CONVERSATION_SID, conversationSid).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
     }

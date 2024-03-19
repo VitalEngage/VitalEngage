@@ -37,7 +37,7 @@ class NewConversationDialog: BaseBottomSheetDialogFragment() {
             return
         }
 
-        conversationListViewModel.createConversation(friendlyName)
+            //conversationListViewModel.createConversation(friendlyName)
         dismiss()
     }
 }

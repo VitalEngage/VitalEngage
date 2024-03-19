@@ -8,62 +8,54 @@ import com.eemphasys.vitalconnect.api.AuthInterceptor
 import com.eemphasys.vitalconnect.api.RetrofitHelper
 import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.RequestToken
+import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.common.extensions.lazyViewModel
+import com.eemphasys.vitalconnect.data.models.Contact
+import com.eemphasys.vitalconnect.data.models.WebUser
 import com.eemphasys.vitalconnect.ui.activity.ConversationListActivity
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
+import org.json.JSONArray
+import org.json.JSONObject
 
 class MainActivity() : AppCompatActivity() {
 
     val mainViewModel by lazyViewModel { injector.createMainViewModel(application) }
     override fun onCreate(savedInstanceState: Bundle?) {
 
-
-
         val username = intent.getStringExtra("username")
+        val friendlyName = intent.getStringExtra("friendlyName")
         val clientID = intent.getStringExtra("clientID")
         val clientSecret = intent.getStringExtra("clientSecret")
         val tenantcode = intent.getStringExtra("tenantcode")
         val baseurl = intent.getStringExtra("baseurl")
+        val parentApp = intent.getStringExtra("parentApp")
+        val contacts = intent.getStringExtra("contacts")
+        val twilioToken = intent.getStringExtra("twilioToken")
+        val webusers = intent.getStringExtra("webusers")
+        val authToken = intent.getStringExtra("authToken")
 
+        Constants.AUTH_TOKEN = authToken!!
+        Constants.CONTACTS = contacts!!
+        Constants.WEBUSERS = webusers!!
         Constants.BASE_URL = baseurl!!
         Constants.TENANT_CODE = tenantcode!!
+        Constants.CLIENT_ID = clientID!!
+        Constants.CLIENT_SECRET = clientSecret!!
+        Constants.FRIENDLY_NAME = friendlyName!!
+        Constants.PRODUCT = parentApp!!
+        Constants.USERNAME = username!!
+        Constants.TWILIO_TOKEN = twilioToken!!
 
+        mainViewModel.create()
 
-        val tenant = "VitalConnectDev"
-        val client= "VitalConnect-sQz2LmzcRLU07nnod9MlJJcJdcQj6iFZTg6uSnPbjxZ9Vssm9qONFhbPh64hmUYLxbKWpURQ0JesgZTvhNsFj3ca67lDuIWwyir4rS6GWFK5dxaHQ/4kqh8aCmB6JJP0"
-        val secret= "+QXNy5ItEjPCSDG6sF7R23oy7M9sDjfFJuNcizgyRXYKjcTc98EFye7g4G5CTiee7QCLaEfQhd2i1mihW9tOTaFxsO077LlciZyNCWpoUYjH5LLoPiqYIw7Ux/JYF3gP"
-        val user = "qb"
-        val product = "eLog"
+            super.onCreate(savedInstanceState)
+        val intent = Intent(this, ConversationListActivity::class.java)
+        startActivity(intent)
 
-        val requestData = RequestToken( tenant,client,secret,user,product)
-
-        val tokenApi = RetrofitHelper.getInstance().create(TwilioApi::class.java)
-        // launching a new coroutine
-        GlobalScope.launch {
-            val result = tokenApi.getAuthToken(requestData)
-            Log.d("result", result.toString())
-
-            if (result != null)
-                Log.d("Himanshu: ", result.body()!!.token)
-
-            val httpClientWithToken = OkHttpClient.Builder()
-                .addInterceptor(AuthInterceptor(result.body()!!.token))
-                .build()
-            val retrofitWithToken = RetrofitHelper.getInstance(httpClientWithToken).create(TwilioApi::class.java)
-
-            val TwilioToken = retrofitWithToken.getTwilioToken(tenant, user,user)
-            Log.d("twiliotoken",TwilioToken.body()!!.token)
-            Constants.TWILIO_TOKEN = TwilioToken.body()!!.token
-
-            mainViewModel.create()
         }
-
-        super.onCreate(savedInstanceState)
-        startActivity(Intent(this, ConversationListActivity::class.java))
-
     }
-}

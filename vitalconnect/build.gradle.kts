@@ -68,6 +68,8 @@ dependencies {
     implementation("androidx.room:room-common:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
     implementation("androidx.emoji:emoji:1.1.0")
+    implementation("androidx.preference:preference-ktx:1.2.1")
+    implementation("com.google.firebase:firebase-messaging-ktx:23.4.1")
     kapt ("androidx.room:room-compiler:2.6.1")
 //    ksp ("androidx.room:room-compiler:2.6.1")
     //implementation("androidx.paging:paging-common-ktx:3.2.1")
@@ -112,4 +114,6 @@ dependencies {
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
 
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
+
+    implementation ("androidx.recyclerview:recyclerview:1.2.0-alpha04")
 }

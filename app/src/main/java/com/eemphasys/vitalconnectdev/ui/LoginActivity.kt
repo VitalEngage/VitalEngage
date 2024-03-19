@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import androidx.appcompat.app.AppCompatActivity
 import com.eemphasys.vitalconnect.MainActivity
+import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.data.localCache.LocalCacheProvider
 import com.eemphasys.vitalconnectdev.ChatApplication
 import com.eemphasys.vitalconnectdev.R
@@ -17,8 +18,11 @@ import com.eemphasys.vitalconnectdev.common.extensions.lazyViewModel
 import com.eemphasys.vitalconnectdev.common.extensions.onSubmit
 import com.eemphasys.vitalconnectdev.common.injector
 import com.eemphasys.vitalconnectdev.data.LoginConstants
+import com.eemphasys.vitalconnectdev.data.model.Contact
+import com.eemphasys.vitalconnectdev.data.model.WebUser
 import com.eemphasys.vitalconnectdev.databinding.ActivityLoginBinding
 import com.google.android.material.snackbar.Snackbar
+import org.json.JSONObject
 
 class LoginActivity : AppCompatActivity() {
 
@@ -37,12 +41,14 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
 
-        val items = listOf("e-servicetech", "e-logistics", "e-serviceplus")
-        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, items)
 
-        val autoCompleteTextView = findViewById<AutoCompleteTextView>(R.id.dropdown_product)
+//        val items = listOf("e-servicetech", "e-logistics", "e-serviceplus")
+//        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, items)
+//
+//        val autoCompleteTextView = findViewById<AutoCompleteTextView>(R.id.dropdown_product)
+//
+//        autoCompleteTextView.setAdapter(adapter)
 
-        autoCompleteTextView.setAdapter(adapter)
         loginViewModel.isLoading.observe(this) { isLoading ->
             showProgress(isLoading)
         }
@@ -59,9 +65,12 @@ class LoginActivity : AppCompatActivity() {
             signInSucceeded()
         }
 
-        binding.passwordTv.onSubmit { signInPressed() }
+        binding.usernameTv.onSubmit { signInPressed() }
         binding.signInBtn.setOnClickListener { signInPressed() }
         binding.settingsBtn.setOnClickListener { openSettings() }
+
+        initializeChatAppModel()
+
     }
 
 //    override fun onDestroy() {
@@ -69,12 +78,27 @@ class LoginActivity : AppCompatActivity() {
 //        super.onDestroy()
 //    }
 
+    private fun initializeChatAppModel(){
+        ChatAppModel.init(
+            LoginConstants.BASE_URL,
+            LoginConstants.PROXY_NUMBER,
+            LoginConstants.TENANT_CODE,
+            LoginConstants.CLIENT_ID,
+            LoginConstants.CLIENT_SECRET,
+            LoginConstants.PRODUCT,
+            LoginConstants.CURRENT_USER
+
+        )
+    }
+
     private fun signInPressed() {
         //Timber.d("signInPressed")
         val identity = binding.usernameTv.text.toString()
-        val password = binding.passwordTv.text.toString()
+        LoginConstants.CURRENT_USER = identity
+        LoginConstants.FRIENDLY_NAME = identity
+//        val password = binding.passwordTv.text.toString()
 
-        loginViewModel.signIn(identity, password)
+        loginViewModel.signIn(identity)
     }
 
     private fun showProgress(show: Boolean) {
@@ -94,23 +118,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun goToChildAppScreen() {
-        val identity = binding.usernameTv.text.toString()
-        val selectedItem = binding.dropdownProduct.text.toString()
-
-        if (selectedItem == "e-servicetech") {
-            val cliendID = "12345"
-            val clientSecret = "servicetech"
-            start(this, cliendID, clientSecret, identity)
-        } else if (selectedItem == "e-logistics") {
-            val cliendID = "12345"
-            val clientSecret = "logistics"
-            start(this, cliendID, clientSecret, identity)
-        } else if (selectedItem == ("e-serviceplus")) {
-            val cliendID = "12345"
-            val clientSecret = "plus"
-            start(this, cliendID, clientSecret, identity)
-        }
-
+        start(this)
     }
 
     private fun openSettings(){
@@ -124,31 +132,38 @@ class LoginActivity : AppCompatActivity() {
         when (error) {
             EMPTY_USERNAME -> binding.usernameInputLayout.error = getString(R.string.enter_username)
 
-            EMPTY_PASSWORD -> binding.passwordInputLayout.error = getString(R.string.enter_password)
+//            EMPTY_PASSWORD -> binding.passwordInputLayout.error = getString(R.string.enter_password)
 
             EMPTY_USERNAME_AND_PASSWORD -> {
                 binding.usernameInputLayout.error = getString(R.string.enter_username)
-                binding.passwordInputLayout.error = getString(R.string.enter_password)
+//                binding.passwordInputLayout.error = getString(R.string.enter_password)
             }
 
             //TOKEN_ACCESS_DENIED -> binding.passwordInputLayout.error = getString(R.string.token_access_denied)
 
 //            NO_INTERNET_CONNECTION -> showNoInternetDialog()
 
-            else -> binding.passwordInputLayout.error = getString( R.string.sign_in_error)
+            else -> binding.usernameInputLayout.error = getString( R.string.sign_in_error)
         }
     }
 
     companion object{
 
 
-        fun start(context: Context, clientID: String, clientSecret: String, identity:String ){
+        fun start(context: Context){
             val intent = Intent(context, MainActivity::class.java)
-            intent.putExtra("username", identity)
-            intent.putExtra("clientID", clientID)
-            intent.putExtra("clientSecret", clientSecret)
+            intent.putExtra("username", LoginConstants.CURRENT_USER)
+            intent.putExtra("clientID", LoginConstants.CLIENT_ID)
+            intent.putExtra("clientSecret", LoginConstants.CLIENT_SECRET)
             intent.putExtra("baseurl",LoginConstants.BASE_URL)
             intent.putExtra("tenantcode",LoginConstants.TENANT_CODE)
+            intent.putExtra("parentApp",LoginConstants.PRODUCT)
+            intent.putExtra("proxyNumber",LoginConstants.PROXY_NUMBER)
+            intent.putExtra("friendlyName",LoginConstants.FRIENDLY_NAME)
+            intent.putExtra("twilioToken",LoginConstants.TWILIO_TOKEN)
+            intent.putExtra("contacts", LoginConstants.CONTACTS)
+            intent.putExtra("webusers", LoginConstants.WEBUSERS)
+            intent.putExtra("authToken",LoginConstants.AUTH_TOKEN)
             context.startActivity(intent)
 
 

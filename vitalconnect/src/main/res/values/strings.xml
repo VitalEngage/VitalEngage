@@ -33,7 +33,7 @@
 
     <string name="page_conversation_list">Conversations</string>
     <string name="page_profile">Profile</string>
-    <string name="page_debug">Debug</string>
+    <string name="contacts">Contacts</string>
 
     <string name="leave_dialog_title">Leave Conversation?</string>
     <string name="leave_dialog_message">By leaving the Conversation you will no longer
@@ -154,7 +154,7 @@
     <string name="details_created_date">Date: %1$s</string>
     <string name="details_actions">Actions</string>
     <string name="details_add_chat_participant">Add Chat Participant</string>
-    <string name="details_add_non_chat_participant">Add SMS or WhatsApp Participant</string>
+    <string name="details_add_non_chat_participant">Add SMS Participant</string>
     <string name="details_participant_list">Participant List</string>
     <string name="details_rename_conversation">Rename Conversation</string>
     <string name="details_mute_conversation">Mute Conversation</string>

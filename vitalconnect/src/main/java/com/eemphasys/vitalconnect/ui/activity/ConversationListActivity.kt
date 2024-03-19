@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.databinding.ActivityConversationListBinding
+import com.eemphasys.vitalconnect.ui.fragment.ContactListFragment
 import com.eemphasys.vitalconnect.ui.fragment.ConversationListFragment
 
 
@@ -21,15 +22,16 @@ class ConversationListActivity:AppCompatActivity() {
 
         binding.bottomNavigation.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
+                R.id.page_contact_list -> replaceFragment(ContactListFragment())
                 R.id.page_conversation_list -> replaceFragment(ConversationListFragment())
-               /* R.id.page_profile -> replaceFragment(ProfileFragment())
-                R.id.page_debug -> replaceFragment(DebugFragment())*/
+               /* R.id.page_profile -> replaceFragment(ProfileFragment())*/
+
             }
             return@setOnItemSelectedListener true
         }
 
         if (savedInstanceState == null) {
-            replaceFragment(ConversationListFragment())
+            replaceFragment(ContactListFragment())
         }
     }
 

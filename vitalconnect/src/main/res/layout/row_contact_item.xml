@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+<!--    <data>-->
+
+<!--        <import type="android.view.View" />-->
+
+<!--        <variable-->
+<!--            name="contact"-->
+<!--            type="com.eemphasys.vitalconnect.data.models.ContactListViewItem" />-->
+
+<!--    </data>-->
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/contactItem"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:focusableInTouchMode="false"
+    android:padding="16dp"
+    >
+<!--    <ImageView-->
+<!--        android:id="@+id/conversationStateIcon"-->
+<!--        android:layout_width="14dp"-->
+<!--        android:layout_height="14dp"-->
+<!--        android:layout_marginEnd="8dp"-->
+<!--        android:src="@drawable/ic_muted_conversation"-->
+<!--        android:visibility="@{conversation.isMuted ? View.VISIBLE : View.GONE}"-->
+<!--        app:layout_constraintBottom_toBottomOf="@+id/conversationName"-->
+<!--        app:layout_constraintEnd_toStartOf="@+id/conversationName"-->
+<!--        app:layout_constraintHorizontal_chainStyle="packed"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="@+id/conversationName" />-->
+
+    <TextView
+        android:id="@+id/contactName"
+        style="@style/TextViewTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="middle"
+        android:textColor="@color/text_title"
+        tools:text="Contact friendly name"
+        tools:ignore="MissingConstraints" />
+
+    <TextView
+        android:id="@+id/contactType"
+        style="@style/TextViewTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="middle"
+        android:textColor="@color/text_title_weak"
+        app:layout_constraintLeft_toRightOf="@+id/contactName"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="Type"
+        tools:ignore="MissingConstraints" />
+
+<!--    <TextView-->
+<!--        android:id="@+id/participantsCount"-->
+<!--        style="@style/TextViewSubtitle"-->
+<!--        android:layout_width="120dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginStart="16dp"-->
+<!--        android:gravity="end"-->
+<!--        android:text="@{@plurals/participants_count(conversation.participantCount, conversation.participantCount)}"-->
+<!--        app:layout_constraintBottom_toBottomOf="@+id/conversationName"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toEndOf="@+id/conversationName"-->
+<!--        app:layout_constraintTop_toTopOf="@+id/conversationName"-->
+<!--        tools:text="1000 participants" />-->
+
+<!--    <ImageView-->
+<!--        android:id="@+id/messageStateIcon"-->
+<!--        android:layout_width="14dp"-->
+<!--        android:layout_height="14dp"-->
+<!--        android:layout_marginEnd="8dp"-->
+<!--        android:src="@{conversation.lastMessageStateIcon}"-->
+<!--        android:visibility="@{conversation.lastMessageStateIcon != 0 ? View.VISIBLE : View.GONE}"-->
+<!--        app:layout_constraintBottom_toBottomOf="@+id/messageText"-->
+<!--        app:layout_constraintEnd_toStartOf="@+id/messageText"-->
+<!--        app:layout_constraintHorizontal_chainStyle="packed"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="@+id/messageText"-->
+<!--        tools:src="@drawable/ic_waiting_message" />-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/messageText"-->
+<!--        style="@style/TextViewSubtitle"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="4dp"-->
+<!--        android:ellipsize="end"-->
+<!--        android:text="@{conversation.lastMessageText}"-->
+<!--        android:textColor="@{conversation.lastMessageColor}"-->
+<!--        app:layout_constraintEnd_toEndOf="@+id/conversationName"-->
+<!--        app:layout_constraintStart_toEndOf="@+id/messageStateIcon"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/conversationName"-->
+<!--        tools:text="This is a waiting message bla bla bla bla bla" />-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/messageDate"-->
+<!--        style="@style/TextViewSubtitle"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginEnd="8dp"-->
+<!--        android:gravity="end"-->
+<!--        android:text="@{conversation.lastMessageDate}"-->
+<!--        app:layout_constraintEnd_toStartOf="@+id/unreadCount"-->
+<!--        app:layout_constraintHorizontal_chainStyle="packed"-->
+<!--        app:layout_constraintStart_toStartOf="@+id/participantsCount"-->
+<!--        app:layout_constraintTop_toTopOf="@+id/messageText"-->
+<!--        app:layout_goneMarginEnd="0dp"-->
+<!--        tools:text="Yesterday" />-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/unreadCount"-->
+<!--        style="@style/TextViewCounter"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:background="@drawable/bg_conversation_counter"-->
+<!--        android:gravity="center"-->
+<!--        android:text="@{conversation.unreadMessageCount}"-->
+<!--        android:visibility="@{conversation.showUnreadMessageCount ? View.VISIBLE : View.GONE}"-->
+<!--        app:layout_constraintBottom_toBottomOf="@+id/messageText"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="@+id/messageText"-->
+<!--        tools:text="99+" />-->
+</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

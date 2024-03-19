@@ -120,7 +120,8 @@
                             android:drawablePadding="16dp"
                             android:text="@string/details_add_chat_participant"
                             android:textColor="@color/text_title"
-                            android:textSize="14sp" />
+                            android:textSize="14sp"
+                            android:visibility="gone"/>
 
                         <TextView
                             android:id="@+id/add_non_chat_participant_button"
@@ -132,7 +133,8 @@
                             android:drawablePadding="16dp"
                             android:text="@string/details_add_non_chat_participant"
                             android:textColor="@color/text_title"
-                            android:textSize="14sp" />
+                            android:textSize="14sp"
+                            android:visibility="gone"/>
 
                         <TextView
                             android:id="@+id/participants_list_button"

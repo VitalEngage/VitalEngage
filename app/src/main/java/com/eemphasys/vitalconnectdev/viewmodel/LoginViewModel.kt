@@ -27,7 +27,7 @@ class LoginViewModel(
 
     val onSignInSuccess = SingleLiveEvent<Unit>()
 
-    fun signIn(identity: String, password: String) {
+    fun signIn(identity: String) {
         if (isLoading.value == true) return
         //Timber.d("signIn in viewModel")
 
@@ -37,7 +37,7 @@ class LoginViewModel(
             return
         }
 
-        val credentialError = validateSignInDetails(identity, password)
+        val credentialError = validateSignInDetails(identity)
 
         if (credentialError != ConversationsError.NO_ERROR) {
             //Timber.d("credentials are not valid")
@@ -49,7 +49,7 @@ class LoginViewModel(
         isLoading.value = true
         viewModelScope.launch {
             try {
-                loginManager.signIn(identity, password)
+                loginManager.signIn(identity)
                 onSignInSuccess.call()
             } catch (e: TwilioException) {
                 isLoading.value = false
@@ -58,12 +58,12 @@ class LoginViewModel(
         }
     }
 
-    private fun validateSignInDetails(identity: String, password: String): ConversationsError {
+    private fun validateSignInDetails(identity: String): ConversationsError {
         //Timber.d("validateSignInDetails")
         return when {
-            identity.isBlank() && password.isBlank() -> ConversationsError.EMPTY_USERNAME_AND_PASSWORD
+            identity.isBlank() -> ConversationsError.EMPTY_USERNAME_AND_PASSWORD
             identity.isBlank() -> ConversationsError.EMPTY_USERNAME
-            password.isBlank() -> ConversationsError.EMPTY_PASSWORD
+//            password.isBlank() -> ConversationsError.EMPTY_PASSWORD
             else -> ConversationsError.NO_ERROR
         }
     }

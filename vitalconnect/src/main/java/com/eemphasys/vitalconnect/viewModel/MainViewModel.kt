@@ -18,4 +18,13 @@ class MainViewModel(private val mainManager: MainManager) : ViewModel() {
                 }
             }
         }
+
+    fun registerForFcm(){
+        viewModelScope.launch {
+            try {
+                mainManager.registerForFcm()
+            } catch (e: TwilioException) {
+            }
+        }
+    }
 }
