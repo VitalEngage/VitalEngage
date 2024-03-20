@@ -51,38 +51,60 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <LinearLayout
+                        android:id="@+id/linearLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="16dp">
+                        android:padding="16dp"
+                        app:layout_constraintEnd_toStartOf="@+id/textView"
+                        app:layout_constraintStart_toStartOf="@+id/textView">
 
                         <TextView
-                            android:layout_width="match_parent"
+                            android:id="@+id/textView"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@{details.conversationName}"
-                            tools:text="Conversation Name"
-                            android:layout_marginBottom="8dp"
                             android:fontFamily="sans-serif-medium"
+                            android:text="@{details.conversationName}"
                             android:textColor="@color/text_title"
-                            android:textSize="16sp" />
-
+                            android:textSize="16sp"
+                            tools:layout_conversion_absoluteHeight="0dp"
+                            tools:layout_conversion_absoluteWidth="0dp"
+                            tools:layout_editor_absoluteX="0dp"
+                            tools:layout_editor_absoluteY="0dp"
+                            tools:text="Conversation Name" />
+                        <!--</LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="35dp">-->
                         <TextView
-                            android:layout_width="match_parent"
+                            android:id="@+id/textView2"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@{@string/details_created_date(details.dateCreated)}"
-                            tools:text="Date: 23 May 2020"
+                            android:text="@{details.dateCreated}"
                             android:textColor="@color/text_title"
-                            android:textSize="14sp" />
-
+                            android:textSize="14sp"
+                            tools:layout_conversion_absoluteHeight="0dp"
+                            tools:layout_conversion_absoluteWidth="0dp"
+                            tools:layout_editor_absoluteX="0dp"
+                            tools:layout_editor_absoluteY="0dp"
+                            tools:text="Date: 23 May 2020" />
+                        <!---->
                         <TextView
-                            android:layout_width="match_parent"
+                            android:id="@+id/textView3"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@{@string/details_created_by(details.createdBy)}"
-                            tools:text="Created by: Eddy"
                             android:textColor="@color/text_title"
-                            android:textSize="14sp" />
-
+                            android:textSize="14sp"
+                            tools:layout_conversion_absoluteHeight="0dp"
+                            tools:layout_conversion_absoluteWidth="0dp"
+                            tools:layout_editor_absoluteX="0dp"
+                            tools:layout_editor_absoluteY="0dp"
+                            tools:text="Created by: Eddy" />
                     </LinearLayout>
+
 
                 </androidx.cardview.widget.CardView>
 
@@ -104,9 +126,9 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/details_actions"
                             android:layout_marginBottom="8dp"
                             android:fontFamily="sans-serif-medium"
+                            android:text="@string/details_actions"
                             android:textColor="@color/text_title"
                             android:textSize="16sp" />
 
@@ -115,74 +137,80 @@
                             android:layout_width="match_parent"
                             android:layout_height="48dp"
                             android:background="?attr/selectableItemBackground"
-                            android:gravity="center_vertical"
                             android:drawableStart="@drawable/ic_chat_participant_add"
                             android:drawablePadding="16dp"
+                            android:gravity="center_vertical"
                             android:text="@string/details_add_chat_participant"
                             android:textColor="@color/text_title"
                             android:textSize="14sp"
-                            android:visibility="gone"/>
+                            android:visibility="gone" />
 
                         <TextView
                             android:id="@+id/add_non_chat_participant_button"
                             android:layout_width="match_parent"
                             android:layout_height="48dp"
                             android:background="?attr/selectableItemBackground"
-                            android:gravity="center_vertical"
                             android:drawableStart="@drawable/ic_non_chat_participant_add"
                             android:drawablePadding="16dp"
+                            android:gravity="center_vertical"
                             android:text="@string/details_add_non_chat_participant"
                             android:textColor="@color/text_title"
                             android:textSize="14sp"
-                            android:visibility="gone"/>
+                            android:visibility="gone" />
 
                         <TextView
                             android:id="@+id/participants_list_button"
                             android:layout_width="match_parent"
                             android:layout_height="48dp"
                             android:background="?attr/selectableItemBackground"
-                            android:gravity="center_vertical"
-                            android:drawableStart="@drawable/ic_participants"
+                            android:drawableStart="@drawable/icon_participant_list"
                             android:drawablePadding="16dp"
+                            android:gravity="center_vertical"
                             android:text="@string/details_participant_list"
-                            android:textColor="@color/text_title"
-                            android:textSize="14sp" />
-
+                            style="@style/TextViewConversationDetails"
+                             />
+                        <!--android:textColor="@color/text_title"
+                        android:textSize="14sp"-->
                         <TextView
                             android:id="@+id/conversation_rename_button"
                             android:layout_width="match_parent"
                             android:layout_height="48dp"
                             android:background="?attr/selectableItemBackground"
-                            android:gravity="center_vertical"
-                            android:drawableStart="@drawable/ic_edit"
+                            android:drawableStart="@drawable/icon_rename_conversation"
                             android:drawablePadding="16dp"
+                            android:gravity="center_vertical"
                             android:text="@string/details_rename_conversation"
-                            android:textColor="@color/text_title"
-                            android:textSize="14sp" />
+                            style="@style/TextViewConversationDetails"
+                             />
+                        <!--android:textColor="@color/text_title"
+                        android:textSize="14sp"-->
 
                         <TextView
                             android:id="@+id/conversation_mute_button"
                             android:layout_width="match_parent"
                             android:layout_height="48dp"
                             android:background="?attr/selectableItemBackground"
-                            android:gravity="center_vertical"
+                            android:drawableStart="@{details.isMuted ? @drawable/ic_notifications_off : @drawable/icon_mute_conversation}"
                             android:drawablePadding="16dp"
-                            android:drawableStart="@{details.isMuted ? @drawable/ic_notifications_off : @drawable/ic_notifications_on}"
+                            android:gravity="center_vertical"
                             android:text="@{details.isMuted ? @string/details_unmute_conversation : @string/details_mute_conversation }"
-                            android:textColor="@color/text_title"
-                            android:textSize="14sp" />
-
+                            style="@style/TextViewConversationDetails"
+                            />
+                        <!--android:textColor="@color/text_title"
+                        android:textSize="14sp"-->
                         <TextView
                             android:id="@+id/conversation_leave_button"
                             android:layout_width="match_parent"
                             android:layout_height="48dp"
                             android:background="?attr/selectableItemBackground"
-                            android:gravity="center_vertical"
-                            android:drawableStart="@drawable/ic_leave"
+                            android:drawableStart="@drawable/icon_leave_conversation"
                             android:drawablePadding="16dp"
+                            android:gravity="center_vertical"
                             android:text="@string/details_leave_conversation"
-                            android:textColor="@color/text_title"
-                            android:textSize="14sp" />
+                            style="@style/TextViewConversationDetails"
+                             />
+                        <!--android:textColor="@color/text_title"
+                        android:textSize="14sp"-->
 
                     </LinearLayout>
 

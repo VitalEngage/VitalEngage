@@ -112,9 +112,9 @@ class MessageListActivity: AppCompatActivity() {
             binding.messageInput.onSubmit {
                 sendMessage()
             }
-            binding.messageInputHolder.setEndIconOnClickListener {
+            /*binding.messageInputHolder.setEndIconOnClickListener {
                 sendMessage()
-            }
+            }*/
             binding.messageInput.doAfterTextChanged {
                 messageListViewModel.typing()
             }
@@ -156,10 +156,10 @@ class MessageListActivity: AppCompatActivity() {
                 binding.typingIndicator.text =
                     resources.getQuantityString(R.plurals.typing_indicator, participants.size, text)
             }
-            binding.messageAttachmentButton.setOnClickListener {
+            /*binding.messageAttachmentButton.setOnClickListener {
                 AttachFileDialog.getInstance(messageListViewModel.conversationSid)
                     .showNow(supportFragmentManager, null)
-            }
+            }*/
         }
 
         private fun showRemoveMessageDialog() {

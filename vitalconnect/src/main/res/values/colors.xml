@@ -26,4 +26,14 @@
     <color name="divider">#aaa</color>
     <color name="swipe_mute_background">#4B5671</color>
     <color name="outgoing_msg">#AFBBC6</color>
+
+    <color name="text_black">#000000</color>
+    <color name="text_black_30_opacity">#4D000000</color>
+    <color name="search_gray">#EBECEC</color>
+    <color name="text_gray">#83898E</color>
+    <color name="messagelist_background">#F4F9FF</color>
+    <color name="message_background">#AFBBC6</color>
+    <color name="message_text">#FFFFFF</color>
+    <color name="alternate_message_text">#7B8793</color>
+    <color name="message_typing_background">#49A6E0</color>
 </resources>

@@ -18,14 +18,23 @@
         android:id="@+id/conversationRefresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
+        <!--<androidx.appcompat.widget.SearchView
+            android:layout_width="410dp"
+            android:layout_height="44dp"
+            android:layout_marginEnd="1dp"
+            android:layout_marginBottom="2dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />-->
+        <!--app:layout_constraintBottom_toTopOf="@+id/grid_view"-->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/conversationList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/row_conversation_item"
              />
-<!--        tools:listitem="@layout/row_conversation_item"-->
+
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 <!--    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton-->

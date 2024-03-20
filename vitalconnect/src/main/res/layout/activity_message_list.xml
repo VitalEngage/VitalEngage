@@ -40,7 +40,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:stackFromEnd="true"
-            tools:listitem="@layout/row_message_item_outgoing" />
+            android:background="@color/messagelist_background"/>
+        <!--tools:listitem="@layout/row_message_item_outgoing"-->
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/messageInputLayout"
@@ -62,7 +63,9 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="user00 is typing" />
+                tools:text="user00 is typing"
+                style="@style/TextViewMessageTyping"
+                android:background="@color/message_typing_background"/>
 
             <ImageButton
                 android:id="@+id/messageAttachmentButton"
@@ -92,9 +95,10 @@
                 app:endIconTint="@color/colorPrimary"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/messageAttachmentButton"
                 app:layout_constraintTop_toBottomOf="@+id/typingIndicator"
+                app:layout_constraintStart_toEndOf="@+id/messageAttachmentButton"
                 app:layout_goneMarginTop="17dp">
+
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/messageInput"
@@ -103,7 +107,18 @@
                     android:inputType="textCapSentences" />
 
             </com.google.android.material.textfield.TextInputLayout>
-
+            <!--<ImageButton
+                android:id="@+id/messageSendButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="9dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_send_message"
+                app:layout_constraintBottom_toBottomOf="@+id/messageInputHolder"
+                app:layout_constraintStart_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/messageInputHolder"
+                app:tint="@color/colorPrimary"
+                tools:ignore="MissingConstraints" />-->
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

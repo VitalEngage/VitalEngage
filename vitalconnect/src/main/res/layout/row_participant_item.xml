@@ -43,11 +43,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
-                android:textColor="@color/text_title"
-                android:fontFamily="sans-serif-medium"
+                style="@style/TextViewChildTitle"
                 android:text="@{participant.friendlyName}"
                 tools:text="Donald Trump" />
-
+            <!--android:textColor="@color/text_title"
+            android:fontFamily="sans-serif-medium"-->
             <TextView
                 android:id="@+id/participant_info"
                 android:layout_width="match_parent"

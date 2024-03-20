@@ -11,6 +11,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.adapters.ConversationListAdapter
@@ -92,6 +93,7 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
 
         binding.conversationRefresh.setOnRefreshListener { conversationListViewModel.getUserConversations() }
         binding.conversationList.adapter = adapter
+        binding.conversationList.addItemDecoration(DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL))
         //binding.conversationList.addFabExtendingOnScrollListener(binding.newConversationFab)
 
         val swipeCallback = ConversationListSwipeCallback(requireContext(), adapter)

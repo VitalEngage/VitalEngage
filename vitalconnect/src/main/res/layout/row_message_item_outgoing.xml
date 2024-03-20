@@ -70,7 +70,7 @@
 
         <TextView
             android:id="@+id/message_body"
-            style="@style/TextViewSubtitle"
+            style="@style/TextViewMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -182,7 +182,7 @@
 
         <TextView
             android:id="@+id/message_date"
-            style="@style/TextViewSubtitle"
+            style="@style/TextViewMessageTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="8dp"

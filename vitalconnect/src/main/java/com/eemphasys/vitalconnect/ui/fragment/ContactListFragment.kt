@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.adapters.ContactListAdapter
@@ -283,6 +284,7 @@ val contactListViewModel by lazyActivityViewModel { injector.createContactListVi
         binding?.contactList?.layoutManager = LinearLayoutManager(context,LinearLayoutManager.VERTICAL,false)
        //Assigning the created adapter to recyclerview
         binding?.contactList?.adapter = adapter
+        binding?.contactList?.addItemDecoration(DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL))
 
     }
 
