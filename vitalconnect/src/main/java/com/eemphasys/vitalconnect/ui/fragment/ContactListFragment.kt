@@ -1,10 +1,13 @@
 package com.eemphasys.vitalconnect.ui.fragment
 
 import android.annotation.SuppressLint
+import android.app.ProgressDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
@@ -39,22 +42,10 @@ class ContactListFragment : Fragment() {
     var binding: FragmentContactListBinding? = null
 
 val contactListViewModel by lazyActivityViewModel { injector.createContactListViewModel(applicationContext) }
-    private val progressDialog: AlertDialog by lazy {
-        AlertDialog.Builder(applicationContext)
-            .setCancelable(false)
-            .setView(R.layout.view_loading_dialog)
-            .create()
-    }
-    val isShowProgress = MutableLiveData<Boolean>()
 
     var contactslist = arrayListOf<Contact>()
     var webuserlist = arrayListOf<WebUser>()
 
-    private fun setShowProgress(show: Boolean) {
-        if (isShowProgress.value != show) {
-            isShowProgress.value = show
-        }
-    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,21 +61,6 @@ val contactListViewModel by lazyActivityViewModel { injector.createContactListVi
             )
         }
 
-//        contactListViewModel.isShowProgress.observe(this) { show ->
-//            if (show) {
-//                progressDialog.show()
-//            } else {
-//                progressDialog.hide()
-//            }
-//        }
-//
-//        isShowProgress.observe(this) { show ->
-//            if (show) {
-//                progressDialog.show()
-//            } else {
-//                progressDialog.hide()
-//            }
-//        }
     }
 
     override fun onCreateView(
@@ -128,7 +104,6 @@ val contactListViewModel by lazyActivityViewModel { injector.createContactListVi
 
         val jsonObjectcontacts = JSONObject(Constants.CONTACTS)
         val jsonArrayContacts = jsonObjectcontacts.getJSONArray("contacts")
-
         for (i in 0 until jsonArrayContacts.length()) {
             val jsonObject = jsonArrayContacts.getJSONObject(i)
             val name = jsonObject.getString("name")
@@ -140,7 +115,6 @@ val contactListViewModel by lazyActivityViewModel { injector.createContactListVi
 
         val jsonObjectwebusers = JSONObject(Constants.WEBUSERS)
         val jsonArrayWebUsers = jsonObjectwebusers.getJSONArray("webUser")
-
         for (i in 0 until jsonArrayWebUsers.length()) {
             val jsonObject = jsonArrayWebUsers.getJSONObject(i)
             val name = jsonObject.getString("name")
@@ -159,15 +133,14 @@ val contactListViewModel by lazyActivityViewModel { injector.createContactListVi
 
         //Creating the Adapter
         val adapter = ContactListAdapter(combinedList,object : OnContactItemClickListener {
+            @SuppressLint("SuspiciousIndentation")
             override fun onContactItemClick(contact: ContactListViewItem) {
-
-                //setShowProgress(true)
 
                 // Handle item click here
                 Log.d("ContactClicked", "Name: ${contact.name}, Number: ${contact.number}, Type: ${contact.type}")
 
                 if (contact.type == "SMS") {
-                    //contactListViewModel.fetchExistingConversation(contact)
+                    binding?.progressBarID?.visibility = VISIBLE
 
                     val existingConversation  = retrofitWithToken.fetchExistingConversation(
                         ChatAppModel.tenant_Code!!,
@@ -217,10 +190,11 @@ val contactListViewModel by lazyActivityViewModel { injector.createContactListVi
                                         Log.d("wait","waiting")
 //                                        delay(1000)
                                         MessageListActivity.startfromFragment(applicationContext,conversation.conversationSid)
-                                        //setShowProgress(false)
+                                        binding?.progressBarID?.visibility = GONE
                                     }
                                 } else { //If there is no existing conversation with SMS user, create new
                                     contactListViewModel.createConversation(contact.name + " " + contact.number ,contact.email,contact.number)
+                                    binding?.progressBarID?.visibility = GONE
                                 }
                             } else {
                                 println("Response was not successful: ${response.code()}")
@@ -235,7 +209,7 @@ val contactListViewModel by lazyActivityViewModel { injector.createContactListVi
 
                 }
                 else{
-
+                    binding?.progressBarID?.visibility = VISIBLE
                     //Below code can be uncommented if we want universal channel for webchatusers too.
 
                     //If contact is webchat user
@@ -266,7 +240,8 @@ val contactListViewModel by lazyActivityViewModel { injector.createContactListVi
 //                                    }
 //                                } else { //If there is no existing conversation with web user, create new
                                     contactListViewModel.createConversation(contact.name,contact.email,contact.number)
-//                                }
+                                    binding?.progressBarID?.visibility = GONE
+                //                                }
 //                            } else {
 //                                println("Response was not successful: ${response.code()}")
 //                            }

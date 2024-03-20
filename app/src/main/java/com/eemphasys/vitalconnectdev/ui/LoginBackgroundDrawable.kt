@@ -17,8 +17,8 @@ const val kLineAngleRadians = kLineAngleDegrees * PI.toFloat() / 180
 
 class LoginBackgroundDrawable(context: Context) : Drawable() {
 
-    val topColor = ContextCompat.getColor(context, R.color.gray_background)
-    val bottomColor = ContextCompat.getColor(context, R.color.gray_background)
+    val topColor = ContextCompat.getColor(context, R.color.white)
+    val bottomColor = ContextCompat.getColor(context, R.color.white)
 
     val path = Path()
 

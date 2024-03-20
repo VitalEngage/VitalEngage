@@ -14,7 +14,7 @@ class LoginConstants   {
         var TWILIO_TOKEN = ""
         var AUTH_TOKEN = ""
 
-        val CONTACTS =
+        val CONTACTS1 =
             """{
             "contacts" : 
             [
@@ -39,7 +39,7 @@ class LoginConstants   {
             ]
        } """.trimIndent()
 
-        val WEBUSERS = """{
+        val WEBUSERS1 = """{
             "webUser":[
             {
                 "name":"Ankush Belorkar",
@@ -61,7 +61,8 @@ class LoginConstants   {
         }
         """.trimIndent()
 
-
+        val CONTACTS = ""
+        val WEBUSERS = ""
 
     }
 }
