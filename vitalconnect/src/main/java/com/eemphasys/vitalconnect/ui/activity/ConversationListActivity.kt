@@ -2,13 +2,16 @@ package com.eemphasys.vitalconnect.ui.activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.eemphasys.vitalconnect.R
+import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.databinding.ActivityConversationListBinding
 import com.eemphasys.vitalconnect.ui.fragment.ContactListFragment
 import com.eemphasys.vitalconnect.ui.fragment.ConversationListFragment
 import com.eemphasys.vitalconnect.ui.fragment.ProfileFragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 
 class ConversationListActivity:AppCompatActivity() {
@@ -20,6 +23,12 @@ class ConversationListActivity:AppCompatActivity() {
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar)
+        val menubottom : BottomNavigationView = findViewById(R.id.bottom_navigation)
+        val menu = menubottom.menu
+        val menuItem = menu.findItem(R.id.page_contact_list)
+
+        val isDataAvailable = Constants.CONTACTS.isNullOrEmpty() || Constants.WEBUSERS.isNullOrEmpty()
+        menuItem.isVisible = !isDataAvailable
 
         binding.bottomNavigation.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
@@ -32,7 +41,12 @@ class ConversationListActivity:AppCompatActivity() {
         }
 
         if (savedInstanceState == null) {
-            replaceFragment(ContactListFragment())
+            if (!isDataAvailable) {
+                replaceFragment(ContactListFragment())
+            }
+            else {
+                replaceFragment(ConversationListFragment())
+            }
         }
     }
 
