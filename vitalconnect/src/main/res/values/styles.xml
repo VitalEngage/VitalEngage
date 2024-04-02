@@ -185,8 +185,21 @@
     </style>
 
     <style name="TextViewConversationDetails">
-        <item name="android:textColor">@color/black</item>
+<!--        Below color is black with opacity 77%-->
+        <item name="android:textColor">#C4000000</item>
         <item name="android:textSize">19sp</item>
+        <item name="android:fontFamily">Helvetica</item>
+        <item name="fontWeight">400</item>
+    </style>
+    <style name="ConversationDetails_Subtext">
+        <item name="android:textColor">@color/alternate_message_text</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">Helvetica</item>
+        <item name="fontWeight">400</item>
+    </style>
+    <style name="AppBar_Title">
+        <item name="android:textColor">@color/text_black</item>
+        <item name="android:textSize">27sp</item>
         <item name="android:fontFamily">Helvetica</item>
         <item name="fontWeight">400</item>
     </style>

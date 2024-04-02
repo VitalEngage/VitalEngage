@@ -13,7 +13,6 @@ import com.eemphasys.vitalconnect.common.enums.ConversationsError
 import com.eemphasys.vitalconnect.common.extensions.*
 import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.databinding.ActivityConversationDetailsBinding
-//import timber.log.Timber
 
 class ConversationDetailsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityConversationDetailsBinding
@@ -33,7 +32,6 @@ class ConversationDetailsActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        //Timber.d("onCreate")
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil
             .setContentView<ActivityConversationDetailsBinding>(this, R.layout.activity_conversation_details)
@@ -70,30 +68,25 @@ class ConversationDetailsActivity : AppCompatActivity() {
         title = getString(R.string.details_title)
 
         binding.addChatParticipantButton.setOnClickListener {
-            //Timber.d("Add chat participant clicked")
             binding.addChatParticipantSheet.addChatParticipantIdInput.text?.clear()
             addChatParticipantSheetBehavior.show()
         }
 
         binding.addNonChatParticipantButton.setOnClickListener {
-            //Timber.d("Add non-chat participant clicked")
             binding.addNonChatParticipantSheet.addNonChatParticipantPhoneInput.text?.clear()
             binding.addNonChatParticipantSheet.addNonChatParticipantProxyInput.text?.clear()
             addNonChatParticipantSheetBehavior.show()
         }
 
         binding.participantsListButton.setOnClickListener {
-            //Timber.d("Show participant list clicked")
             ParticipantListActivity.start(this, conversationDetailsViewModel.conversationSid)
         }
 
         binding.conversationRenameButton.setOnClickListener {
-            //Timber.d("Show rename conversation popup clicked")
             renameConversationSheetBehavior.show()
         }
 
         binding.conversationMuteButton.setOnClickListener {
-            //Timber.d("Conversation mute clicked")
             if (conversationDetailsViewModel.isConversationMuted()) {
                 conversationDetailsViewModel.unmuteConversation()
             } else {
@@ -102,7 +95,6 @@ class ConversationDetailsActivity : AppCompatActivity() {
         }
 
         binding.conversationLeaveButton.setOnClickListener {
-            //Timber.d("Conversation leave clicked")
             conversationDetailsViewModel.leaveConversation()
         }
 
@@ -117,7 +109,6 @@ class ConversationDetailsActivity : AppCompatActivity() {
         }
 
         binding.renameConversationSheet.renameConversationButton.setOnClickListener {
-            //Timber.d("Conversation rename clicked")
             renameConversationSheetBehavior.hide()
             conversationDetailsViewModel.renameConversation(binding.renameConversationSheet.renameConversationInput.text.toString())
         }
@@ -127,7 +118,6 @@ class ConversationDetailsActivity : AppCompatActivity() {
         }
 
         binding.addChatParticipantSheet.addChatParticipantIdButton.setOnClickListener {
-            //Timber.d("Add chat participant clicked")
             addChatParticipantSheetBehavior.hide()
             conversationDetailsViewModel.addChatParticipant(binding.addChatParticipantSheet.addChatParticipantIdInput.text.toString())
         }
@@ -137,7 +127,6 @@ class ConversationDetailsActivity : AppCompatActivity() {
         }
 
         binding.addNonChatParticipantSheet.addNonChatParticipantIdButton.setOnClickListener {
-            //Timber.d("Add non-chat participant clicked")
             addNonChatParticipantSheetBehavior.hide()
             conversationDetailsViewModel.addNonChatParticipant(
                 binding.addNonChatParticipantSheet.addNonChatParticipantPhoneInput.text.toString(),
@@ -154,7 +143,6 @@ class ConversationDetailsActivity : AppCompatActivity() {
         }
 
         conversationDetailsViewModel.conversationDetails.observe(this) { conversationDetails ->
-            //Timber.d("Conversation details received: $conversationDetails")
             binding.details = conversationDetails
             binding.renameConversationSheet.renameConversationInput.setText(conversationDetails.conversationName)
         }

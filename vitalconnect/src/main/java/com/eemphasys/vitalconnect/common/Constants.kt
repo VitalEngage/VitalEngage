@@ -16,5 +16,6 @@ class Constants   {
         var CONTACTS : String = ""
         var WEBUSERS : String = ""
         var AUTH_TOKEN : String = ""
+        var PROXY_NUMBER : String = ""
     }
 }

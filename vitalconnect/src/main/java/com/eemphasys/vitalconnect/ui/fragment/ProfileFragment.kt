@@ -27,7 +27,6 @@ class ProfileFragment:Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        //Timber.d("onViewCreated")
         super.onViewCreated(view, savedInstanceState)
         requireActivity().title = getString(R.string.title_profile)
 

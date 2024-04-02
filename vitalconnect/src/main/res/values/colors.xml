@@ -23,9 +23,9 @@
     <color name="sheet_background">#80000000</color>
     <color name="message_failed_icon_tint">#FEECEC</color>
     <color name="participant_background">#aaa</color>
-    <color name="divider">#aaa</color>
+    <color name="divider">#36AAAAAA</color>
     <color name="swipe_mute_background">#4B5671</color>
-    <color name="outgoing_msg">#AFBBC6</color>
+    <color name="outgoing_msg">#7990A5</color>
 
     <color name="text_black">#000000</color>
     <color name="text_black_30_opacity">#4D000000</color>
@@ -35,5 +35,6 @@
     <color name="message_background">#AFBBC6</color>
     <color name="message_text">#FFFFFF</color>
     <color name="alternate_message_text">#7B8793</color>
-    <color name="message_typing_background">#49A6E0</color>
+    <color name="message_typing_background">#DBE5ED</color>
+    <color name="conversation_details_background">#EBECEC</color>
 </resources>

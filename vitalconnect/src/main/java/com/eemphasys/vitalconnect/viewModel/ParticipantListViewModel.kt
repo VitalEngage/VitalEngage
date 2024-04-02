@@ -15,7 +15,6 @@ import com.twilio.util.TwilioException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.launch
-//import timber.log.Timber
 import kotlin.properties.Delegates
 
 @ExperimentalCoroutinesApi
@@ -38,7 +37,6 @@ class ParticipantListViewModel(
     var selectedParticipant: ParticipantListViewItem? = null
 
     init {
-        //Timber.d("init")
         getConversationParticipants()
     }
 
@@ -71,7 +69,6 @@ class ParticipantListViewModel(
             participantListManager.removeParticipant(participant.sid)
             onParticipantRemoved.call()
         } catch (e: TwilioException) {
-            //Timber.d("Failed to remove participant")
             onParticipantError.value = ConversationsError.PARTICIPANT_REMOVE_FAILED
         }
     }

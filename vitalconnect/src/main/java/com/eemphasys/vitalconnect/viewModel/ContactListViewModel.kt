@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.eemphasys.vitalconnect.common.ChatAppModel
+import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.SingleLiveEvent
 import com.eemphasys.vitalconnect.common.asConversationListViewItems
 import com.eemphasys.vitalconnect.common.call
@@ -53,8 +54,6 @@ class ContactListViewModel(
     val onDetailsError = SingleLiveEvent<ConversationsError>()
 
     init {
-        //Timber.d("init")
-        Log.d("check", "inside init")
         getUserConversations()
 
         unfilteredUserConversationItems.observeForever { updateUserConversationItems() }
@@ -70,7 +69,6 @@ class ContactListViewModel(
 
     fun getUserConversations() = viewModelScope.launch {
         conversationsRepository.getUserConversations().collect { (list, status) ->
-            //Timber.d("UserConversations collected: ${list.size}, ${status}")
 
             unfilteredUserConversationItems.value = list
                 .asConversationListViewItems(applicationContext)
@@ -112,7 +110,6 @@ class ContactListViewModel(
 
 
     fun createConversation(friendlyName: String, identity : String, phoneNumber : String) = viewModelScope.launch {
-        //Timber.d("Creating conversation: $friendlyName")
         try {
             setDataLoading(true)
 
@@ -120,7 +117,7 @@ class ContactListViewModel(
             {
                 val conversationSid = conversationListManager.createConversation(friendlyName)
                 conversationListManager.joinConversation(conversationSid)
-                addNonChatParticipant(phoneNumber, ChatAppModel.twilio_proxy!!,friendlyName,conversationSid)
+                addNonChatParticipant(phoneNumber, Constants.PROXY_NUMBER,friendlyName,conversationSid)
                 delay(1000)
                 MessageListActivity.startfromFragment(applicationContext,conversationSid)
 
@@ -132,12 +129,10 @@ class ContactListViewModel(
                 MessageListActivity.startfromFragment(applicationContext,conversationSid)
 
                 onConversationCreated.call()
-                //Timber.d("Created conversation: $friendlyName $conversationSid")
             }
 
 
         } catch (e: TwilioException) {
-            //Timber.d("Failed to create conversation")
             onConversationError.value = ConversationsError.CONVERSATION_CREATE_FAILED
         } finally {
             setDataLoading(false)
@@ -148,13 +143,11 @@ class ContactListViewModel(
         if (isShowProgress.value == true) {
             return@launch
         }
-        //Timber.d("Adding chat participant: $identity")
         try {
             setShowProgress(true)
             autoParticipantListManager.addChatParticipant(identity,sid)
             onParticipantAdded.value = identity
         } catch (e: TwilioException) {
-            //Timber.d("Failed to add chat participant")
             onDetailsError.value = ConversationsError.PARTICIPANT_ADD_FAILED
         } finally {
             setShowProgress(false)
@@ -165,13 +158,11 @@ class ContactListViewModel(
         if (isShowProgress.value == true) {
             return@launch
         }
-        //Timber.d("Adding non-chat participant: ($phone; $proxyPhone)")
         try {
             setShowProgress(true)
             autoParticipantListManager.addNonChatParticipant(phone, proxyPhone,friendlyName,sid)
             onParticipantAdded.value = phone
         } catch (e: TwilioException) {
-            //Timber.d("Failed to add non-chat participant")
             onDetailsError.value = ConversationsError.PARTICIPANT_ADD_FAILED
         } finally {
             setShowProgress(false)

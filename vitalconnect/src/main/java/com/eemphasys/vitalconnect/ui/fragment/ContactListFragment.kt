@@ -32,11 +32,13 @@ import com.eemphasys.vitalconnect.data.models.ContactListViewItem
 import com.eemphasys.vitalconnect.data.models.WebUser
 import com.eemphasys.vitalconnect.databinding.FragmentContactListBinding
 import com.eemphasys.vitalconnect.ui.activity.MessageListActivity
+import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.logging.Handler
 
 class ContactListFragment : Fragment() {
     var binding: FragmentContactListBinding? = null
@@ -143,7 +145,7 @@ val contactListViewModel by lazyActivityViewModel { injector.createContactListVi
                     binding?.progressBarID?.visibility = VISIBLE
 
                     val existingConversation  = retrofitWithToken.fetchExistingConversation(
-                        ChatAppModel.tenant_Code!!,
+                        Constants.TENANT_CODE,
                         contact.number,
                         false,
                         1
@@ -165,7 +167,7 @@ val contactListViewModel by lazyActivityViewModel { injector.createContactListVi
                                         println("Conversation SID: ${conversation.conversationSid}")
 
                                         try{
-                                        val participantSid = retrofitWithToken.addParticipantToConversation(ChatAppModel.tenant_Code!!,conversation.conversationSid,Constants.USERNAME)
+                                        val participantSid = retrofitWithToken.addParticipantToConversation(Constants.TENANT_CODE,conversation.conversationSid,Constants.USERNAME)
 
                                             participantSid.enqueue(object : Callback<String> {
                                                 override fun onResponse(call: Call<String>, response: Response<String>) {
@@ -214,7 +216,7 @@ val contactListViewModel by lazyActivityViewModel { injector.createContactListVi
 
                     //If contact is webchat user
 //                    val existingConversation  = retrofitWithToken.fetchExistingConversation(
-//                        ChatAppModel.tenant_Code!!,
+//                        Constants.TENANT_CODE,
 //                        contact.email,
 //                        true,
 //                        1

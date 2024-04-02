@@ -113,7 +113,6 @@ class ConversationsRepositoryImpl(
     private val clientListener = ConversationsClientListener(
         onConversationDeleted = { conversation ->
             launch {
-                //Timber.d("Conversation deleted $conversation")
                 localCache.conversationsDao().delete(conversation.sid)
             }
         },
@@ -132,35 +131,30 @@ class ConversationsRepositoryImpl(
 
     private val conversationListener = ConversationListener(
         onTypingStarted = { conversation, participant ->
-            //Timber.d("${participant.identity} started typing in ${conversation.friendlyName}")
             this@ConversationsRepositoryImpl.launch {
                 val user = participant.getAndSubscribeUser()
                 localCache.participantsDao().insertOrReplace(participant.asParticipantDataItem(typing = true, user))
             }
         },
         onTypingEnded = { conversation, participant ->
-            //Timber.d("${participant.identity} stopped typing in ${conversation.friendlyName}")
             this@ConversationsRepositoryImpl.launch {
                 val user = participant.getAndSubscribeUser()
                 localCache.participantsDao().insertOrReplace(participant.asParticipantDataItem(typing = false, user))
             }
         },
         onParticipantAdded = { participant ->
-            //Timber.d("${participant.identity} added in ${participant.conversation.sid}")
             this@ConversationsRepositoryImpl.launch {
                 val user = participant.getAndSubscribeUser()
                 localCache.participantsDao().insertOrReplace(participant.asParticipantDataItem(user = user))
             }
         },
         onParticipantUpdated = { participant, reason ->
-            //Timber.d("${participant.identity} updated in ${participant.conversation.sid}, reason: $reason")
             this@ConversationsRepositoryImpl.launch {
                 val user = participant.getAndSubscribeUser()
                 localCache.participantsDao().insertOrReplace(participant.asParticipantDataItem(user = user))
             }
         },
         onParticipantDeleted = { participant ->
-            //Timber.d("${participant.identity} deleted in ${participant.conversation.sid}")
             this@ConversationsRepositoryImpl.launch {
                 localCache.participantsDao().delete(participant.asParticipantDataItem())
             }
@@ -198,11 +192,9 @@ class ConversationsRepositoryImpl(
     override fun getMessageByUuid(messageUuid: String) = localCache.messagesDao().getMessageByUuid(messageUuid)
 
     override fun getMessages(conversationSid: String, pageSize: Int): Flow<RepositoryResult<PagedList<MessageListViewItem>>> {
-        //Timber.v("getMessages($conversationSid, $pageSize)")
         val requestStatusConversation = Channel<RepositoryRequestStatus>(Channel.BUFFERED)
         val boundaryCallback = object : PagedList.BoundaryCallback<MessageListViewItem>() {
             override fun onZeroItemsLoaded() {
-                //Timber.v("BoundaryCallback.onZeroItemsLoaded()")
                 launch {
                     fetchMessages(conversationSid) { getLastMessages(pageSize) }
                         .flowOn(dispatchers.io())
@@ -213,11 +205,9 @@ class ConversationsRepositoryImpl(
             }
 
             override fun onItemAtEndLoaded(itemAtEnd: MessageListViewItem) {
-                //Timber.v("BoundaryCallback.onItemAtEndLoaded($itemAtEnd)")
             }
 
             override fun onItemAtFrontLoaded(itemAtFront: MessageListViewItem) {
-                //Timber.v("BoundaryCallback.onItemAtFrontLoaded($itemAtFront)")
                 if (itemAtFront.index > 0) {
                     launch {
                         fetchMessages(conversationSid) { getMessagesBefore(itemAtFront.index - 1, pageSize) }
@@ -361,7 +351,6 @@ class ConversationsRepositoryImpl(
             }
             emit(COMPLETE)
         } catch (e: TwilioException) {
-            //Timber.d("fetchMessages error: ${e.errorInfo.message}")
             emit(Error(e.toConversationsError()))
         }
     }
@@ -372,7 +361,6 @@ class ConversationsRepositoryImpl(
             insertOrUpdateConversation(conversationSid)
             emit(COMPLETE)
         } catch (e: TwilioException) {
-            //Timber.d("fetchConversations error: ${e.errorInfo.message}")
             emit(Error(e.toConversationsError()))
         }
     }
@@ -389,7 +377,6 @@ class ConversationsRepositoryImpl(
             }
             emit(COMPLETE)
         } catch (e: TwilioException) {
-            //Timber.d("fetchParticipants error: ${e.errorInfo.message}")
             emit(Error(e.toConversationsError()))
         }
     }
@@ -403,7 +390,6 @@ class ConversationsRepositoryImpl(
                 .getConversationsClient()
                 .myConversations
                 .map { it.toConversationDataItem() }
-            //Timber.d("repo dataItems from client $dataItems")
 
             localCache.conversationsDao().deleteGoneUserConversations(dataItems)
             send(SUBSCRIBING)
@@ -416,37 +402,31 @@ class ConversationsRepositoryImpl(
                         try {
                             insertOrUpdateConversation(it.sid)
                         } catch (e: TwilioException) {
-                            //Timber.d("insertOrUpdateConversation error: ${e.errorInfo.message}")
                             status = Error(e.toConversationsError())
                         }
                     }
                 }
             }
-            //Timber.d("fetchConversations completed with status: $status")
             send(status)
         } catch (e: TwilioException) {
-            //Timber.d("fetchConversations error: ${e.errorInfo.message}")
             send(Error(e.toConversationsError()))
         }
     }
 
     override fun subscribeToConversationsClientEvents() {
         launch {
-            //Timber.d("Client listener added")
             conversationsClientWrapper.getConversationsClient().addListener(clientListener)
         }
     }
 
     override fun unsubscribeFromConversationsClientEvents() {
         launch {
-            //Timber.d("Client listener removed")
             conversationsClientWrapper.getConversationsClient().removeListener(clientListener)
         }
     }
 
     private suspend fun insertOrUpdateConversation(conversationSid: String) {
         val conversation = conversationsClientWrapper.getConversationsClient().getConversation(conversationSid)
-        //Timber.d("repo updating dataItem in db... ${conversation.friendlyName}")
         conversation.addListener(conversationListener)
         localCache.conversationsDao().insert(conversation.toConversationDataItem())
         localCache.conversationsDao().update(conversation.sid,
@@ -478,7 +458,6 @@ class ConversationsRepositoryImpl(
     private fun deleteMessage(message: Message) {
         launch {
             val identity = conversationsClientWrapper.getConversationsClient().myIdentity
-            //Timber.d("Message deleted: ${message.toMessageDataItem(identity)}")
             localCache.messagesDao().delete(message.toMessageDataItem(identity))
             updateConversationLastMessage(message.conversationSid)
         }
@@ -488,7 +467,6 @@ class ConversationsRepositoryImpl(
         launch {
             val identity = conversationsClientWrapper.getConversationsClient().myIdentity
             val uuid = localCache.messagesDao().getMessageBySid(message.sid)?.uuid ?: ""
-            //Timber.d("Message updated: ${message.toMessageDataItem(identity)}, reason: $updateReason")
             localCache.messagesDao().insertOrReplace(message.toMessageDataItem(identity, uuid))
             updateConversationLastMessage(message.conversationSid)
         }
@@ -497,7 +475,6 @@ class ConversationsRepositoryImpl(
     private fun addMessage(message: Message) {
         launch {
             val identity = conversationsClientWrapper.getConversationsClient().myIdentity
-            //Timber.d("Message added: ${message.toMessageDataItem(identity)}")
             localCache.messagesDao().updateByUuidOrInsert(message.toMessageDataItem(identity, message.attributes.string ?: ""))
             updateConversationLastMessage(message.conversationSid)
         }

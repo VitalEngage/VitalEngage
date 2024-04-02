@@ -14,7 +14,7 @@ class LoginConstants   {
         var TWILIO_TOKEN = ""
         var AUTH_TOKEN = ""
 
-        val CONTACTS1 =
+        val CONTACTS =
             """{
             "contacts" : 
             [
@@ -29,7 +29,7 @@ class LoginConstants   {
                   },
                   {
                      "name":"Himanshu Mahajan",
-                     "number":"+917769966961",
+                     "number":"+919175346961",
                      "customerName":"",
                      "customField1":"",
                      "customField2":"",
@@ -39,7 +39,7 @@ class LoginConstants   {
             ]
        } """.trimIndent()
 
-        val WEBUSERS1 = """{
+        val WEBUSERS = """{
             "webUser":[
             {
                 "name":"Ankush Belorkar",
@@ -61,8 +61,8 @@ class LoginConstants   {
         }
         """.trimIndent()
 
-        val CONTACTS = ""
-        val WEBUSERS = ""
+        val CONTACTS1 = ""
+        val WEBUSERS1 = ""
 
     }
 }

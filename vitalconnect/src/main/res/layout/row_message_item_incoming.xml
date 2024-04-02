@@ -18,12 +18,17 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/message_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:focusableInTouchMode="false"
-        tools:background="@color/white">
+        tools:background="@color/white"
+        tools:ignore="MissingConstraints">
 
         <TextView
             android:id="@+id/message_author"
@@ -47,7 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:src="@drawable/ic_avatar"
+            android:src="@drawable/icon_single_user_conversation"
             app:layout_constraintEnd_toStartOf="@+id/message_background"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/message_author" />
@@ -89,8 +94,8 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginHorizontal="8dp"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/bg_message_attachment"
+            android:layout_marginTop="0dp"
+            android:background="@color/white"
             app:layout_constraintBottom_toBottomOf="@+id/attachment_footer"
             app:layout_constraintEnd_toEndOf="@+id/message_background"
             app:layout_constraintStart_toStartOf="@+id/message_background"
@@ -168,7 +173,7 @@
             app:layout_constraintStart_toStartOf="@+id/attachment_file_name"
             app:layout_constraintTop_toBottomOf="@+id/attachment_info" />
 
-        <TextView
+        <!--<TextView
             android:id="@+id/message_date"
             style="@style/TextViewSubtitle"
             android:layout_width="0dp"
@@ -182,7 +187,7 @@
             app:layout_constraintEnd_toEndOf="@+id/message_background"
             app:layout_constraintStart_toStartOf="@+id/message_background"
             app:layout_constraintTop_toBottomOf="@+id/attachment_background"
-            tools:text="15:58" />
+            tools:text="15:58" />-->
 
         <Space
             android:id="@+id/message_footer"
@@ -190,7 +195,7 @@
             android:layout_height="12dp"
             app:layout_constraintEnd_toEndOf="@id/message_background"
             app:layout_constraintStart_toStartOf="@+id/message_background"
-            app:layout_constraintTop_toBottomOf="@+id/message_date" />
+            app:layout_constraintTop_toBottomOf="@+id/attachment_info" />
 
         <LinearLayout
             android:id="@+id/message_reaction_holder"
@@ -202,7 +207,7 @@
             android:gravity="center_vertical|end"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="@+id/message_background"
-            app:layout_constraintTop_toBottomOf="@+id/message_date" />
+            app:layout_constraintTop_toBottomOf="@+id/attachment_info" />
 
         <Space
             android:id="@+id/reactions_footer"
@@ -226,6 +231,21 @@
                 attachment_footer"
             tools:visibility="visible" />
 
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/message_date"
+            style="@style/TextViewSubtitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="70dp"
+            android:layout_marginTop="8dp"
+            android:singleLine="true"
+            android:text="@{message.dateCreated}"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/message_item"
+            tools:text="15:58" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

@@ -28,19 +28,10 @@ class MainManagerImpl(
             val token = firebaseTokenManager.retrieveToken()
 
             credentialStorage.fcmToken = token
-
-//Timber.d("Registering for FCM: $token")
-
             conversationsClient.getConversationsClient().registerFCMToken(
-
                 ConversationsClient.FCMToken(token)
-
             )
-
         } catch (e: Exception) {
-
-//Timber.d(e, "Failed to register FCM")
-
         }
 
     }

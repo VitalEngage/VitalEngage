@@ -23,7 +23,6 @@ import com.eemphasys.vitalconnect.data.models.MessageListViewItem
 import com.eemphasys.vitalconnect.databinding.RowMessageItemIncomingBinding
 import com.eemphasys.vitalconnect.databinding.RowMessageItemOutgoingBinding
 import com.eemphasys.vitalconnect.databinding.ViewReactionItemBinding
-//import timber.log.Timber
 
 class MessageListAdapter(
     private val onDisplaySendError: (message: MessageListViewItem) -> Unit,
@@ -56,7 +55,6 @@ class MessageListAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val message = getItem(position)
         if (message == null) {
-            //Timber.e("onBindViewHolder called for a missing item (position: $position, total items: $itemCount)")
             return
         }
 
@@ -147,7 +145,6 @@ class MessageListAdapter(
     private fun addReactions(rootView: LinearLayout, message: MessageListViewItem) {
         rootView.setOnClickListener { onReactionClicked(message.index) }
         rootView.removeAllViews()
-        //Timber.d("Adding reactions: ${message.reactions}")
         message.reactions.forEach { reaction ->
             if (reaction.value.isNotEmpty()) {
                 val emoji = ViewReactionItemBinding.inflate(LayoutInflater.from(rootView.context))

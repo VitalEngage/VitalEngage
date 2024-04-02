@@ -9,6 +9,7 @@ import android.widget.AutoCompleteTextView
 import androidx.appcompat.app.AppCompatActivity
 import com.eemphasys.vitalconnect.MainActivity
 import com.eemphasys.vitalconnect.common.ChatAppModel
+import com.eemphasys.vitalconnect.common.extensions.hideKeyboard
 import com.eemphasys.vitalconnect.data.localCache.LocalCacheProvider
 import com.eemphasys.vitalconnectdev.ChatApplication
 import com.eemphasys.vitalconnectdev.R
@@ -65,8 +66,12 @@ class LoginActivity : AppCompatActivity() {
             signInSucceeded()
         }
 
-        binding.usernameTv.onSubmit { signInPressed() }
-        binding.signInBtn.setOnClickListener { signInPressed() }
+        binding.usernameTv.onSubmit {
+            hideKeyboard()
+            signInPressed() }
+        binding.signInBtn.setOnClickListener {
+            hideKeyboard()
+            signInPressed() }
         binding.settingsBtn.setOnClickListener { openSettings() }
 
         initializeChatAppModel()
@@ -74,25 +79,18 @@ class LoginActivity : AppCompatActivity() {
     }
 
 //    override fun onDestroy() {
-//       // Timber.d("onDestroy")
 //        super.onDestroy()
 //    }
 
     private fun initializeChatAppModel(){
         ChatAppModel.init(
             LoginConstants.BASE_URL,
-            LoginConstants.PROXY_NUMBER,
-            LoginConstants.TENANT_CODE,
-            LoginConstants.CLIENT_ID,
-            LoginConstants.CLIENT_SECRET,
-            LoginConstants.PRODUCT,
-            LoginConstants.CURRENT_USER
+            LoginConstants.TWILIO_TOKEN
 
         )
     }
 
     private fun signInPressed() {
-        //Timber.d("signInPressed")
         val identity = binding.usernameTv.text.toString()
         LoginConstants.CURRENT_USER = identity
         LoginConstants.FRIENDLY_NAME = identity
@@ -102,13 +100,11 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun showProgress(show: Boolean) {
-        //Timber.d("showProgress: $show")
         binding.loginProgress.root.visibility = if (show) View.VISIBLE else View.GONE
         binding.loginLayout.visibility = if (show) View.GONE else View.VISIBLE
     }
 
     private fun showNoInternetSnackbar(show: Boolean) {
-        // Timber.d("showNoInternetSnackbar: $show")
 
         if (show) {
             noInternetSnackBar.show()

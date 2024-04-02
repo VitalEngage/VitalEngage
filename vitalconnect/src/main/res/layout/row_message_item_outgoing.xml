@@ -20,11 +20,15 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/message_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
-        android:focusableInTouchMode="false">
+        android:focusableInTouchMode="false"
+        tools:ignore="MissingConstraints">
 
         <Space
             android:id="@+id/message_header"
@@ -40,7 +44,7 @@
             android:id="@+id/message_avatar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_avatar"
+            android:src="@drawable/icon_single_user_conversation"
             android:visibility="@{message.type == MessageType.MEDIA ? View.INVISIBLE : View.GONE}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/message_header"
@@ -65,12 +69,11 @@
             app:barrierMargin="-8dp"
             app:constraint_referenced_ids="
                 message_body,
-                message_date,
                 attachment_background" />
 
         <TextView
             android:id="@+id/message_body"
-            style="@style/TextViewMessage"
+            style="@style/TextViewSubtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -181,8 +184,8 @@
             app:layout_constraintTop_toBottomOf="@+id/attachment_info" />
 
         <TextView
-            android:id="@+id/message_date"
-            style="@style/TextViewMessageTime"
+            android:id="@+id/message_datedummy"
+            style="@style/TextViewSubtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="8dp"
@@ -196,18 +199,19 @@
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="@+id/message_background"
             app:layout_constraintTop_toBottomOf="@+id/attachment_background"
-            tools:text="15:58" />
+            tools:text="15:58"
+            android:visibility="invisible"/>
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/message_send_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:src="@{message.sendStatusIcon}"
-            app:layout_constraintBottom_toBottomOf="@id/message_date"
+            app:layout_constraintBottom_toBottomOf="@id/message_datedummy"
             app:layout_constraintEnd_toEndOf="@+id/message_background"
-            app:layout_constraintStart_toEndOf="@id/message_date"
-            app:layout_constraintTop_toTopOf="@id/message_date"
+            app:layout_constraintStart_toEndOf="@id/message_datedummy"
+            app:layout_constraintTop_toTopOf="@id/message_datedummy"
             android:tint="@{message.sendStatus == SendStatus.ERROR ? @color/message_failed_icon_tint : @color/white}"
             tools:src="@drawable/ic_sent_message" />
 
@@ -217,7 +221,7 @@
             android:layout_height="12dp"
             app:layout_constraintEnd_toEndOf="@id/message_background"
             app:layout_constraintStart_toStartOf="@+id/message_background"
-            app:layout_constraintTop_toBottomOf="@+id/message_date" />
+            app:layout_constraintTop_toBottomOf="@+id/message_datedummy" />
 
         <TextView
             android:id="@+id/message_send_error"
@@ -242,7 +246,7 @@
             android:gravity="center_vertical|end"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="@+id/message_background"
-            app:layout_constraintTop_toBottomOf="@+id/message_date" />
+            app:layout_constraintTop_toBottomOf="@+id/message_datedummy" />
 
         <Space
             android:id="@+id/reactions_footer"
@@ -266,5 +270,21 @@
             tools:visibility="gone" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
+        <TextView
+            android:id="@+id/message_date"
+            style="@style/TextViewSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginTop="8dp"
+            android:singleLine="true"
+            android:text="@{message.dateCreated}"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintTop_toBottomOf="@+id/message_item"
+            app:layout_constraintRight_toRightOf="parent"
+            tools:text="15:58" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
+

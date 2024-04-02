@@ -159,7 +159,6 @@ class MessageListManagerImpl(
         val message = withContext(dispatchers.io()) { conversationsRepository.getMessageByUuid(messageUuid) } ?: return
         if (message.sendStatus == SendStatus.SENDING.value) return
         if (message.mediaUploadUri == null) {
-            //Timber.w("Missing mediaUploadUri in retrySendMediaMessage: $message")
             return
         }
         conversationsRepository.updateMessageByUuid(message.copy(sendStatus = SendStatus.SENDING.value))
@@ -187,14 +186,12 @@ class MessageListManagerImpl(
 
         return object: MediaUploadListener {
             override fun onStarted() {
-                //Timber.d("Upload started for $uri")
                 conversationsRepository.updateMessageMediaUploadStatus(
                     messageUuid
                 )
             }
 
             override fun onProgress(bytesSent: Long) {
-                //Timber.d("Upload progress for $uri: $bytesSent bytes")
                 conversationsRepository.updateMessageMediaUploadStatus(
                     messageUuid,
                     uploadedBytes = bytesSent
@@ -202,7 +199,6 @@ class MessageListManagerImpl(
             }
 
             override fun onCompleted(mediaSid: kotlin.String) {
-                //Timber.d("Upload for $uri complete: $mediaSid")
                 conversationsRepository.updateMessageMediaUploadStatus(
                     messageUuid,
                     uploading = false
@@ -210,7 +206,6 @@ class MessageListManagerImpl(
             }
 
             override fun onFailed(errorInfo: ErrorInfo) {
-                //Timber.d("Upload failed: " + errorInfo)
             }
         }
 
@@ -244,7 +239,6 @@ class MessageListManagerImpl(
         val reactionsMap: Map<String, Set<String>> = reactions.map { it.key.value to it.value }.toMap()
         val reactionAttributes = ReactionAttributes(reactionsMap)
 
-        //Timber.d("Updating reactions: $reactions")
         message.setAttributes(Attributes(JSONObject(Gson().toJson(reactionAttributes))))
     }
 

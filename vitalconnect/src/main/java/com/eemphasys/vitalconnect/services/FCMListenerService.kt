@@ -35,14 +35,12 @@ class FCMListenerService: FirebaseMessagingService() {
         Log.d("remotemessage",remoteMessage.data.toString())
         super.onMessageReceived(remoteMessage)
         launch {
-            //Timber.d("onMessageReceived for FCM from: ${remoteMessage.from}")
 
             // Check if message contains a data payload and we have saved FCM token
             // If we don't have FCM token - probably we receive this message because of invalidating the token
             // on logout has failed (probably device has been offline). We will invalidate the token on
             // next login then.
             if (remoteMessage.data.isNotEmpty() && credentialStorage.fcmToken.isNotEmpty()) {
-                //Timber.d("Data Message Body: ${remoteMessage.data}")
                 fcmManager.onMessageReceived(NotificationPayload(remoteMessage.data))
             }
         }

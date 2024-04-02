@@ -27,19 +27,15 @@ class ProfileViewModel(
     val onError = SingleLiveEvent<ConversationsError>()
 
     fun setFriendlyName(friendlyName: String) = viewModelScope.launch {
-        //Timber.d("Updating self user: $friendlyName")
         try {
             userManager.setFriendlyName(friendlyName)
-            //Timber.d("Self user updated: $friendlyName")
             onUserUpdated.call()
         } catch (e: TwilioException) {
-            //Timber.d("Failed to update self user")
             onError.value = ConversationsError.USER_UPDATE_FAILED
         }
     }
 
     /*fun signOut() = viewModelScope.launch {
-        Timber.d("signOut")
         loginManager.signOut()
         onSignedOut.call()
     }*/

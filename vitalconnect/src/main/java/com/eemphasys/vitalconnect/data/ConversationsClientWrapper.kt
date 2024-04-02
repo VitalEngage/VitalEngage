@@ -12,6 +12,7 @@ import kotlinx.coroutines.SupervisorJob
 
 import android.net.Uri
 import androidx.annotation.RestrictTo
+import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.enums.ConversationsError
 import com.eemphasys.vitalconnect.common.extensions.createTwilioException
 import com.twilio.conversations.extensions.addListener
@@ -34,8 +35,8 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
     suspend fun getConversationsClient() = deferredClient.await()
 
     suspend fun getclient(){
-
-        val client = createAndSyncConversationsClient(applicationContext, Constants.TWILIO_TOKEN)
+println(ChatAppModel.twilio_token!!)
+        val client = createAndSyncConversationsClient(applicationContext,ChatAppModel.twilio_token!!)
         this.deferredClient.complete(client)
 
         Log.d("client", client.myIdentity)
@@ -48,7 +49,6 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
 
 
     suspend fun shutdown() {
-        //Timber.d("shutdown")
         getConversationsClient().shutdown()
         deferredClient = CompletableDeferred()
     }
@@ -58,7 +58,6 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
      */
 
 //    private fun updateToken(identity: String, password: String, notifyOnFailure: Boolean) = coroutineScope.launch {
-//        //Timber.d("updateToken notifyOnFailure: $notifyOnFailure")
 //
 //        val result = runCatching {
 //            val twilioToken = getToken(identity, password)
@@ -66,7 +65,6 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
 //        }
 //
 //        if (result.isFailure && notifyOnFailure) {
-//            //Timber.e(result.exceptionOrNull())
 //            notifyUpdateTokenFailure()
 //        }
 //    }

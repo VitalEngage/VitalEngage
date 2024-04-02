@@ -5,15 +5,14 @@ import com.eemphasys.vitalconnect.api.AuthInterceptor
 import com.eemphasys.vitalconnect.api.RetrofitHelper
 import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.RequestToken
-import com.eemphasys.vitalconnect.manager.MainManager
-import com.eemphasys.vitalconnect.manager.MainManagerImpl
+import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
+import com.eemphasys.vitalconnect.common.FirebaseTokenManager
 import com.eemphasys.vitalconnectdev.data.LoginConstants
-import com.eemphasys.vitalconnectdev.common.FirebaseTokenManager
 import com.eemphasys.vitalconnectdev.common.enums.ConversationsError
 import com.eemphasys.vitalconnectdev.common.extensions.createTwilioException
 import com.eemphasys.vitalconnectdev.data.CredentialStorage
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import com.twilio.conversations.ConversationsClient
+import com.twilio.conversations.extensions.registerFCMToken
 import okhttp3.OkHttpClient
 
 
@@ -25,18 +24,19 @@ interface LoginManager {
 //    suspend fun unregisterFromFcm()
     fun clearCredentials()
     fun isLoggedIn(): Boolean
+
+    suspend fun getTwilioclient()
+    suspend fun registerForFcm()
 }
 
 class LoginManagerImpl(
     private val credentialStorage: CredentialStorage,
     private val firebaseTokenManager: FirebaseTokenManager,
+    private val conversationsClient: ConversationsClientWrapper,
 ): LoginManager {
 
     override suspend fun signIn(identity: String) {
-        //Timber.d("signIn")
         //conversationsClient.create
-
-
         val requestData = RequestToken(
             LoginConstants.TENANT_CODE,
             LoginConstants.CLIENT_ID,
@@ -67,14 +67,11 @@ class LoginManagerImpl(
             Log.d("twiliotoken", TwilioToken.body()!!.token)
             LoginConstants.TWILIO_TOKEN = TwilioToken.body()!!.token
 
-
-
 //        }
         credentialStorage.storeCredentials(identity)
     }
 
     override suspend fun signInUsingStoredCredentials() {
-        //Timber.d("signInUsingStoredCredentials")
         if (credentialStorage.isEmpty()) throw createTwilioException(ConversationsError.NO_STORED_CREDENTIALS)
         val identity = credentialStorage.identity
         val password = credentialStorage.password
@@ -100,10 +97,30 @@ class LoginManagerImpl(
     }
 
     private fun handleError(error: ConversationsError) {
-        //Timber.d("handleError")
         if (error == ConversationsError.TOKEN_ACCESS_DENIED) {
             clearCredentials()
         }
+    }
+
+    override suspend fun getTwilioclient() {
+        conversationsClient.getclient()
+    }
+
+
+    override suspend fun registerForFcm() {
+        try {
+            val token = firebaseTokenManager.retrieveToken()
+
+            credentialStorage.fcmToken = token
+            conversationsClient.getConversationsClient().registerFCMToken(
+
+                ConversationsClient.FCMToken(token)
+            )
+
+        } catch (e: Exception) {
+
+        }
+
     }
 
 }
