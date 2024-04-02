@@ -8,26 +8,25 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="112dp"
-        android:background="@color/gray_background">
+        android:background="@color/conversation_details_background">
 
         <ImageView
             android:id="@+id/profile_image"
             android:layout_width="54dp"
             android:layout_height="54dp"
             android:layout_marginStart="22dp"
-            android:src="@drawable/ic_profile"
+            android:src="@drawable/icon_single_user_conversation"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/profile_name"
-            style="@style/TextViewTitle"
+            style="@style/TextViewChildTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="22dp"
             android:layout_marginEnd="16dp"
-            android:textSize="18sp"
             app:layout_constraintBottom_toTopOf="@id/profile_identity"
             app:layout_constraintStart_toEndOf="@+id/profile_image"
             app:layout_constraintTop_toTopOf="parent"
@@ -36,7 +35,7 @@
 
         <TextView
             android:id="@+id/profile_identity"
-            style="@style/TextViewSubtitle"
+            style="@style/ConversationDetails_Subtext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="22dp"
@@ -58,16 +57,18 @@
         android:padding="16dp">
 
         <TextView
-            style="@style/TextViewTitle"
+            style="@style/TextViewConversationDetails"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/edit_profile" />
+            android:text="@string/edit_profile"
+            android:layout_marginTop="5dp"/>
 
         <TextView
-            style="@style/TextViewSubtitle"
+            style="@style/ConversationDetails_Subtext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/edit_friendly_name" />
+            android:text="@string/edit_friendly_name"
+            android:layout_marginTop="10dp"/>
 
     </LinearLayout>
 
@@ -77,7 +78,8 @@
         android:layout_height="wrap_content"
         android:background="?android:attr/selectableItemBackground"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:visibility="gone">
 
         <TextView
             style="@style/TextViewTitle"

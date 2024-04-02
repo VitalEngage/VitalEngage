@@ -43,7 +43,6 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
     val conversationListViewModel by lazyActivityViewModel { injector.createConversationListViewModel(applicationContext) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        //Timber.d("onCreate")
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
     }
@@ -54,7 +53,6 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        //Timber.d("onViewCreated")
         super.onViewCreated(view, savedInstanceState)
         requireActivity().title = getString(R.string.title_conversations_list)
 
@@ -100,17 +98,14 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
         val swipeCallback = ConversationListSwipeCallback(requireContext(), adapter)
 
         swipeCallback.onMute = { conversationSid ->
-            //Timber.d("OnMute: $conversationSid")
             conversationListViewModel.muteConversation(conversationSid)
         }
 
         swipeCallback.onUnMute = { conversationSid ->
-            //Timber.d("onUnMute: $conversationSid")
             conversationListViewModel.unmuteConversation(conversationSid)
         }
 
         swipeCallback.onLeave = { conversationSid ->
-            //Timber.d("onLeave: $conversationSid")
             showLeaveConfirmationDialog(conversationSid)
 
         }
@@ -124,7 +119,6 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        //Timber.d("onCreateOptionsMenu")
         super.onCreateOptionsMenu(menu, inflater)
 
         inflater.inflate(R.menu.menu_conversation_list, menu)
@@ -186,7 +180,6 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
     }
 
     private fun showNoInternetSnackbar(show: Boolean) {
-        //Timber.d("showNoInternetSnackbar: $show")
 
         if (show) {
             noInternetSnackBar.show()

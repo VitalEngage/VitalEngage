@@ -25,7 +25,9 @@
                 android:id="@+id/conversation_details_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@color/white" />
+                android:background="@color/white"
+                app:titleCentered="true"
+                app:titleTextAppearance="@style/AppBar_Title"/>
 <!--            style="@style/Widget.MaterialComponents.Toolbar.Primary"-->
 <!--            android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"-->
 
@@ -43,12 +45,14 @@
                 <androidx.cardview.widget.CardView
                     android:id="@+id/conversation_details_holder"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:elevation="5dp"
+                    android:layout_height="100dp"
+                    android:layout_margin="0dp"
+                    android:elevation="0dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:backgroundTint="@color/conversation_details_background"
+                    >
 
                     <LinearLayout
                         android:id="@+id/linearLayout"
@@ -63,46 +67,31 @@
                             android:id="@+id/textView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif-medium"
                             android:text="@{details.conversationName}"
-                            android:textColor="@color/text_title"
-                            android:textSize="16sp"
-                            tools:layout_conversion_absoluteHeight="0dp"
-                            tools:layout_conversion_absoluteWidth="0dp"
-                            tools:layout_editor_absoluteX="0dp"
-                            tools:layout_editor_absoluteY="0dp"
+                            style="@style/TextViewChildTitle"
                             tools:text="Conversation Name" />
-                        <!--</LinearLayout>
-                    <LinearLayout
+                        <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="35dp">-->
-                        <TextView
-                            android:id="@+id/textView2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@{details.dateCreated}"
-                            android:textColor="@color/text_title"
-                            android:textSize="14sp"
-                            tools:layout_conversion_absoluteHeight="0dp"
-                            tools:layout_conversion_absoluteWidth="0dp"
-                            tools:layout_editor_absoluteX="0dp"
-                            tools:layout_editor_absoluteY="0dp"
-                            tools:text="Date: 23 May 2020" />
-                        <!---->
-                        <TextView
-                            android:id="@+id/textView3"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@{@string/details_created_by(details.createdBy)}"
-                            android:textColor="@color/text_title"
-                            android:textSize="14sp"
-                            tools:layout_conversion_absoluteHeight="0dp"
-                            tools:layout_conversion_absoluteWidth="0dp"
-                            tools:layout_editor_absoluteX="0dp"
-                            tools:layout_editor_absoluteY="0dp"
-                            tools:text="Created by: Eddy" />
+                        android:orientation="horizontal">
+                            <TextView
+                                android:id="@+id/textView3"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:text="@{@string/details_created_by(details.createdBy)}"
+                                tools:text="Created by: Eddy"
+                                style="@style/ConversationDetails_Subtext"
+                                android:layout_weight="1"/>
+                            <TextView
+                                android:id="@+id/textView2"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:text="@{details.dateCreated}"
+                                android:textAlignment="textEnd"
+                                tools:text="23 May 2020"
+                                style="@style/ConversationDetails_Subtext"
+                                android:layout_weight="1"/>
+                    </LinearLayout>
                     </LinearLayout>
 
 
@@ -111,8 +100,9 @@
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:elevation="5dp"
+                    android:layout_margin="0dp"
+                    android:elevation="0dp"
+                    android:layout_marginTop="20dp"
                     app:layout_constraintTop_toBottomOf="@id/conversation_details_holder"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent">
@@ -121,16 +111,16 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="16dp">
+                        android:layout_marginTop="20dp"
+                        >
 
                         <TextView
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="8dp"
-                            android:fontFamily="sans-serif-medium"
+                            android:layout_height="70dp"
                             android:text="@string/details_actions"
-                            android:textColor="@color/text_title"
-                            android:textSize="16sp" />
+                            style="@style/TextViewChildTitle"
+                            android:padding="16dp"
+                            />
 
                         <TextView
                             android:id="@+id/add_chat_participant_button"
@@ -161,56 +151,68 @@
                         <TextView
                             android:id="@+id/participants_list_button"
                             android:layout_width="match_parent"
-                            android:layout_height="48dp"
+                            android:layout_height="70dp"
                             android:background="?attr/selectableItemBackground"
                             android:drawableStart="@drawable/icon_participant_list"
                             android:drawablePadding="16dp"
                             android:gravity="center_vertical"
                             android:text="@string/details_participant_list"
                             style="@style/TextViewConversationDetails"
+                            android:padding="16dp"
                              />
-                        <!--android:textColor="@color/text_title"
-                        android:textSize="14sp"-->
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="0.7dp"
+                            android:background="@color/divider"/>
                         <TextView
                             android:id="@+id/conversation_rename_button"
                             android:layout_width="match_parent"
-                            android:layout_height="48dp"
+                            android:layout_height="70dp"
                             android:background="?attr/selectableItemBackground"
                             android:drawableStart="@drawable/icon_rename_conversation"
                             android:drawablePadding="16dp"
                             android:gravity="center_vertical"
                             android:text="@string/details_rename_conversation"
                             style="@style/TextViewConversationDetails"
-                             />
-                        <!--android:textColor="@color/text_title"
-                        android:textSize="14sp"-->
-
+                            android:padding="16dp"
+                            android:visibility="gone" />
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="0.7dp"
+                            android:background="@color/divider"
+                            android:visibility="gone"/>
                         <TextView
                             android:id="@+id/conversation_mute_button"
                             android:layout_width="match_parent"
-                            android:layout_height="48dp"
+                            android:layout_height="70dp"
                             android:background="?attr/selectableItemBackground"
-                            android:drawableStart="@{details.isMuted ? @drawable/ic_notifications_off : @drawable/icon_mute_conversation}"
+                            android:drawableStart="@{details.isMuted ? @drawable/icon_unmute_conversation : @drawable/icon_mute_conversation}"
                             android:drawablePadding="16dp"
                             android:gravity="center_vertical"
                             android:text="@{details.isMuted ? @string/details_unmute_conversation : @string/details_mute_conversation }"
                             style="@style/TextViewConversationDetails"
+                            android:padding="16dp"
                             />
-                        <!--android:textColor="@color/text_title"
-                        android:textSize="14sp"-->
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="0.7dp"
+                            android:background="@color/divider"/>
                         <TextView
                             android:id="@+id/conversation_leave_button"
                             android:layout_width="match_parent"
-                            android:layout_height="48dp"
+                            android:layout_height="70dp"
                             android:background="?attr/selectableItemBackground"
                             android:drawableStart="@drawable/icon_leave_conversation"
                             android:drawablePadding="16dp"
                             android:gravity="center_vertical"
                             android:text="@string/details_leave_conversation"
                             style="@style/TextViewConversationDetails"
+                            android:padding="16dp"
                              />
-                        <!--android:textColor="@color/text_title"
-                        android:textSize="14sp"-->
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="0.7dp"
+                            android:background="@color/divider"/>
 
                     </LinearLayout>
 

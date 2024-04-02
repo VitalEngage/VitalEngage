@@ -27,7 +27,6 @@ import com.eemphasys.vitalconnect.ui.activity.ConversationListActivity
 import com.eemphasys.vitalconnect.ui.activity.MessageListActivity
 import com.twilio.conversations.extensions.registerFCMToken
 import com.twilio.util.TwilioException
-//import timber.log.Timber
 
 private const val NOTIFICATION_CONVERSATION_ID = "twilio_notification_id"
 private const val NOTIFICATION_NAME = "Twilio Notification"
@@ -54,14 +53,12 @@ class FCMManagerImpl(
     }
 
     override suspend fun onNewToken(token: String) {
-        //Timber.d("FCM Token received: $token")
         try {
             if (token != credentialStorage.fcmToken && conversationsClient.isClientCreated) {
                 conversationsClient.getConversationsClient().registerFCMToken(ConversationsClient.FCMToken(token))
             }
             credentialStorage.fcmToken = token
         } catch (e: TwilioException) {
-            //Timber.d("Failed to register FCM token")
         }
     }
 
@@ -69,7 +66,6 @@ class FCMManagerImpl(
         if (conversationsClient.isClientCreated) {
             conversationsClient.getConversationsClient().handleNotification(payload)
         }
-        //Timber.d("Message received: $payload, ${payload.type}, $isBackgrounded")
         // Ignore everything we don't support
         if (payload.type == NotificationPayload.Type.UNKNOWN) return
 
@@ -142,17 +138,14 @@ class FCMManagerImpl(
         if (context.resources.getIdentifier(soundFileName, "raw", context.packageName) != 0) {
             val sound = Uri.parse("android.resource://${context.packageName}/raw/$soundFileName")
             notificationBuilder.setSound(sound)
-            //Timber.d("Playing specified sound $soundFileName")
         } else {
             notificationBuilder.setDefaults(Notification.DEFAULT_SOUND)
-            //Timber.d("Playing default sound")
         }
 
         return notificationBuilder.build()
     }
 
     override fun showNotification(payload: NotificationPayload) {
-        //Timber.d("showNotification: ${payload.conversationSid}")
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationChannel = NotificationChannel(

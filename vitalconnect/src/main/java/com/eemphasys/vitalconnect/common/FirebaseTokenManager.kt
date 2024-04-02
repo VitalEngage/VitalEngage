@@ -25,7 +25,6 @@ class FirebaseTokenManager {
     }
     fun deleteToken() = CompletableDeferred<Boolean>().apply {
         FirebaseMessaging.getInstance().deleteToken().addOnCompleteListener { task ->
-//Timber.d("delete FCM token completed: ${task.isSuccessful}")
             complete(task.isSuccessful)
         }
     }

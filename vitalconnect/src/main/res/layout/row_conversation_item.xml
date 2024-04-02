@@ -22,6 +22,15 @@
     android:padding="16dp"
     >
     <ImageView
+        android:id="@+id/participant_icon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/icon_multi_user_conversation"
+        android:layout_marginRight="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/conversationStateIcon" />
+    <ImageView
         android:id="@+id/conversationStateIcon"
         android:layout_width="14dp"
         android:layout_height="14dp"
@@ -31,7 +40,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/conversationName"
         app:layout_constraintEnd_toStartOf="@+id/conversationName"
         app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/participant_icon"
         app:layout_constraintTop_toTopOf="@+id/conversationName" />
 
     <TextView
@@ -39,11 +48,14 @@
         style="@style/TextViewChildTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:ellipsize="middle"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:text="@{conversation.name}"
         android:textColor="@{conversation.isMuted ? @color/text_title_weak : @color/text_title}"
         app:layout_constraintStart_toEndOf="@+id/conversationStateIcon"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@id/participant_icon"
+        app:layout_constraintEnd_toStartOf="@id/messageDate"
+        app:layout_constraintWidth_max="wrap"
         tools:text="Conversation friendly name bla bla bla bla" />
 <!--    app:layout_constraintEnd_toStartOf="@+id/participantsCount"-->
     <TextView
@@ -61,7 +73,7 @@
         tools:text="1000 participants"
         android:visibility="gone"/>
 
-    <ImageView
+    <!--<ImageView
         android:id="@+id/messageStateIcon"
         android:layout_width="14dp"
         android:layout_height="14dp"
@@ -73,7 +85,7 @@
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/messageText"
-        tools:src="@drawable/ic_waiting_message" />
+        tools:src="@drawable/ic_waiting_message" />-->
 
     <TextView
         android:id="@+id/messageText"
@@ -85,7 +97,7 @@
         android:text="@{conversation.lastMessageText}"
         android:textColor="@{conversation.lastMessageColor}"
         app:layout_constraintEnd_toEndOf="@+id/conversationName"
-        app:layout_constraintStart_toEndOf="@+id/messageStateIcon"
+        app:layout_constraintStart_toStartOf="@+id/conversationName"
         app:layout_constraintTop_toBottomOf="@+id/conversationName"
         tools:text="This is a waiting message bla bla bla bla bla" />
 
@@ -96,12 +108,16 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:gravity="end"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:text="@{conversation.lastMessageDate}"
         app:layout_constraintEnd_toStartOf="@+id/unreadCount"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toEndOf="@+id/conversationName"
         app:layout_constraintTop_toTopOf="@+id/conversationName"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_goneMarginEnd="0dp"
+        app:layout_constraintWidth_default="wrap"
         tools:text="Yesterday" />
     <!--        app:layout_constraintTop_toTopOf="@+id/messageText"-->
 

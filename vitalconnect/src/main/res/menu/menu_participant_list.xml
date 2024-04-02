@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:id="@+id/filter_participants"
-        android:icon="@drawable/ic_filter_list"
+        android:icon="@drawable/ic_search"
         android:title="@string/participant_filter_hint"
         app:showAsAction="collapseActionView|always"
         app:actionViewClass="androidx.appcompat.widget.SearchView"/>

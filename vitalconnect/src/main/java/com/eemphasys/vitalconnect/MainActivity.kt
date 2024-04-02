@@ -38,6 +38,7 @@ class MainActivity() : AppCompatActivity() {
         val twilioToken = intent.getStringExtra("twilioToken")
         val webusers = intent.getStringExtra("webusers")
         val authToken = intent.getStringExtra("authToken")
+        val proxyNumber = intent.getStringExtra("proxyNumber")
 
         Constants.AUTH_TOKEN = authToken!!
         Constants.CONTACTS = contacts!!
@@ -50,8 +51,10 @@ class MainActivity() : AppCompatActivity() {
         Constants.PRODUCT = parentApp!!
         Constants.USERNAME = username!!
         Constants.TWILIO_TOKEN = twilioToken!!
+        Constants.PROXY_NUMBER = proxyNumber!!
 
         mainViewModel.create()
+//        mainViewModel.registerForFcm()
 
             super.onCreate(savedInstanceState)
         val intent = Intent(this, ConversationListActivity::class.java)

@@ -43,7 +43,8 @@
                 android:textColorHint="@color/text_demo_experience"
                 app:boxBackgroundMode="outline"
                 app:boxStrokeColor="#000000"
-                app:boxStrokeWidth="1dp">
+                app:boxStrokeWidth="1dp"
+                app:hintEnabled="false">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/usernameTv"
@@ -51,7 +52,8 @@
                     android:layout_height="match_parent"
                     android:hint="@string/username"
                     android:inputType="text"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"
+                    app:hintEnabled="false"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 

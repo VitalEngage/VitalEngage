@@ -97,7 +97,6 @@ class MessageListViewModel(
         }
 
     init {
-        //Timber.d("init: $conversationSid")
         viewModelScope.launch {
             getConversationResult()
         }
@@ -120,13 +119,10 @@ class MessageListViewModel(
 
     fun sendTextMessage(message: String) = viewModelScope.launch {
         val messageUuid = UUID.randomUUID().toString()
-        //Timber.d("messageUuid: $messageUuid")
         try {
             messageListManager.sendTextMessage(message, messageUuid)
             onMessageSent.call()
-            //Timber.d("Message sent: $messageUuid")
         } catch (e: TwilioException) {
-            //Timber.d("Text message send error: ${e.errorInfo.status}:${e.errorInfo.code} ${e.errorInfo.message}")
             messageListManager.updateMessageStatus(messageUuid, SendStatus.ERROR, e.errorInfo.code)
             onMessageError.value = ConversationsError.MESSAGE_SEND_FAILED
         }
@@ -136,7 +132,6 @@ class MessageListViewModel(
         try {
             messageListManager.retrySendTextMessage(messageUuid)
             onMessageSent.call()
-            //Timber.d("Message re-sent: $messageUuid")
         } catch (e: TwilioException) {
             messageListManager.updateMessageStatus(messageUuid, SendStatus.ERROR, e.errorInfo.code)
             onMessageError.value = ConversationsError.MESSAGE_SEND_FAILED
@@ -149,9 +144,7 @@ class MessageListViewModel(
             try {
                 messageListManager.sendMediaMessage(uri, inputStream, fileName, mimeType, messageUuid)
                 onMessageSent.call()
-                //Timber.d("Media message sent: $messageUuid")
             } catch (e: TwilioException) {
-                //Timber.d("Media message send error: ${e.errorInfo.status}:${e.errorInfo.code} ${e.errorInfo.message}")
                 messageListManager.updateMessageStatus(messageUuid, SendStatus.ERROR, e.errorInfo.code)
                 onMessageError.value = ConversationsError.MESSAGE_SEND_FAILED
             }
@@ -161,7 +154,6 @@ class MessageListViewModel(
         try {
             messageListManager.retrySendMediaMessage(inputStream, messageUuid)
             onMessageSent.call()
-            //Timber.d("Media re-sent: $messageUuid")
         } catch (e: TwilioException) {
             messageListManager.updateMessageStatus(messageUuid, SendStatus.ERROR, e.errorInfo.code)
             onMessageError.value = ConversationsError.MESSAGE_SEND_FAILED
@@ -177,7 +169,6 @@ class MessageListViewModel(
     }
 
     fun typing() = viewModelScope.launch {
-        //Timber.d("Typing in conversation $conversationSid")
         messageListManager.typing()
     }
 
@@ -197,7 +188,6 @@ class MessageListViewModel(
             clipboard!!.setPrimaryClip(clip)
             onMessageCopied.call()
         } catch (e: Exception) {
-            //Timber.d("Failed to copy message")
             onMessageError.value = ConversationsError.MESSAGE_COPY_FAILED
         }
     }
@@ -207,7 +197,6 @@ class MessageListViewModel(
             messageListManager.removeMessage(selectedMessageIndex)
             onMessageRemoved.call()
         } catch (e: TwilioException) {
-            //Timber.d("Failed to remove message")
             onMessageError.value = ConversationsError.MESSAGE_REMOVE_FAILED
         }
     }
@@ -227,12 +216,10 @@ class MessageListViewModel(
     }
 
     fun startMessageMediaDownload(messageIndex: Long, fileName: String?) = viewModelScope.launch {
-        //Timber.d("Start file download for message index $messageIndex")
         updateMessageMediaDownloadStatus(messageIndex, DownloadState.DOWNLOADING)
 
         val sourceUriResult = runCatching { Uri.parse(messageListManager.getMediaContentTemporaryUrl(messageIndex)) }
         val sourceUri = sourceUriResult.getOrElse { e ->
-            //Timber.w(e, "Message media download failed: cannot get sourceUri")
             updateMessageMediaDownloadStatus(messageIndex, DownloadState.ERROR)
             return@launch
         }
@@ -248,7 +235,6 @@ class MessageListViewModel(
             setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
         }
         val downloadId = downloadManager.enqueue(downloadRequest)
-        //Timber.d("Download enqueued with ID: $downloadId")
 
         messageListManager.setMessageMediaDownloadId(messageIndex, downloadId)
         observeMessageMediaDownload(messageIndex, downloadId)
@@ -260,7 +246,6 @@ class MessageListViewModel(
         val downloadObserver = object : ContentObserver(Handler(Looper.getMainLooper())) {
             override fun onChange(selfChange: Boolean) {
                 if (!updateMessageMediaDownloadState(messageIndex, downloadId)) {
-                    //Timber.d("Download $downloadId completed")
                     downloadCursor.unregisterContentObserver(this)
                     downloadCursor.close()
                 }
@@ -285,7 +270,6 @@ class MessageListViewModel(
         val status = cursor.getInt(DownloadManager.COLUMN_STATUS)
         val downloadInProgress = status != DownloadManager.STATUS_FAILED && status != DownloadManager.STATUS_SUCCESSFUL
         val downloadedBytes = cursor.getLong(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR)
-        //Timber.d("Download status changed. Status: $status, downloaded bytes: $downloadedBytes")
 
         updateMessageMediaDownloadStatus(messageIndex, DownloadState.DOWNLOADING, downloadedBytes)
 
@@ -305,10 +289,6 @@ class MessageListViewModel(
             DownloadManager.STATUS_FAILED -> {
                 onMessageError.value = ConversationsError.MESSAGE_MEDIA_DOWNLOAD_FAILED
                 updateMessageMediaDownloadStatus(messageIndex, DownloadState.ERROR, downloadedBytes)
-//                Timber.w(
-//                    "Message media download failed. Failure reason: %s",
-//                    cursor.getString(DownloadManager.COLUMN_REASON)
-//                )
             }
         }
 

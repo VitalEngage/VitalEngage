@@ -14,7 +14,6 @@ import com.eemphasys.vitalconnect.common.SheetListener
 import com.eemphasys.vitalconnect.common.extensions.*
 import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.databinding.ActivityParticipantsBinding
-//import timber.log.Timber
 
 class ParticipantListActivity : AppCompatActivity() {
     private val binding by lazy { ActivityParticipantsBinding.inflate(layoutInflater) }
@@ -26,7 +25,6 @@ class ParticipantListActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        //Timber.d("onCreate")
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
@@ -80,12 +78,11 @@ class ParticipantListActivity : AppCompatActivity() {
         sheetBehavior.addBottomSheetCallback(sheetListener)
         title = getString(R.string.participant_title)
         val adapter = ParticipantListAdapter { participant ->
-            //Timber.d("Participant clicked: $participant")
             participantListViewModel.selectedParticipant = participant
 
             binding.participantDetailsSheet.participantDetailsName.text = participant.friendlyName
             binding.participantDetailsSheet.participantDetailsStatus.setText(if (participant.isOnline) R.string.participant_online else R.string.participant_offline)
-            sheetBehavior.show()
+//            sheetBehavior.show()
         }
 
         binding.participantRefresh.setOnRefreshListener { participantListViewModel.getConversationParticipants() }
@@ -96,13 +93,11 @@ class ParticipantListActivity : AppCompatActivity() {
         }
 
         binding.participantDetailsSheet.participantDetailsRemove.setOnClickListener {
-            //Timber.d("Participant remove clicked: ${participantListViewModel.selectedParticipant?.sid}")
             participantListViewModel.removeSelectedParticipant()
             sheetBehavior.hide()
         }
 
         participantListViewModel.participantsList.observe(this) { participants ->
-            //Timber.d("Participants received: $participants")
             adapter.participants = participants
             binding.participantRefresh.isRefreshing = false
         }

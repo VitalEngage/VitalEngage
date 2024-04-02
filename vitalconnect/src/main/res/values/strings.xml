@@ -124,7 +124,7 @@
     <string name="conversation_filter_hint">Filter Conversations</string>
 
     <!-- Message list -->
-    <string name="new_message">New message</string>
+    <string name="new_message">Enter your message here</string>
     <string name="message_send_error">An error has occurred. Tap for more info.</string>
 
     <plurals name="typing_indicator">

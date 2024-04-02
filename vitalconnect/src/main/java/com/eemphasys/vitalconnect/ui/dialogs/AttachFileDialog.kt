@@ -18,7 +18,6 @@ import com.eemphasys.vitalconnect.common.extensions.lazyActivityViewModel
 import com.eemphasys.vitalconnect.common.extensions.parcelable
 import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.databinding.DialogAttachFileBinding
-//import timber.log.Timber
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -81,7 +80,6 @@ class AttachFileDialog : BaseBottomSheetDialogFragment() {
         val photoFile = File.createTempFile("JPEG_${timeStamp}_", ".jpg", picturesDir)
         imageCaptureUri =
             FileProvider.getUriForFile(requireContext(), "com.twilio.conversations.app.fileprovider", photoFile)
-        //Timber.d("Capturing image to $imageCaptureUri")
 
         takePicture.launch(imageCaptureUri)
     }
@@ -95,7 +93,6 @@ class AttachFileDialog : BaseBottomSheetDialogFragment() {
             messageListViewModel.sendMediaMessage(uri.toString(), inputStream, name, type)
         } else {
             messageListViewModel.onMessageError.value = ConversationsError.MESSAGE_SEND_FAILED
-            //Timber.w("Could not get input stream for file reading: $uri")
         }
     }
 

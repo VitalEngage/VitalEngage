@@ -14,7 +14,6 @@ import com.eemphasys.vitalconnect.manager.ParticipantListManager
 import com.eemphasys.vitalconnect.repository.ConversationsRepository
 import com.twilio.util.TwilioException
 import kotlinx.coroutines.launch
-//import timber.log.Timber
 
 class ConversationDetailsViewModel(
     val conversationSid: String,
@@ -32,7 +31,6 @@ class ConversationDetailsViewModel(
     val onParticipantAdded = SingleLiveEvent<String>()
 
     init {
-        //Timber.d("init: $conversationSid")
         viewModelScope.launch {
             getConversationResult()
         }
@@ -58,13 +56,11 @@ class ConversationDetailsViewModel(
         if (isShowProgress.value == true) {
             return@launch
         }
-        //Timber.d("Renaming conversation: $friendlyName")
         try {
             setShowProgress(true)
             conversationListManager.renameConversation(conversationSid, friendlyName)
             onConversationRenamed.call()
         } catch (e: TwilioException) {
-            //Timber.d("Failed to rename conversation")
             onDetailsError.value = ConversationsError.CONVERSATION_RENAME_FAILED
         } finally {
             setShowProgress(false)
@@ -75,13 +71,11 @@ class ConversationDetailsViewModel(
         if (isShowProgress.value == true) {
             return@launch
         }
-        //Timber.d("Muting conversation: $conversationSid")
         try {
             setShowProgress(true)
             conversationListManager.muteConversation(conversationSid)
             onConversationMuted.value = true
         } catch (e: TwilioException) {
-            //Timber.d("Failed to mute conversation")
             onDetailsError.value = ConversationsError.CONVERSATION_MUTE_FAILED
         } finally {
             setShowProgress(false)
@@ -92,13 +86,11 @@ class ConversationDetailsViewModel(
         if (isShowProgress.value == true) {
             return@launch
         }
-        //Timber.d("Unmuting conversation: $conversationSid")
         try {
             setShowProgress(true)
             conversationListManager.unmuteConversation(conversationSid)
             onConversationMuted.value = false
         } catch (e: TwilioException) {
-            //Timber.d("Failed to unmute conversation")
             onDetailsError.value = ConversationsError.CONVERSATION_UNMUTE_FAILED
         } finally {
             setShowProgress(false)
@@ -109,13 +101,11 @@ class ConversationDetailsViewModel(
         if (isShowProgress.value == true) {
             return@launch
         }
-        //Timber.d("Leaving conversation: $conversationSid")
         try {
             setShowProgress(true)
             conversationListManager.leaveConversation(conversationSid)
             onConversationLeft.call()
         } catch (e: TwilioException) {
-            //Timber.d("Failed to remove conversation")
             onDetailsError.value = ConversationsError.CONVERSATION_REMOVE_FAILED
         } finally {
             setShowProgress(false)
@@ -126,13 +116,11 @@ class ConversationDetailsViewModel(
         if (isShowProgress.value == true) {
             return@launch
         }
-        //Timber.d("Adding chat participant: $identity")
         try {
             setShowProgress(true)
             participantListManager.addChatParticipant(identity)
             onParticipantAdded.value = identity
         } catch (e: TwilioException) {
-            //Timber.d("Failed to add chat participant")
             onDetailsError.value = ConversationsError.PARTICIPANT_ADD_FAILED
         } finally {
             setShowProgress(false)
@@ -143,13 +131,11 @@ class ConversationDetailsViewModel(
         if (isShowProgress.value == true) {
             return@launch
         }
-        //Timber.d("Adding non-chat participant: ($phone; $proxyPhone)")
         try {
             setShowProgress(true)
             participantListManager.addNonChatParticipant(phone, proxyPhone, friendlyName = "$phone")
             onParticipantAdded.value = phone
         } catch (e: TwilioException) {
-            //Timber.d("Failed to add non-chat participant")
             onDetailsError.value = ConversationsError.PARTICIPANT_ADD_FAILED
         } finally {
             setShowProgress(false)

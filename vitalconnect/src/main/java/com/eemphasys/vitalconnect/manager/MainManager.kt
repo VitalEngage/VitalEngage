@@ -24,6 +24,8 @@ class MainManagerImpl(
         conversationsClient.getclient()
         conversationsRepository.subscribeToConversationsClientEvents()
     }
+
+
     override suspend fun registerForFcm() {
         try {
             val token = firebaseTokenManager.retrieveToken()
@@ -39,8 +41,6 @@ class MainManagerImpl(
             )
 
         } catch (e: Exception) {
-
-//Timber.d(e, "Failed to register FCM")
         }
 
     }

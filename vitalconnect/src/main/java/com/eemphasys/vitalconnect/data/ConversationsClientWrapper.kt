@@ -60,7 +60,6 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
 
 
     suspend fun shutdown() {
-        //Timber.d("shutdown")
         getConversationsClient().shutdown()
         deferredClient = CompletableDeferred()
     }

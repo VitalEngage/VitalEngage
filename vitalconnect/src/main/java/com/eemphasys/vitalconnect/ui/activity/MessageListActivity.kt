@@ -38,7 +38,6 @@ class MessageListActivity: AppCompatActivity() {
         }
 
         override fun onCreate(savedInstanceState: Bundle?) {
-            //Timber.d("onCreate")
             try{
                 super.onCreate(savedInstanceState)
                 setContentView(binding.root)
@@ -73,15 +72,12 @@ class MessageListActivity: AppCompatActivity() {
             binding.conversationToolbar.setNavigationOnClickListener { onBackPressed() }
             val adapter = MessageListAdapter(
                 onDisplaySendError = { message ->
-                    //Timber.d("Display send error clicked: ${message.uuid}")
                     showSendErrorDialog(message)
                 },
                 onDownloadMedia = { message ->
-                    //Timber.d("Download clicked: $message")
                     messageListViewModel.startMessageMediaDownload(message.index, message.mediaFileName)
                 },
                 onOpenMedia = { uri, mimeType ->
-                    //Timber.d("Open clicked")
                     if (mimeType.startsWith("image/")) {
                         viewUri(uri)
                     } else {
@@ -89,12 +85,10 @@ class MessageListActivity: AppCompatActivity() {
                     }
                 },
                 onItemLongClick = { messageIndex ->
-                    //Timber.d("Message long clicked: $messageIndex")
                     messageListViewModel.selectedMessageIndex = messageIndex
                     showMessageActionsDialog()
                 },
                 onReactionClicked = { messageIndex ->
-                    //Timber.d("Reaction clicked:, $messageIndex")
                     messageListViewModel.selectedMessageIndex = messageIndex
                     showReactionDetailsDialog()
                 }
@@ -112,9 +106,9 @@ class MessageListActivity: AppCompatActivity() {
             binding.messageInput.onSubmit {
                 sendMessage()
             }
-            /*binding.messageInputHolder.setEndIconOnClickListener {
+            binding.messageSendButton.setOnClickListener {
                 sendMessage()
-            }*/
+            }
             binding.messageInput.doAfterTextChanged {
                 messageListViewModel.typing()
             }
@@ -156,10 +150,10 @@ class MessageListActivity: AppCompatActivity() {
                 binding.typingIndicator.text =
                     resources.getQuantityString(R.plurals.typing_indicator, participants.size, text)
             }
-            /*binding.messageAttachmentButton.setOnClickListener {
+            binding.messageInputHolder.setEndIconOnClickListener {
                 AttachFileDialog.getInstance(messageListViewModel.conversationSid)
                     .showNow(supportFragmentManager, null)
-            }*/
+            }
         }
 
         private fun showRemoveMessageDialog() {
@@ -206,7 +200,6 @@ class MessageListActivity: AppCompatActivity() {
 
         private fun sendMessage() {
             binding.messageInput.text.toString().takeIf { it.isNotBlank() }?.let { message ->
-                //Timber.d("Sending message: $message")
                 messageListViewModel.sendTextMessage(message)
                 binding.messageInput.text?.clear()
             }
@@ -220,7 +213,6 @@ class MessageListActivity: AppCompatActivity() {
                 if (fileInputStream != null) {
                     messageListViewModel.resendMediaMessage(fileInputStream, message.uuid)
                 } else {
-                    //Timber.w("Could not get input stream for file reading: ${message.mediaUploadUri}")
                     showToast(R.string.err_failed_to_resend_media)
                 }
             }

@@ -16,7 +16,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class ConversationListActivity:AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        //Timber.d("onCreate")
         super.onCreate(savedInstanceState)
 
         val binding = ActivityConversationListBinding.inflate(layoutInflater)
@@ -51,11 +50,9 @@ class ConversationListActivity:AppCompatActivity() {
     }
 
     private fun replaceFragment(fragment: Fragment) {
-        //Timber.d("replaceFragment")
 
         supportFragmentManager.findFragmentById(R.id.fragment_container)?.let { currentFragment ->
             if (currentFragment::class == fragment::class) {
-                //Timber.d("replaceFragment: skip")
                 return
             }
         }

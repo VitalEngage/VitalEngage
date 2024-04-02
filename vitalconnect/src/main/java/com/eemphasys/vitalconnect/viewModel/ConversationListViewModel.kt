@@ -44,8 +44,6 @@ class ConversationListViewModel(
     var conversationFilter by Delegates.observable("") { _, _, _ -> updateUserConversationItems() }
 
     init {
-        //Timber.d("init")
-        Log.d("check", "inside init")
         getUserConversations()
 
         unfilteredUserConversationItems.observeForever { updateUserConversationItems() }
@@ -61,7 +59,6 @@ class ConversationListViewModel(
 
     fun getUserConversations() = viewModelScope.launch {
         conversationsRepository.getUserConversations().collect { (list, status) ->
-            //Timber.d("UserConversations collected: ${list.size}, ${status}")
 
             unfilteredUserConversationItems.value = list
                 .asConversationListViewItems(applicationContext)
@@ -95,15 +92,12 @@ class ConversationListViewModel(
         }
 
     fun createConversation(friendlyName: String) = viewModelScope.launch {
-        //Timber.d("Creating conversation: $friendlyName")
         try {
             setDataLoading(true)
             val conversationSid = conversationListManager.createConversation(friendlyName)
             conversationListManager.joinConversation(conversationSid)
-            //Timber.d("Created conversation: $friendlyName $conversationSid")
             onConversationCreated.call()
         } catch (e: TwilioException) {
-            //Timber.d("Failed to create conversation")
             onConversationError.value = ConversationsError.CONVERSATION_CREATE_FAILED
         } finally {
             setDataLoading(false)
@@ -114,13 +108,11 @@ class ConversationListViewModel(
         if (isConversationLoading(conversationSid)) {
             return@launch
         }
-        //Timber.d("Muting conversation: $conversationSid")
         try {
             setConversationLoading(conversationSid, true)
             conversationListManager.muteConversation(conversationSid)
             onConversationMuted.value = true
         } catch (e: TwilioException) {
-            //Timber.d("Failed to mute conversation")
             onConversationError.value = ConversationsError.CONVERSATION_MUTE_FAILED
         } finally {
             setConversationLoading(conversationSid, false)
@@ -131,13 +123,11 @@ class ConversationListViewModel(
         if (isConversationLoading(conversationSid)) {
             return@launch
         }
-        //Timber.d("Unmuting conversation: $conversationSid")
         try {
             setConversationLoading(conversationSid, true)
             conversationListManager.unmuteConversation(conversationSid)
             onConversationMuted.value = false
         } catch (e: TwilioException) {
-            //Timber.d("Failed to unmute conversation")
             onConversationError.value = ConversationsError.CONVERSATION_UNMUTE_FAILED
         } finally {
             setConversationLoading(conversationSid, false)
@@ -148,13 +138,11 @@ class ConversationListViewModel(
         if (isConversationLoading(conversationSid)) {
             return@launch
         }
-        //Timber.d("Leaving conversation: $conversationSid")
         try {
             setConversationLoading(conversationSid, true)
             conversationListManager.leaveConversation(conversationSid)
             onConversationLeft.call()
         } catch (e: TwilioException) {
-            //Timber.d("Failed to leave conversation")
             onConversationError.value = ConversationsError.CONVERSATION_LEAVE_FAILED
         } finally {
             setConversationLoading(conversationSid, false)
