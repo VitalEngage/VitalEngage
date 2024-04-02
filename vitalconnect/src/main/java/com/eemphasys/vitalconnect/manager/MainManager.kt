@@ -3,6 +3,7 @@ package com.eemphasys.vitalconnect.manager
 import com.eemphasys.vitalconnect.common.FirebaseTokenManager
 import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
 import com.eemphasys.vitalconnect.data.CredentialStorage
+import com.eemphasys.vitalconnect.repository.ConversationsRepository
 import com.twilio.conversations.ConversationsClient
 import com.twilio.conversations.extensions.registerFCMToken
 
@@ -17,12 +18,12 @@ class MainManagerImpl(
     private val conversationsClient: ConversationsClientWrapper,
     private val firebaseTokenManager: FirebaseTokenManager,
     private val credentialStorage: CredentialStorage,
+    private val conversationsRepository: ConversationsRepository,
 ) : MainManager {
     override suspend fun getTwilioclient() {
         conversationsClient.getclient()
+        conversationsRepository.subscribeToConversationsClientEvents()
     }
-
-
     override suspend fun registerForFcm() {
         try {
             val token = firebaseTokenManager.retrieveToken()
@@ -40,7 +41,6 @@ class MainManagerImpl(
         } catch (e: Exception) {
 
 //Timber.d(e, "Failed to register FCM")
-
         }
 
     }
