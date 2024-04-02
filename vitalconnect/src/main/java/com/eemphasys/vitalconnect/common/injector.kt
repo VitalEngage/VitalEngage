@@ -53,7 +53,8 @@ open class Injector {
     open fun createMainManager(applicationContext: Context): MainManager = MainManagerImpl(
         ConversationsClientWrapper.INSTANCE,
         FirebaseTokenManager(),
-        CredentialStorage(applicationContext)
+        CredentialStorage(applicationContext),
+        ConversationsRepositoryImpl.INSTANCE
     )
 
     open fun createMainViewModel(application: Application): MainViewModel {
