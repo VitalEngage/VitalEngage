@@ -42,7 +42,7 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
 
     suspend fun getclient(){
 
-        val client = createAndSyncConversationsClient(applicationContext, Constants.TWILIO_TOKEN)
+        val client = createAndSyncConversationsClient(applicationContext, ChatAppModel.twilio_token!!)
         this.deferredClient.complete(client)
 
         Log.d("client", client.myIdentity)
@@ -98,17 +98,18 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
                 Constants.CLIENT_ID,
                 Constants.CLIENT_SECRET,
                 username,
-                Constants.PRODUCT
+                Constants.PRODUCT,
+                ""
             )
 
             val tokenApi = RetrofitHelper.getInstance().create(TwilioApi::class.java)
             val result = tokenApi.getAuthToken(requestData)
-            Log.d("Authtoken: ", result.body()!!.token)
+            Log.d("Authtoken: ", result.body()!!.jwtToken)
 
-            Constants.AUTH_TOKEN = result.body()!!.token
+            Constants.AUTH_TOKEN = result.body()!!.jwtToken
 
             val httpClientWithToken = OkHttpClient.Builder()
-                .addInterceptor(AuthInterceptor(result.body()!!.token))
+                .addInterceptor(AuthInterceptor(result.body()!!.jwtToken))
                 .build()
             val retrofitWithToken =
                 RetrofitHelper.getInstance(httpClientWithToken).create(TwilioApi::class.java)

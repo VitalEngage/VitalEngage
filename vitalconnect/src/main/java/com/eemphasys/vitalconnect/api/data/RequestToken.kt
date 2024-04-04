@@ -7,6 +7,7 @@ data class RequestToken(
     val clientId : String,
     val clientSecret :String,
     val currentUser :String,
-    val productCode: String
+    val productCode: String,
+    val communicationMethod : String
     //val jsonObject: JsonObject
 )

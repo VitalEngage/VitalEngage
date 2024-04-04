@@ -277,7 +277,7 @@ class MessageListViewModel(
             DownloadManager.STATUS_SUCCESSFUL -> {
                 val downloadedFile = cursor.getString(DownloadManager.COLUMN_LOCAL_URI).toUri().toFile()
                 val downloadedLocation =
-                    FileProvider.getUriForFile(appContext, "com.twilio.conversations.app.fileprovider", downloadedFile)
+                    FileProvider.getUriForFile(appContext, "com.eemphasys.vitalconnect.fileprovider", downloadedFile)
                         .toString()
                 updateMessageMediaDownloadStatus(
                     messageIndex,

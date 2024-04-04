@@ -42,17 +42,19 @@ class LoginManagerImpl(
             LoginConstants.CLIENT_ID,
             LoginConstants.CLIENT_SECRET,
             LoginConstants.CURRENT_USER,
-            LoginConstants.PRODUCT
+            LoginConstants.PRODUCT,
+            ""
+
         )
 
             val tokenApi = RetrofitHelper.getInstance().create(TwilioApi::class.java)
             val result = tokenApi.getAuthToken(requestData)
-            Log.d("Authtoken: ", result.body()!!.token)
+            Log.d("Authtoken: ", result.body()!!.jwtToken)
 
-            LoginConstants.AUTH_TOKEN = result.body()!!.token
+            LoginConstants.AUTH_TOKEN = result.body()!!.jwtToken
 
             val httpClientWithToken = OkHttpClient.Builder()
-                .addInterceptor(AuthInterceptor(result.body()!!.token))
+                .addInterceptor(AuthInterceptor(result.body()!!.jwtToken))
                 .build()
             val retrofitWithToken =
                 RetrofitHelper.getInstance(httpClientWithToken).create(TwilioApi::class.java)

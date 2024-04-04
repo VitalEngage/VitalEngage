@@ -25,7 +25,7 @@ class ConversationListActivity:AppCompatActivity() {
         val menubottom : BottomNavigationView = findViewById(R.id.bottom_navigation)
         val menu = menubottom.menu
         val menuItem = menu.findItem(R.id.page_contact_list)
-
+        menubottom.itemIconTintList = null
         val isDataAvailable = Constants.CONTACTS.isNullOrEmpty() || Constants.WEBUSERS.isNullOrEmpty()
         menuItem.isVisible = !isDataAvailable
 

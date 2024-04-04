@@ -57,6 +57,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/message_author" />
 
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/message_background_barrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="end"
+            app:barrierMargin="2dp"
+            app:constraint_referenced_ids="
+                message_body,
+                attachment_background" />
         <View
             android:id="@+id/message_background"
             android:layout_width="0dp"
@@ -173,22 +182,6 @@
             app:layout_constraintStart_toStartOf="@+id/attachment_file_name"
             app:layout_constraintTop_toBottomOf="@+id/attachment_info" />
 
-        <!--<TextView
-            android:id="@+id/message_date"
-            style="@style/TextViewSubtitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="8dp"
-            android:layout_marginTop="8dp"
-            android:singleLine="true"
-            android:text="@{message.dateCreated}"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toTopOf="@+id/message_reaction_holder"
-            app:layout_constraintEnd_toEndOf="@+id/message_background"
-            app:layout_constraintStart_toStartOf="@+id/message_background"
-            app:layout_constraintTop_toBottomOf="@+id/attachment_background"
-            tools:text="15:58" />-->
-
         <Space
             android:id="@+id/message_footer"
             android:layout_width="0dp"
@@ -238,8 +231,7 @@
             style="@style/TextViewSubtitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="70dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginLeft="75dp"
             android:singleLine="true"
             android:text="@{message.dateCreated}"
             android:textSize="12sp"

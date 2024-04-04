@@ -33,6 +33,7 @@
         android:layout_height="wrap_content"
         android:background="@color/white"
         app:itemTextColor="@color/black"
+        app:itemIconTint="@null"
         app:menu="@menu/menu_bottom_navigation" />
-    <!--    style="@style/Widget.MaterialComponents.BottomNavigationView.Colored"-->
+<!--        style="@style/Widget.MaterialComponents.BottomNavigationView.Colored"-->
 </LinearLayout>
