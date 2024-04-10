@@ -21,10 +21,15 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import com.twilio.conversations.ConversationsClient
 import com.twilio.conversations.NotificationPayload
 import com.eemphasys.vitalconnect.R
+import com.eemphasys.vitalconnect.common.Constants
+import com.eemphasys.vitalconnect.common.SessionHelper
 import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
 import com.eemphasys.vitalconnect.data.CredentialStorage
+import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys.vitalconnect.ui.activity.ConversationListActivity
 import com.eemphasys.vitalconnect.ui.activity.MessageListActivity
+import com.eemphasys_enterprise.commonmobilelib.EETLog
+import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.twilio.conversations.extensions.registerFCMToken
 import com.twilio.util.TwilioException
 
@@ -59,6 +64,18 @@ class FCMManagerImpl(
             }
             credentialStorage.fcmToken = token
         } catch (e: TwilioException) {
+            e.printStackTrace()
+
+            EETLog.error(
+                SessionHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    SessionHelper.appContext!!
+                )!!
+            );
         }
     }
 

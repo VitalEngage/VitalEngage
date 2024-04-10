@@ -32,7 +32,7 @@ class FCMListenerService: FirebaseMessagingService() {
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        Log.d("remotemessage",remoteMessage.data.toString())
+        //Log.d("remotemessage",remoteMessage.data.toString())
         super.onMessageReceived(remoteMessage)
         launch {
 

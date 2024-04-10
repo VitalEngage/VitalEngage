@@ -3,6 +3,8 @@ package com.eemphasys.vitalconnect.viewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.eemphasys.vitalconnect.common.Constants
+import com.eemphasys.vitalconnect.common.SessionHelper
 import com.eemphasys.vitalconnect.common.SingleLiveEvent
 import com.eemphasys.vitalconnect.common.asConversationDetailsViewItem
 import com.eemphasys.vitalconnect.common.call
@@ -11,7 +13,11 @@ import com.eemphasys.vitalconnect.data.models.ConversationDetailsViewItem
 import com.eemphasys.vitalconnect.data.models.RepositoryRequestStatus
 import com.eemphasys.vitalconnect.manager.ConversationListManager
 import com.eemphasys.vitalconnect.manager.ParticipantListManager
+import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
+import com.eemphasys.vitalconnect.misc.log_trace.LogTraceHelper
 import com.eemphasys.vitalconnect.repository.ConversationsRepository
+import com.eemphasys_enterprise.commonmobilelib.EETLog
+import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.twilio.util.TwilioException
 import kotlinx.coroutines.launch
 
@@ -62,6 +68,18 @@ class ConversationDetailsViewModel(
             onConversationRenamed.call()
         } catch (e: TwilioException) {
             onDetailsError.value = ConversationsError.CONVERSATION_RENAME_FAILED
+            e.printStackTrace()
+
+            EETLog.error(
+                SessionHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    SessionHelper.appContext!!
+                )!!
+            );
         } finally {
             setShowProgress(false)
         }
@@ -77,6 +95,18 @@ class ConversationDetailsViewModel(
             onConversationMuted.value = true
         } catch (e: TwilioException) {
             onDetailsError.value = ConversationsError.CONVERSATION_MUTE_FAILED
+            e.printStackTrace()
+
+            EETLog.error(
+                SessionHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    SessionHelper.appContext!!
+                )!!
+            );
         } finally {
             setShowProgress(false)
         }
@@ -92,6 +122,18 @@ class ConversationDetailsViewModel(
             onConversationMuted.value = false
         } catch (e: TwilioException) {
             onDetailsError.value = ConversationsError.CONVERSATION_UNMUTE_FAILED
+            e.printStackTrace()
+
+            EETLog.error(
+                SessionHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    SessionHelper.appContext!!
+                )!!
+            );
         } finally {
             setShowProgress(false)
         }
@@ -107,6 +149,18 @@ class ConversationDetailsViewModel(
             onConversationLeft.call()
         } catch (e: TwilioException) {
             onDetailsError.value = ConversationsError.CONVERSATION_REMOVE_FAILED
+            e.printStackTrace()
+
+            EETLog.error(
+                SessionHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    SessionHelper.appContext!!
+                )!!
+            );
         } finally {
             setShowProgress(false)
         }
@@ -122,6 +176,18 @@ class ConversationDetailsViewModel(
             onParticipantAdded.value = identity
         } catch (e: TwilioException) {
             onDetailsError.value = ConversationsError.PARTICIPANT_ADD_FAILED
+            e.printStackTrace()
+
+            EETLog.error(
+                SessionHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    SessionHelper.appContext!!
+                )!!
+            );
         } finally {
             setShowProgress(false)
         }
@@ -137,6 +203,18 @@ class ConversationDetailsViewModel(
             onParticipantAdded.value = phone
         } catch (e: TwilioException) {
             onDetailsError.value = ConversationsError.PARTICIPANT_ADD_FAILED
+            e.printStackTrace()
+
+            EETLog.error(
+                SessionHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    SessionHelper.appContext!!
+                )!!
+            );
         } finally {
             setShowProgress(false)
         }

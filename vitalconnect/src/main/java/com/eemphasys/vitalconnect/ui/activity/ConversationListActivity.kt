@@ -11,13 +11,14 @@ import com.eemphasys.vitalconnect.databinding.ActivityConversationListBinding
 import com.eemphasys.vitalconnect.ui.fragment.ContactListFragment
 import com.eemphasys.vitalconnect.ui.fragment.ConversationListFragment
 import com.eemphasys.vitalconnect.ui.fragment.ProfileFragment
+import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 
 class ConversationListActivity:AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        EETLog.saveUserJourney(this::class.java.simpleName + " onCreate Called")
         val binding = ActivityConversationListBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

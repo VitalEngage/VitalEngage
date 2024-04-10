@@ -28,6 +28,7 @@ import com.eemphasys.vitalconnect.databinding.ActivityMessageListBinding
 import com.eemphasys.vitalconnect.ui.dialogs.AttachFileDialog
 import com.eemphasys.vitalconnect.ui.dialogs.MessageActionsDialog
 import com.eemphasys.vitalconnect.ui.dialogs.ReactionDetailsDialog
+import com.eemphasys_enterprise.commonmobilelib.EETLog
 
 class MessageListActivity: AppCompatActivity() {
 
@@ -40,6 +41,7 @@ class MessageListActivity: AppCompatActivity() {
         override fun onCreate(savedInstanceState: Bundle?) {
             try{
                 super.onCreate(savedInstanceState)
+                EETLog.saveUserJourney(this::class.java.simpleName + " onCreate Called")
                 setContentView(binding.root)
 
                 initViews()}

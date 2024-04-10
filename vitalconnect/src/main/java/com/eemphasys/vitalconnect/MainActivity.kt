@@ -15,6 +15,7 @@ import com.eemphasys.vitalconnect.common.extensions.lazyViewModel
 import com.eemphasys.vitalconnect.data.models.Contact
 import com.eemphasys.vitalconnect.data.models.WebUser
 import com.eemphasys.vitalconnect.ui.activity.ConversationListActivity
+import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -26,7 +27,7 @@ class MainActivity() : AppCompatActivity() {
 
     val mainViewModel by lazyViewModel { injector.createMainViewModel(application) }
     override fun onCreate(savedInstanceState: Bundle?) {
-
+        EETLog.saveUserJourney(this::class.java.simpleName + " onCreate Called")
         val username = intent.getStringExtra("username")
         val friendlyName = intent.getStringExtra("friendlyName")
         val clientID = intent.getStringExtra("clientID")

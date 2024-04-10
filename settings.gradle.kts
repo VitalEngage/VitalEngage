@@ -14,4 +14,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "VitalConnectDev"
-include(":app",":vitalconnect")
+include(":app",":vitalconnect",":commonmobilelib2.6")

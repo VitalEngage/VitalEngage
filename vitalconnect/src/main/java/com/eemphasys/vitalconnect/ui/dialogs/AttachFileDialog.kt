@@ -18,6 +18,7 @@ import com.eemphasys.vitalconnect.common.extensions.lazyActivityViewModel
 import com.eemphasys.vitalconnect.common.extensions.parcelable
 import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.databinding.DialogAttachFileBinding
+import com.eemphasys_enterprise.commonmobilelib.EETLog
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -46,6 +47,7 @@ class AttachFileDialog : BaseBottomSheetDialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         savedInstanceState?.let { imageCaptureUri = it.parcelable(IMAGE_CAPTURE_URI) }
+        EETLog.saveUserJourney(this::class.java.simpleName + " onCreate Called")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

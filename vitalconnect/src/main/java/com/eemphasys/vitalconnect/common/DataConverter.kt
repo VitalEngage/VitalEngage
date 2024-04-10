@@ -28,6 +28,9 @@ import com.eemphasys.vitalconnect.data.models.ConversationListViewItem
 import com.eemphasys.vitalconnect.data.models.MessageListViewItem
 import com.eemphasys.vitalconnect.data.models.ReactionAttributes
 import com.eemphasys.vitalconnect.manager.friendlyName
+import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
+import com.eemphasys_enterprise.commonmobilelib.EETLog
+import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.twilio.conversations.Conversation
 import com.twilio.conversations.Message
 import com.twilio.conversations.Participant
@@ -107,6 +110,16 @@ fun MessageDataItem.toMessageListViewItem(authorChanged: Boolean): MessageListVi
 fun getReactions(attributes: String): Map<String, Set<String>> = try {
     Gson().fromJson(attributes, ReactionAttributes::class.java).reactions
 } catch (e: Exception) {
+    EETLog.error(
+        SessionHelper.appContext, LogConstants.logDetails(
+            e,
+            LogConstants.LOG_LEVEL.ERROR.toString(),
+            LogConstants.LOG_SEVERITY.HIGH.toString()
+        ),
+        Constants.EX, LogTraceConstants.getUtilityData(
+            SessionHelper.appContext!!
+        )!!
+    );
     emptyMap()
 }
 
@@ -117,6 +130,16 @@ fun Map<String, Set<String>>.asReactionList(): Reactions {
         try {
             reactions[Reaction.fromString(it.key)] = it.value
         } catch (e: Exception) {
+            EETLog.error(
+                SessionHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    SessionHelper.appContext!!
+                )!!
+            );
         }
     }
     return reactions

@@ -10,26 +10,28 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 
-import android.net.Uri
 import androidx.annotation.RestrictTo
 import com.eemphasys.vitalconnect.api.AuthInterceptor
 import com.eemphasys.vitalconnect.api.RetrofitHelper
+import com.eemphasys.vitalconnect.api.RetryInterceptor
 import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.RequestToken
 import com.eemphasys.vitalconnect.common.ChatAppModel
+import com.eemphasys.vitalconnect.common.SessionHelper
 import com.eemphasys.vitalconnect.common.enums.ConversationsError
 import com.eemphasys.vitalconnect.common.extensions.createTwilioException
 import com.twilio.conversations.extensions.addListener
-import com.twilio.conversations.extensions.createAndSyncConversationsClient
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.FileNotFoundException
-import java.net.URL
 import com.eemphasys.vitalconnect.common.extensions.updateToken
+import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
+import com.eemphasys_enterprise.commonmobilelib.EETLog
+import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import okhttp3.OkHttpClient
+import java.util.concurrent.TimeUnit
 
 class ConversationsClientWrapper(private val applicationContext: Context) {
     private var deferredClient = CompletableDeferred<ConversationsClient>()
@@ -41,7 +43,7 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
     suspend fun getConversationsClient() = deferredClient.await()
 
     suspend fun getclient(){
-
+        Log.d("Twilio Token in wrapper",ChatAppModel.twilio_token!!)
         val client = createAndSyncConversationsClient(applicationContext, ChatAppModel.twilio_token!!)
         this.deferredClient.complete(client)
 
@@ -104,30 +106,47 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
 
             val tokenApi = RetrofitHelper.getInstance().create(TwilioApi::class.java)
             val result = tokenApi.getAuthToken(requestData)
-            Log.d("Authtoken: ", result.body()!!.jwtToken)
+            //Log.d("Authtoken: ", result.body()!!.jwtToken)
 
             Constants.AUTH_TOKEN = result.body()!!.jwtToken
 
             val httpClientWithToken = OkHttpClient.Builder()
+                .connectTimeout(300, TimeUnit.SECONDS)
+                .readTimeout(300, TimeUnit.SECONDS)
+                .writeTimeout(300, TimeUnit.SECONDS)
                 .addInterceptor(AuthInterceptor(result.body()!!.jwtToken))
+                .addInterceptor(RetryInterceptor())
                 .build()
             val retrofitWithToken =
                 RetrofitHelper.getInstance(httpClientWithToken).create(TwilioApi::class.java)
 
-            Log.d("username", Constants.USERNAME)
+            //Log.d("username", Constants.USERNAME)
             val TwilioToken = retrofitWithToken.getTwilioToken(
                 Constants.TENANT_CODE,
                 username,
                 Constants.FRIENDLY_NAME
             )
 
-            Log.d("twiliotoken", TwilioToken.body()!!.token)
+            //Log.d("twiliotoken", TwilioToken.body()!!.token)
             Constants.TWILIO_TOKEN = TwilioToken.body()!!.token
             return@withContext TwilioToken.body()!!.token
         } catch (e: FileNotFoundException) {
             throw createTwilioException(ConversationsError.TOKEN_ACCESS_DENIED)
         } catch (e: Exception) {
-            throw createTwilioException(ConversationsError.TOKEN_ERROR)
+
+            /*e.printStackTrace()*/
+
+            EETLog.error(
+                SessionHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    SessionHelper.appContext!!
+                )!!
+            )
+            throw createTwilioException(ConversationsError.TOKEN_ERROR);
         }
     }
 

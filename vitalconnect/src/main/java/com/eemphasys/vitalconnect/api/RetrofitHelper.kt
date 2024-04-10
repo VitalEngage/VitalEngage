@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitHelper {
 
-    val baseUrl = "https://xappsweb.e-emphasys.com/VitalConnect/WebApi/"
+    //val baseUrl = "https://xappsweb.e-emphasys.com/VitalConnect/WebApi/"
 
         fun getInstance(httpClient: OkHttpClient? = null): Retrofit {
 
@@ -18,10 +18,6 @@ object RetrofitHelper {
             if (httpClient != null) {
                     builder.client(httpClient)
                 }
-
                 return builder.build()
-
         }
-
-
 }

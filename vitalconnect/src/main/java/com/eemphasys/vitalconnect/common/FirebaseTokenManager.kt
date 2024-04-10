@@ -2,6 +2,9 @@ package com.eemphasys.vitalconnect.common
 
 import com.eemphasys.vitalconnect.common.enums.ConversationsError
 import com.eemphasys.vitalconnect.common.extensions.createTwilioException
+import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
+import com.eemphasys_enterprise.commonmobilelib.EETLog
+import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.CompletableDeferred
 import kotlin.coroutines.resume
@@ -19,6 +22,18 @@ class FirebaseTokenManager {
                 } catch (e: Exception) {
 // TOO_MANY_REGISTRATIONS thrown on devices with too many Firebase instances
                     continuation.resumeWithException(createTwilioException(ConversationsError.TOKEN_ERROR))
+                    e.printStackTrace()
+
+                    EETLog.error(
+                        SessionHelper.appContext, LogConstants.logDetails(
+                            e,
+                            LogConstants.LOG_LEVEL.ERROR.toString(),
+                            LogConstants.LOG_SEVERITY.HIGH.toString()
+                        ),
+                        Constants.EX, LogTraceConstants.getUtilityData(
+                            SessionHelper.appContext!!
+                        )!!
+                    );
                 }
             }
         }

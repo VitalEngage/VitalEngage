@@ -21,6 +21,8 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
+import com.eemphasys.vitalconnect.common.Constants
+import com.eemphasys.vitalconnect.common.SessionHelper
 import com.eemphasys.vitalconnect.repository.ConversationsRepository
 import com.eemphasys.vitalconnect.common.SingleLiveEvent
 import com.eemphasys.vitalconnect.common.call
@@ -36,6 +38,10 @@ import com.eemphasys.vitalconnect.data.localCache.entity.ParticipantDataItem
 import com.eemphasys.vitalconnect.data.models.MessageListViewItem
 import com.eemphasys.vitalconnect.data.models.RepositoryRequestStatus
 import com.eemphasys.vitalconnect.manager.MessageListManager
+import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
+import com.eemphasys.vitalconnect.misc.log_trace.LogTraceHelper
+import com.eemphasys_enterprise.commonmobilelib.EETLog
+import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.twilio.util.TwilioException
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -122,9 +128,32 @@ class MessageListViewModel(
         try {
             messageListManager.sendTextMessage(message, messageUuid)
             onMessageSent.call()
+            LogTraceHelper.trace(
+                appContext,
+                LogTraceConstants.traceDetails(
+                    Thread.currentThread().stackTrace,
+                    "Activity Selected :",
+                    LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
+                    LogConstants.LOG_SEVERITY.NORMAL.toString()
+                ),
+                LogTraceConstants.chatappmodel,
+                LogTraceConstants.getUtilityData(appContext)!!
+            )
         } catch (e: TwilioException) {
             messageListManager.updateMessageStatus(messageUuid, SendStatus.ERROR, e.errorInfo.code)
             onMessageError.value = ConversationsError.MESSAGE_SEND_FAILED
+            e.printStackTrace()
+
+            EETLog.error(
+                SessionHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    SessionHelper.appContext!!
+                )!!
+            );
         }
     }
 
@@ -132,9 +161,32 @@ class MessageListViewModel(
         try {
             messageListManager.retrySendTextMessage(messageUuid)
             onMessageSent.call()
+            LogTraceHelper.trace(
+                appContext,
+                LogTraceConstants.traceDetails(
+                    Thread.currentThread().stackTrace,
+                    "Activity Selected :",
+                    LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
+                    LogConstants.LOG_SEVERITY.NORMAL.toString()
+                ),
+                LogTraceConstants.chatappmodel,
+                LogTraceConstants.getUtilityData(appContext)!!
+            )
         } catch (e: TwilioException) {
             messageListManager.updateMessageStatus(messageUuid, SendStatus.ERROR, e.errorInfo.code)
             onMessageError.value = ConversationsError.MESSAGE_SEND_FAILED
+            e.printStackTrace()
+
+            EETLog.error(
+                SessionHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    SessionHelper.appContext!!
+                )!!
+            );
         }
     }
 
@@ -144,9 +196,32 @@ class MessageListViewModel(
             try {
                 messageListManager.sendMediaMessage(uri, inputStream, fileName, mimeType, messageUuid)
                 onMessageSent.call()
+                LogTraceHelper.trace(
+                    appContext,
+                    LogTraceConstants.traceDetails(
+                        Thread.currentThread().stackTrace,
+                        "Activity Selected :",
+                        LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
+                        LogConstants.LOG_SEVERITY.NORMAL.toString()
+                    ),
+                    LogTraceConstants.chatappmodel,
+                    LogTraceConstants.getUtilityData(appContext)!!
+                )
             } catch (e: TwilioException) {
                 messageListManager.updateMessageStatus(messageUuid, SendStatus.ERROR, e.errorInfo.code)
                 onMessageError.value = ConversationsError.MESSAGE_SEND_FAILED
+                e.printStackTrace()
+
+                EETLog.error(
+                    SessionHelper.appContext, LogConstants.logDetails(
+                        e,
+                        LogConstants.LOG_LEVEL.ERROR.toString(),
+                        LogConstants.LOG_SEVERITY.HIGH.toString()
+                    ),
+                    Constants.EX, LogTraceConstants.getUtilityData(
+                        SessionHelper.appContext!!
+                    )!!
+                );
             }
         }
 
@@ -154,16 +229,62 @@ class MessageListViewModel(
         try {
             messageListManager.retrySendMediaMessage(inputStream, messageUuid)
             onMessageSent.call()
+            LogTraceHelper.trace(
+                appContext,
+                LogTraceConstants.traceDetails(
+                    Thread.currentThread().stackTrace,
+                    "Activity Selected :",
+                    LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
+                    LogConstants.LOG_SEVERITY.NORMAL.toString()
+                ),
+                LogTraceConstants.chatappmodel,
+                LogTraceConstants.getUtilityData(appContext)!!
+            )
         } catch (e: TwilioException) {
             messageListManager.updateMessageStatus(messageUuid, SendStatus.ERROR, e.errorInfo.code)
             onMessageError.value = ConversationsError.MESSAGE_SEND_FAILED
+            e.printStackTrace()
+
+            EETLog.error(
+                SessionHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    SessionHelper.appContext!!
+                )!!
+            );
         }
     }
 
     fun handleMessageDisplayed(messageIndex: Long) = viewModelScope.launch {
         try {
             messageListManager.notifyMessageRead(messageIndex)
+            LogTraceHelper.trace(
+                appContext,
+                LogTraceConstants.traceDetails(
+                    Thread.currentThread().stackTrace,
+                    "Activity Selected :",
+                    LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
+                    LogConstants.LOG_SEVERITY.NORMAL.toString()
+                ),
+                LogTraceConstants.chatappmodel,
+                LogTraceConstants.getUtilityData(appContext)!!
+            )
         } catch (e: TwilioException) {
+            e.printStackTrace()
+
+            EETLog.error(
+                SessionHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    SessionHelper.appContext!!
+                )!!
+            );
             // Ignored
         }
     }
@@ -175,8 +296,31 @@ class MessageListViewModel(
     fun setReactions(reactions: Reactions) = viewModelScope.launch {
         try {
             messageListManager.setReactions(selectedMessageIndex, reactions)
+            LogTraceHelper.trace(
+                appContext,
+                LogTraceConstants.traceDetails(
+                    Thread.currentThread().stackTrace,
+                    "Activity Selected :",
+                    LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
+                    LogConstants.LOG_SEVERITY.NORMAL.toString()
+                ),
+                LogTraceConstants.chatappmodel,
+                LogTraceConstants.getUtilityData(appContext)!!
+            )
         } catch (e: TwilioException) {
             onMessageError.value = ConversationsError.REACTION_UPDATE_FAILED
+            e.printStackTrace()
+
+            EETLog.error(
+                SessionHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    SessionHelper.appContext!!
+                )!!
+            );
         }
     }
 
@@ -187,8 +331,31 @@ class MessageListViewModel(
             val clipboard = ContextCompat.getSystemService(appContext, ClipboardManager::class.java)
             clipboard!!.setPrimaryClip(clip)
             onMessageCopied.call()
+            LogTraceHelper.trace(
+                appContext,
+                LogTraceConstants.traceDetails(
+                    Thread.currentThread().stackTrace,
+                    "Activity Selected :",
+                    LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
+                    LogConstants.LOG_SEVERITY.NORMAL.toString()
+                ),
+                LogTraceConstants.chatappmodel,
+                LogTraceConstants.getUtilityData(appContext)!!
+            )
         } catch (e: Exception) {
             onMessageError.value = ConversationsError.MESSAGE_COPY_FAILED
+            e.printStackTrace()
+
+            EETLog.error(
+                SessionHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    SessionHelper.appContext!!
+                )!!
+            );
         }
     }
 
@@ -196,8 +363,31 @@ class MessageListViewModel(
         try {
             messageListManager.removeMessage(selectedMessageIndex)
             onMessageRemoved.call()
+            LogTraceHelper.trace(
+                appContext,
+                LogTraceConstants.traceDetails(
+                    Thread.currentThread().stackTrace,
+                    "Activity Selected :",
+                    LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
+                    LogConstants.LOG_SEVERITY.NORMAL.toString()
+                ),
+                LogTraceConstants.chatappmodel,
+                LogTraceConstants.getUtilityData(appContext)!!
+            )
         } catch (e: TwilioException) {
             onMessageError.value = ConversationsError.MESSAGE_REMOVE_FAILED
+            e.printStackTrace()
+
+            EETLog.error(
+                SessionHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    SessionHelper.appContext!!
+                )!!
+            );
         }
     }
 
@@ -238,6 +428,17 @@ class MessageListViewModel(
 
         messageListManager.setMessageMediaDownloadId(messageIndex, downloadId)
         observeMessageMediaDownload(messageIndex, downloadId)
+        LogTraceHelper.trace(
+            appContext,
+            LogTraceConstants.traceDetails(
+                Thread.currentThread().stackTrace,
+                "Activity Selected :",
+                LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
+                LogConstants.LOG_SEVERITY.NORMAL.toString()
+            ),
+            LogTraceConstants.chatappmodel,
+            LogTraceConstants.getUtilityData(appContext)!!
+        )
     }
 
     private fun observeMessageMediaDownload(messageIndex: Long, downloadId: Long) {
@@ -252,6 +453,17 @@ class MessageListViewModel(
             }
         }
         downloadCursor.registerContentObserver(downloadObserver)
+        LogTraceHelper.trace(
+            appContext,
+            LogTraceConstants.traceDetails(
+                Thread.currentThread().stackTrace,
+                "Activity Selected :",
+                LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
+                LogConstants.LOG_SEVERITY.NORMAL.toString()
+            ),
+            LogTraceConstants.chatappmodel,
+            LogTraceConstants.getUtilityData(appContext)!!
+        )
     }
 
     /**

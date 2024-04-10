@@ -2,6 +2,7 @@ package com.eemphasys.vitalconnectdev.data
 
 import android.content.Context
 import androidx.preference.PreferenceManager
+import com.eemphasys_enterprise.commonmobilelib.EETLog
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -33,10 +34,12 @@ class CredentialStorage(applicationContext: Context) {
     fun isEmpty(): Boolean = identity.isEmpty() || password.isEmpty()
 
     fun clearCredentials() {
+        EETLog.saveUserJourney(this::class.java.simpleName + "Clear Credentials function ")
         sharedPreferences.edit().clear().apply()
     }
 
     fun storeCredentials(identity: String) {
+        EETLog.saveUserJourney(this::class.java.simpleName + "store Credentials function ")
         this.identity = identity
 //        this.password = password
     }

@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.eemphasys.vitalconnectdev"
-        minSdk = 24 //24
+        minSdk = 25 //24
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -58,6 +58,7 @@ dependencies {
 
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation(project(":vitalconnect"))
+    implementation(project(":commonmobilelib2.6"))
     implementation("com.twilio:conversations-android:6.0.3")
     //implementation ("com.twilio:conversations-android-with-symbols:6.0.4")
 
@@ -90,4 +91,6 @@ dependencies {
 
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.intuit.sdp:sdp-android:1.0.6")
+    implementation ("com.intuit.ssp:ssp-android:1.0.6")
 }
