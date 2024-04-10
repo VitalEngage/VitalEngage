@@ -87,7 +87,8 @@ class LoginActivity : AppCompatActivity() {
     private fun initializeChatAppModel(){
         ChatAppModel.init(
             LoginConstants.BASE_URL,
-            LoginConstants.TWILIO_TOKEN
+            LoginConstants.TWILIO_TOKEN,
+            packageName.toString()
 
         )
     }

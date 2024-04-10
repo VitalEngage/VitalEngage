@@ -7,6 +7,7 @@ import com.eemphasys.vitalconnect.api.RetryInterceptor
 import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.RequestToken
 import com.eemphasys.vitalconnect.common.Constants
+import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
 import com.eemphasys.vitalconnect.common.FirebaseTokenManager
 import com.eemphasys.vitalconnect.common.SessionHelper
@@ -70,7 +71,7 @@ class LoginManagerImpl(
             val retrofitWithToken =
                 RetrofitHelper.getInstance(httpClientWithToken).create(TwilioApi::class.java)
 
-        //Log.d("username", LoginConstants.CURRENT_USER)
+        Log.d("username", LoginConstants.CURRENT_USER)
             val TwilioToken = retrofitWithToken.getTwilioToken(
                 LoginConstants.TENANT_CODE,
                 LoginConstants.CURRENT_USER,
@@ -79,6 +80,7 @@ class LoginManagerImpl(
 
             Log.d("twiliotoken", TwilioToken.body()!!.token)
             LoginConstants.TWILIO_TOKEN = TwilioToken.body()!!.token
+            ChatAppModel.twilio_token = LoginConstants.TWILIO_TOKEN
 
 //        }
         credentialStorage.storeCredentials(identity)

@@ -16,32 +16,36 @@
         </activity>
 
         <activity
-            android:name=".ui.activity.ConversationListActivity">
+            android:name=".ui.activity.ConversationListActivity"
+            android:theme="@style/AppTheme.null">
 
         </activity>
         <activity
-            android:name=".ui.activity.MessageListActivity">
-
-
-        </activity>
-        <activity
-            android:name=".ui.activity.ConversationDetailsActivity">
+            android:name=".ui.activity.MessageListActivity"
+            android:theme="@style/AppTheme.null">
 
 
         </activity>
         <activity
-            android:name=".ui.activity.ParticipantListActivity">
+            android:name=".ui.activity.ConversationDetailsActivity"
+            android:theme="@style/AppTheme.null">
+
+
+        </activity>
+        <activity
+            android:name=".ui.activity.ParticipantListActivity"
+            android:theme="@style/AppTheme.null">
 
         </activity>
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.eemphasys.vitalconnect.fileprovider"
+            android:authorities="${applicationId}.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
+                android:resource="@xml/provider_paths" />
         </provider>
 
     </application>

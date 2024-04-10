@@ -43,7 +43,7 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
     suspend fun getConversationsClient() = deferredClient.await()
 
     suspend fun getclient(){
-        Log.d("Twilio Token in wrapper",ChatAppModel.twilio_token!!)
+
         val client = createAndSyncConversationsClient(applicationContext, ChatAppModel.twilio_token!!)
         this.deferredClient.complete(client)
 
@@ -106,7 +106,7 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
 
             val tokenApi = RetrofitHelper.getInstance().create(TwilioApi::class.java)
             val result = tokenApi.getAuthToken(requestData)
-            //Log.d("Authtoken: ", result.body()!!.jwtToken)
+            Log.d("Authtoken: ", result.body()!!.jwtToken)
 
             Constants.AUTH_TOKEN = result.body()!!.jwtToken
 
@@ -120,14 +120,14 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
             val retrofitWithToken =
                 RetrofitHelper.getInstance(httpClientWithToken).create(TwilioApi::class.java)
 
-            //Log.d("username", Constants.USERNAME)
+            Log.d("username", Constants.USERNAME)
             val TwilioToken = retrofitWithToken.getTwilioToken(
                 Constants.TENANT_CODE,
                 username,
                 Constants.FRIENDLY_NAME
             )
 
-            //Log.d("twiliotoken", TwilioToken.body()!!.token)
+            Log.d("twiliotoken", TwilioToken.body()!!.token)
             Constants.TWILIO_TOKEN = TwilioToken.body()!!.token
             return@withContext TwilioToken.body()!!.token
         } catch (e: FileNotFoundException) {

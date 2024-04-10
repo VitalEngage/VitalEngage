@@ -23,6 +23,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.SessionHelper
+import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.repository.ConversationsRepository
 import com.eemphasys.vitalconnect.common.SingleLiveEvent
 import com.eemphasys.vitalconnect.common.call
@@ -489,7 +490,7 @@ class MessageListViewModel(
             DownloadManager.STATUS_SUCCESSFUL -> {
                 val downloadedFile = cursor.getString(DownloadManager.COLUMN_LOCAL_URI).toUri().toFile()
                 val downloadedLocation =
-                    FileProvider.getUriForFile(appContext, "com.eemphasys.vitalconnect.fileprovider", downloadedFile)
+                    FileProvider.getUriForFile(appContext, ChatAppModel.appId + ".provider", downloadedFile)
                         .toString()
                 updateMessageMediaDownloadStatus(
                     messageIndex,
