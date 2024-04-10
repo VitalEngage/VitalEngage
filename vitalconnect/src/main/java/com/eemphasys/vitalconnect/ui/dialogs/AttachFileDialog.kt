@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts.OpenDocument
 import androidx.activity.result.contract.ActivityResultContracts.TakePicture
 import androidx.core.content.FileProvider
+import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.enums.ConversationsError
 import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.common.extensions.getString
@@ -79,7 +80,7 @@ class AttachFileDialog : BaseBottomSheetDialogFragment() {
         val picturesDir = requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
         val photoFile = File.createTempFile("JPEG_${timeStamp}_", ".jpg", picturesDir)
         imageCaptureUri =
-            FileProvider.getUriForFile(requireContext(), "com.twilio.conversations.app.fileprovider", photoFile)
+            FileProvider.getUriForFile(requireContext(), ChatAppModel.appId + ".provider", photoFile)
 
         takePicture.launch(imageCaptureUri)
     }

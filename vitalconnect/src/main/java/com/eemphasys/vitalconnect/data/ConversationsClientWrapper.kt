@@ -41,8 +41,8 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
     suspend fun getConversationsClient() = deferredClient.await()
 
     suspend fun getclient(){
-
-        val client = createAndSyncConversationsClient(applicationContext, ChatAppModel.twilio_token!!)
+Log.d("twiliotokeninchild", ChatAppModel.twilio_token!!)
+        val client = createAndSyncConversationsClient(applicationContext, ChatAppModel.twilio_token!! )
         this.deferredClient.complete(client)
 
         Log.d("client", client.myIdentity)

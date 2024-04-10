@@ -49,7 +49,6 @@ class LoginViewModel(
         viewModelScope.launch {
             try {
                 loginManager.signIn(identity)
-                initializeChatAppModel()
                 loginManager.getTwilioclient()
                 loginManager.registerForFcm()
                 onSignInSuccess.call()
@@ -59,13 +58,6 @@ class LoginViewModel(
                 Log.d("exception",e.message!!)
             }
         }
-    }
-
-    private fun initializeChatAppModel(){
-        ChatAppModel.init(
-            LoginConstants.BASE_URL,
-            LoginConstants.TWILIO_TOKEN
-        )
     }
 
     private fun validateSignInDetails(identity: String): ConversationsError {

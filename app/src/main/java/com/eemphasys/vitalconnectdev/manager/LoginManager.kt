@@ -5,6 +5,7 @@ import com.eemphasys.vitalconnect.api.AuthInterceptor
 import com.eemphasys.vitalconnect.api.RetrofitHelper
 import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.RequestToken
+import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
 import com.eemphasys.vitalconnect.common.FirebaseTokenManager
 import com.eemphasys.vitalconnectdev.data.LoginConstants
@@ -68,6 +69,7 @@ class LoginManagerImpl(
 
             Log.d("twiliotoken", TwilioToken.body()!!.token)
             LoginConstants.TWILIO_TOKEN = TwilioToken.body()!!.token
+            ChatAppModel.twilio_token = LoginConstants.TWILIO_TOKEN
 
 //        }
         credentialStorage.storeCredentials(identity)
