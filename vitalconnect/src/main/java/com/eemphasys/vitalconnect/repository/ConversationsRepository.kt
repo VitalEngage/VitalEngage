@@ -23,8 +23,10 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import androidx.paging.PagedList
+import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.DefaultDispatcherProvider
 import com.eemphasys.vitalconnect.common.DispatcherProvider
+import com.eemphasys.vitalconnect.common.SessionHelper
 import com.eemphasys.vitalconnect.common.asMessageDataItems
 import com.eemphasys.vitalconnect.common.asMessageListViewItems
 import com.eemphasys.vitalconnect.common.asParticipantDataItem
@@ -52,6 +54,9 @@ import com.eemphasys.vitalconnect.common.toConversationDataItem
 import com.twilio.conversations.extensions.getConversation
 import com.twilio.conversations.extensions.waitForSynchronization
 import com.eemphasys.vitalconnect.common.toFlow
+import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
+import com.eemphasys_enterprise.commonmobilelib.EETLog
+import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import kotlinx.coroutines.flow.onStart
 
 import kotlinx.coroutines.SupervisorJob
@@ -352,6 +357,18 @@ class ConversationsRepositoryImpl(
             emit(COMPLETE)
         } catch (e: TwilioException) {
             emit(Error(e.toConversationsError()))
+            e.printStackTrace()
+
+            EETLog.error(
+                SessionHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    SessionHelper.appContext!!
+                )!!
+            );
         }
     }
 
@@ -362,6 +379,18 @@ class ConversationsRepositoryImpl(
             emit(COMPLETE)
         } catch (e: TwilioException) {
             emit(Error(e.toConversationsError()))
+            e.printStackTrace()
+
+            EETLog.error(
+                SessionHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    SessionHelper.appContext!!
+                )!!
+            );
         }
     }
 
@@ -378,6 +407,18 @@ class ConversationsRepositoryImpl(
             emit(COMPLETE)
         } catch (e: TwilioException) {
             emit(Error(e.toConversationsError()))
+            e.printStackTrace()
+
+            EETLog.error(
+                SessionHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    SessionHelper.appContext!!
+                )!!
+            );
         }
     }
 
@@ -410,6 +451,18 @@ class ConversationsRepositoryImpl(
             send(status)
         } catch (e: TwilioException) {
             send(Error(e.toConversationsError()))
+            e.printStackTrace()
+
+            EETLog.error(
+                SessionHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    SessionHelper.appContext!!
+                )!!
+            );
         }
     }
 

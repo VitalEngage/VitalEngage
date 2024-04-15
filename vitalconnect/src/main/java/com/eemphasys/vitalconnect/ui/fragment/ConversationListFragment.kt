@@ -1,12 +1,14 @@
 package com.eemphasys.vitalconnect.ui.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toolbar
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
@@ -30,6 +32,7 @@ import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.data.models.ConversationListViewItem
 import com.eemphasys.vitalconnect.ui.activity.MessageListActivity
 import com.eemphasys.vitalconnect.ui.dialogs.NewConversationDialog
+import com.eemphasys_enterprise.commonmobilelib.EETLog
 
 class ConversationListFragment:Fragment(), OnConversationEvent {
     lateinit var binding: FragmentConversationListBinding
@@ -44,9 +47,22 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        EETLog.saveUserJourney(this::class.java.simpleName + " onCreate Called")
         setHasOptionsMenu(true)
+        activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if(shouldInterceptBackPress()){
+                    Log.d("ConversationListFragment","ConversationListFragement back button pressed")
+                // in here you can do logic when backPress is clicked
+                }else{
+                    isEnabled = false
+                    activity?.onBackPressed()
+                }
+            }
+        })
     }
 
+    fun shouldInterceptBackPress() = true
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentConversationListBinding.inflate(inflater, container, false)
         return binding.root

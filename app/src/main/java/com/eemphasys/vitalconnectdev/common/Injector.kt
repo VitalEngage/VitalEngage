@@ -22,7 +22,6 @@ open class Injector{
         CredentialStorage(applicationContext),
         FirebaseTokenManager(),
         ConversationsClientWrapper(applicationContext)
-
     )
 
     open fun createLoginViewModel(application: Application): LoginViewModel {

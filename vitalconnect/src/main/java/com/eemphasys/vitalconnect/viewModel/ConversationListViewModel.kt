@@ -6,6 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.eemphasys.vitalconnect.common.Constants
+import com.eemphasys.vitalconnect.common.SessionHelper
 import com.eemphasys.vitalconnect.common.SingleLiveEvent
 import com.eemphasys.vitalconnect.common.asConversationListViewItems
 import com.eemphasys.vitalconnect.common.call
@@ -20,6 +22,10 @@ import kotlinx.coroutines.launch
 import kotlin.properties.Delegates
 import com.eemphasys.vitalconnect.data.models.RepositoryRequestStatus
 import com.eemphasys.vitalconnect.data.models.RepositoryResult
+import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
+import com.eemphasys.vitalconnect.misc.log_trace.LogTraceHelper
+import com.eemphasys_enterprise.commonmobilelib.EETLog
+import com.eemphasys_enterprise.commonmobilelib.LogConstants
 
 class ConversationListViewModel(
     private val applicationContext: Context,
@@ -97,8 +103,32 @@ class ConversationListViewModel(
             val conversationSid = conversationListManager.createConversation(friendlyName)
             conversationListManager.joinConversation(conversationSid)
             onConversationCreated.call()
+
+            LogTraceHelper.trace(
+                applicationContext,
+                LogTraceConstants.traceDetails(
+                    Thread.currentThread().stackTrace,
+                    "Activity Selected :",
+                    LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
+                    LogConstants.LOG_SEVERITY.NORMAL.toString()
+                ),
+                LogTraceConstants.chatappmodel,
+                LogTraceConstants.getUtilityData(applicationContext)!!
+            )
         } catch (e: TwilioException) {
             onConversationError.value = ConversationsError.CONVERSATION_CREATE_FAILED
+            e.printStackTrace()
+
+            EETLog.error(
+                SessionHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    SessionHelper.appContext!!
+                )!!
+            );
         } finally {
             setDataLoading(false)
         }
@@ -112,8 +142,32 @@ class ConversationListViewModel(
             setConversationLoading(conversationSid, true)
             conversationListManager.muteConversation(conversationSid)
             onConversationMuted.value = true
+
+            LogTraceHelper.trace(
+                applicationContext,
+                LogTraceConstants.traceDetails(
+                    Thread.currentThread().stackTrace,
+                    "Activity Selected :",
+                    LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
+                    LogConstants.LOG_SEVERITY.NORMAL.toString()
+                ),
+                LogTraceConstants.chatappmodel,
+                LogTraceConstants.getUtilityData(applicationContext)!!
+            )
         } catch (e: TwilioException) {
             onConversationError.value = ConversationsError.CONVERSATION_MUTE_FAILED
+            e.printStackTrace()
+
+            EETLog.error(
+                SessionHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    SessionHelper.appContext!!
+                )!!
+            );
         } finally {
             setConversationLoading(conversationSid, false)
         }
@@ -127,8 +181,32 @@ class ConversationListViewModel(
             setConversationLoading(conversationSid, true)
             conversationListManager.unmuteConversation(conversationSid)
             onConversationMuted.value = false
+
+            LogTraceHelper.trace(
+                applicationContext,
+                LogTraceConstants.traceDetails(
+                    Thread.currentThread().stackTrace,
+                    "Activity Selected :",
+                    LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
+                    LogConstants.LOG_SEVERITY.NORMAL.toString()
+                ),
+                LogTraceConstants.chatappmodel,
+                LogTraceConstants.getUtilityData(applicationContext)!!
+            )
         } catch (e: TwilioException) {
             onConversationError.value = ConversationsError.CONVERSATION_UNMUTE_FAILED
+            e.printStackTrace()
+
+            EETLog.error(
+                SessionHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    SessionHelper.appContext!!
+                )!!
+            );
         } finally {
             setConversationLoading(conversationSid, false)
         }
@@ -142,8 +220,32 @@ class ConversationListViewModel(
             setConversationLoading(conversationSid, true)
             conversationListManager.leaveConversation(conversationSid)
             onConversationLeft.call()
+
+            LogTraceHelper.trace(
+                applicationContext,
+                LogTraceConstants.traceDetails(
+                    Thread.currentThread().stackTrace,
+                    "Activity Selected :",
+                    LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
+                    LogConstants.LOG_SEVERITY.NORMAL.toString()
+                ),
+                LogTraceConstants.chatappmodel,
+                LogTraceConstants.getUtilityData(applicationContext)!!
+            )
         } catch (e: TwilioException) {
             onConversationError.value = ConversationsError.CONVERSATION_LEAVE_FAILED
+            e.printStackTrace()
+
+            EETLog.error(
+                SessionHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    SessionHelper.appContext!!
+                )!!
+            );
         } finally {
             setConversationLoading(conversationSid, false)
         }

@@ -13,6 +13,7 @@ import com.eemphasys.vitalconnect.common.enums.ConversationsError
 import com.eemphasys.vitalconnect.common.extensions.*
 import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.databinding.ActivityConversationDetailsBinding
+import com.eemphasys_enterprise.commonmobilelib.EETLog
 
 class ConversationDetailsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityConversationDetailsBinding
@@ -33,6 +34,7 @@ class ConversationDetailsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        EETLog.saveUserJourney(this::class.java.simpleName + " onCreate Called")
         binding = DataBindingUtil
             .setContentView<ActivityConversationDetailsBinding>(this, R.layout.activity_conversation_details)
             .apply {

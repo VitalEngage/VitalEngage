@@ -1,9 +1,11 @@
 package com.eemphasys.vitalconnect.ui.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -14,13 +16,31 @@ import com.eemphasys.vitalconnect.common.extensions.lazyActivityViewModel
 import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.databinding.FragmentProfileBinding
 import com.eemphasys.vitalconnect.ui.dialogs.EditProfileDialog
+import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.google.android.material.snackbar.Snackbar
 
 class ProfileFragment:Fragment() {
     lateinit var binding: FragmentProfileBinding
 
     val profileViewModel by lazyActivityViewModel { injector.createProfileViewModel(applicationContext) }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        EETLog.saveUserJourney(this::class.java.simpleName + " onCreate Called")
+        setHasOptionsMenu(true)
+        activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if(shouldInterceptBackPress()){
+                    Log.d("ProfileFragment","Profile back button pressed")
+                    // in here you can do logic when backPress is clicked
+                }else{
+                    isEnabled = false
+                    activity?.onBackPressed()
+                }
+            }
+        })
+    }
 
+    fun shouldInterceptBackPress() = true
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentProfileBinding.inflate(inflater, container, false)
         return binding.root

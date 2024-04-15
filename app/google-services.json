@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "1007103989984",
-    "project_id": "vitalconnectdev-3e983",
-    "storage_bucket": "vitalconnectdev-3e983.appspot.com"
+    "project_number": "830347159408",
+    "project_id": "vitalconnectdev-e0d5f",
+    "storage_bucket": "vitalconnectdev-e0d5f.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1007103989984:android:9a57c1872cb738e627d885",
+        "mobilesdk_app_id": "1:830347159408:android:0aff75c29d6226f9e591b5",
         "android_client_info": {
           "package_name": "com.eemphasys.vitalconnectdev"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCTZBPJAsNx0EPQe7RnQVoI8-IhRmm8mZw"
+          "current_key": "AIzaSyCbAkCscNVcrUMFUZu-iuSrI5sjh7JtvfA"
         }
       ],
       "services": {

@@ -2,7 +2,12 @@ package com.eemphasys.vitalconnectdev.services
 
 import android.content.Intent
 import android.util.Log
+import com.eemphasys.vitalconnect.common.Constants
+import com.eemphasys.vitalconnect.common.SessionHelper
 import com.eemphasys.vitalconnect.common.injector
+import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
+import com.eemphasys_enterprise.commonmobilelib.EETLog
+import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.twilio.conversations.NotificationPayload
@@ -21,14 +26,14 @@ class FCMListenerService : FirebaseMessagingService() {
     private val fcmManager by lazy { injector.createFCMManager(application) }
     private val credentialStorage by lazy { injector.createCredentialStorage(applicationContext) }
     override fun onNewToken(token: String) {
-        Log.d("fcmtoken in parent",token)
+        //Log.d("fcmtoken in parent",token)
         super.onNewToken(token)
         launch {
             fcmManager.onNewToken(token)
         }
     }
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        Log.d("onmessage",remoteMessage.data.toString())
+        //Log.d("onmessage",remoteMessage.data.toString())
         super.onMessageReceived(remoteMessage)
         launch {
 // Check if message contains a data payload and we have saved FCM token
@@ -82,6 +87,16 @@ class FCMListenerService : FirebaseMessagingService() {
             (e: Exception) {
             super
                 .handleIntent(intent)
+            EETLog.error(
+                SessionHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    SessionHelper.appContext!!
+                )!!
+            );
         }
     }
 

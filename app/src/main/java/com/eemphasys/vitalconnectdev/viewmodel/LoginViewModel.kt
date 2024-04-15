@@ -6,6 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.eemphasys.vitalconnect.common.ChatAppModel
+import com.eemphasys.vitalconnect.common.Constants
+import com.eemphasys.vitalconnect.common.SessionHelper
+import com.eemphasys.vitalconnect.common.extensions.toConversationsError
+import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys.vitalconnectdev.common.SingleLiveEvent
 import com.eemphasys.vitalconnectdev.common.call
 import com.eemphasys.vitalconnectdev.common.enums.ConversationsError
@@ -15,6 +19,8 @@ import kotlinx.coroutines.launch
 
 import com.eemphasys.vitalconnectdev.manager.ConnectivityMonitor
 import com.eemphasys.vitalconnectdev.manager.LoginManager
+import com.eemphasys_enterprise.commonmobilelib.EETLog
+import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.twilio.util.TwilioException
 
 class LoginViewModel(
@@ -54,8 +60,19 @@ class LoginViewModel(
                 onSignInSuccess.call()
             } catch (e: TwilioException) {
                 isLoading.value = false
-                onSignInError.value = e.toConversationsError()
-                Log.d("exception",e.message!!)
+                //onSignInError.value = e.toConversationsError()
+                //e.printStackTrace()
+                Log.d("Error",e.toString())
+                /*EETLog.error(
+                    SessionHelper.appContext, LogConstants.logDetails(
+                        e,
+                        LogConstants.LOG_LEVEL.ERROR.toString(),
+                        LogConstants.LOG_SEVERITY.HIGH.toString()
+                    ),
+                    Constants.EX, LogTraceConstants.getUtilityData(
+                        SessionHelper.appContext!!
+                    )!!
+                );*/
             }
         }
     }

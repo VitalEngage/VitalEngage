@@ -24,6 +24,7 @@ import com.eemphasys.vitalconnectdev.data.model.WebUser
 import com.eemphasys.vitalconnectdev.databinding.ActivityLoginBinding
 import com.google.android.material.snackbar.Snackbar
 import org.json.JSONObject
+import  com.eemphasys_enterprise.commonmobilelib.EETLog
 
 class LoginActivity : AppCompatActivity() {
 
@@ -39,6 +40,7 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        EETLog.saveUserJourney(this::class.java.simpleName + " onCreate Called")
         setContentView(binding.root)
 
 

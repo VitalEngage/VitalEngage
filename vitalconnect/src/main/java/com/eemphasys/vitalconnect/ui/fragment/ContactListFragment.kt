@@ -9,6 +9,7 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
@@ -19,6 +20,7 @@ import com.eemphasys.vitalconnect.adapters.ContactListAdapter
 import com.eemphasys.vitalconnect.adapters.OnContactItemClickListener
 import com.eemphasys.vitalconnect.api.AuthInterceptor
 import com.eemphasys.vitalconnect.api.RetrofitHelper
+import com.eemphasys.vitalconnect.api.RetryInterceptor
 import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.ParticipantExistingConversation
 import com.eemphasys.vitalconnect.common.ChatAppModel
@@ -32,12 +34,14 @@ import com.eemphasys.vitalconnect.data.models.ContactListViewItem
 import com.eemphasys.vitalconnect.data.models.WebUser
 import com.eemphasys.vitalconnect.databinding.FragmentContactListBinding
 import com.eemphasys.vitalconnect.ui.activity.MessageListActivity
+import com.eemphasys_enterprise.commonmobilelib.EETLog
 import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.concurrent.TimeUnit
 import java.util.logging.Handler
 
 class ContactListFragment : Fragment() {
@@ -52,6 +56,7 @@ val contactListViewModel by lazyActivityViewModel { injector.createContactListVi
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        EETLog.saveUserJourney(this::class.java.simpleName + " onCreate Called")
         setHasOptionsMenu(true)
 
         contactListViewModel.onParticipantAdded.observe(this) { identity ->
@@ -62,9 +67,20 @@ val contactListViewModel by lazyActivityViewModel { injector.createContactListVi
                 )
             )
         }
+        activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if(shouldInterceptBackPress()){
+                    Log.d("ContactListFragment","ConversationListFragement back button pressed")
+                    // in here you can do logic when backPress is clicked
+                }else{
+                    isEnabled = false
+                    activity?.onBackPressed()
+                }
+            }
+        })
 
     }
-
+    fun shouldInterceptBackPress() = true
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -112,7 +128,7 @@ val contactListViewModel by lazyActivityViewModel { injector.createContactListVi
             val number = jsonObject.getString("number")
             val customerName = jsonObject.getString("customerName")
             contactslist.add(Contact(name,number,customerName,"","","",""))
-            Log.d("contactname",name)
+            //Log.d("contactname",name)
         }
 
         val jsonObjectwebusers = JSONObject(Constants.WEBUSERS)
@@ -122,13 +138,17 @@ val contactListViewModel by lazyActivityViewModel { injector.createContactListVi
             val name = jsonObject.getString("name")
             val userName = jsonObject.getString("userName")
             webuserlist.add(WebUser(name,userName,"","","",""))
-            Log.d("webusername",name)
+            //Log.d("webusername",name)
         }
 
         val combinedList = combineLists(contactslist, webuserlist)
 
         val httpClientWithToken = OkHttpClient.Builder()
+            .connectTimeout(300, TimeUnit.SECONDS)
+            .readTimeout(300, TimeUnit.SECONDS)
+            .writeTimeout(300, TimeUnit.SECONDS)
             .addInterceptor(AuthInterceptor(Constants.AUTH_TOKEN))
+            .addInterceptor(RetryInterceptor())
             .build()
         val retrofitWithToken =
             RetrofitHelper.getInstance(httpClientWithToken).create(TwilioApi::class.java)
@@ -139,7 +159,7 @@ val contactListViewModel by lazyActivityViewModel { injector.createContactListVi
             override fun onContactItemClick(contact: ContactListViewItem) {
 
                 // Handle item click here
-                Log.d("ContactClicked", "Name: ${contact.name}, Number: ${contact.number}, Type: ${contact.type}")
+                //Log.d("ContactClicked", "Name: ${contact.name}, Number: ${contact.number}, Type: ${contact.type}")
 
                 if (contact.type == "SMS") {
                     binding?.progressBarID?.visibility = VISIBLE
@@ -189,7 +209,6 @@ val contactListViewModel by lazyActivityViewModel { injector.createContactListVi
                                             println("Exception :  ${e.message}")
                                         }
                                         //Starting and redirecting to Existing conversation
-                                        Log.d("wait","waiting")
 //                                        delay(1000)
                                         MessageListActivity.startfromFragment(applicationContext,conversation.conversationSid)
                                         binding?.progressBarID?.visibility = GONE

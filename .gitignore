@@ -13,3 +13,4 @@
 .externalNativeBuild
 .cxx
 local.properties
+/commonmobilelib2.6/build

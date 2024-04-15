@@ -14,6 +14,7 @@ import com.eemphasys.vitalconnect.common.SheetListener
 import com.eemphasys.vitalconnect.common.extensions.*
 import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.databinding.ActivityParticipantsBinding
+import com.eemphasys_enterprise.commonmobilelib.EETLog
 
 class ParticipantListActivity : AppCompatActivity() {
     private val binding by lazy { ActivityParticipantsBinding.inflate(layoutInflater) }
@@ -26,6 +27,7 @@ class ParticipantListActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        EETLog.saveUserJourney(this::class.java.simpleName + " onCreate Called")
         setContentView(binding.root)
 
         initViews()

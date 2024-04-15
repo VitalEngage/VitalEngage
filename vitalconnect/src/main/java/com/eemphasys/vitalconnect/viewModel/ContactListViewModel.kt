@@ -8,6 +8,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.Constants
+import com.eemphasys.vitalconnect.common.SessionHelper
 import com.eemphasys.vitalconnect.common.SingleLiveEvent
 import com.eemphasys.vitalconnect.common.asConversationListViewItems
 import com.eemphasys.vitalconnect.common.call
@@ -22,7 +23,11 @@ import kotlinx.coroutines.launch
 import kotlin.properties.Delegates
 import com.eemphasys.vitalconnect.data.models.RepositoryRequestStatus
 import com.eemphasys.vitalconnect.manager.AutoParticipantListManager
+import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
+import com.eemphasys.vitalconnect.misc.log_trace.LogTraceHelper
 import com.eemphasys.vitalconnect.ui.activity.MessageListActivity
+import com.eemphasys_enterprise.commonmobilelib.EETLog
+import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import kotlinx.coroutines.delay
 
 
@@ -65,6 +70,18 @@ class ContactListViewModel(
 
         isNoResultsFoundVisible.value = conversationFilter.isNotEmpty() && filteredItems.isEmpty()
         isNoConversationsVisible.value = conversationFilter.isEmpty() && filteredItems.isEmpty()
+
+        LogTraceHelper.trace(
+            applicationContext,
+            LogTraceConstants.traceDetails(
+                Thread.currentThread().stackTrace,
+                "Activity Selected :",
+                LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
+                LogConstants.LOG_SEVERITY.NORMAL.toString()
+            ),
+            LogTraceConstants.chatappmodel,
+            LogTraceConstants.getUtilityData(applicationContext)!!
+        )
     }
 
     fun getUserConversations() = viewModelScope.launch {
@@ -130,10 +147,32 @@ class ContactListViewModel(
 
                 onConversationCreated.call()
             }
-
+            LogTraceHelper.trace(
+                applicationContext,
+                LogTraceConstants.traceDetails(
+                    Thread.currentThread().stackTrace,
+                    "Activity Selected :",
+                    LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
+                    LogConstants.LOG_SEVERITY.NORMAL.toString()
+                ),
+                LogTraceConstants.chatappmodel,
+                LogTraceConstants.getUtilityData(applicationContext)!!
+            )
 
         } catch (e: TwilioException) {
             onConversationError.value = ConversationsError.CONVERSATION_CREATE_FAILED
+            e.printStackTrace()
+
+            EETLog.error(
+                SessionHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    SessionHelper.appContext!!
+                )!!
+            );
         } finally {
             setDataLoading(false)
         }
@@ -147,8 +186,32 @@ class ContactListViewModel(
             setShowProgress(true)
             autoParticipantListManager.addChatParticipant(identity,sid)
             onParticipantAdded.value = identity
+
+            LogTraceHelper.trace(
+                applicationContext,
+                LogTraceConstants.traceDetails(
+                    Thread.currentThread().stackTrace,
+                    "Activity Selected :",
+                    LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
+                    LogConstants.LOG_SEVERITY.NORMAL.toString()
+                ),
+                LogTraceConstants.chatappmodel,
+                LogTraceConstants.getUtilityData(applicationContext)!!
+            )
         } catch (e: TwilioException) {
             onDetailsError.value = ConversationsError.PARTICIPANT_ADD_FAILED
+            e.printStackTrace()
+
+            EETLog.error(
+                SessionHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    SessionHelper.appContext!!
+                )!!
+            );
         } finally {
             setShowProgress(false)
         }
@@ -162,8 +225,31 @@ class ContactListViewModel(
             setShowProgress(true)
             autoParticipantListManager.addNonChatParticipant(phone, proxyPhone,friendlyName,sid)
             onParticipantAdded.value = phone
+            LogTraceHelper.trace(
+                applicationContext,
+                LogTraceConstants.traceDetails(
+                    Thread.currentThread().stackTrace,
+                    "Activity Selected :",
+                    LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
+                    LogConstants.LOG_SEVERITY.NORMAL.toString()
+                ),
+                LogTraceConstants.chatappmodel,
+                LogTraceConstants.getUtilityData(applicationContext)!!
+            )
         } catch (e: TwilioException) {
             onDetailsError.value = ConversationsError.PARTICIPANT_ADD_FAILED
+            e.printStackTrace()
+
+            EETLog.error(
+                SessionHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    SessionHelper.appContext!!
+                )!!
+            );
         } finally {
             setShowProgress(false)
         }

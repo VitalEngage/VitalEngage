@@ -13,8 +13,8 @@ android {
         //applicationId = "com.eemphasys.vitalconnect"
         minSdk = 24
         targetSdk = 34
-        //versionCode = 1
-        //versionName = "1.0"
+        /*versionCode = 1
+        versionName = "1.0"*/
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -56,6 +56,7 @@ android {
 
 dependencies {
 
+    implementation(project(":commonmobilelib2.6"))
     //implementation ("com.twilio:conversations-android-with-symbols:6.0.3")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
@@ -116,4 +117,6 @@ dependencies {
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
 
     implementation ("androidx.recyclerview:recyclerview:1.2.0-alpha04")
+    implementation ("com.intuit.sdp:sdp-android:1.0.6")
+    implementation ("com.intuit.ssp:ssp-android:1.0.6")
 }

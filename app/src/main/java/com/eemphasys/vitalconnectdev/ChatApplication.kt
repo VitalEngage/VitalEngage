@@ -8,6 +8,7 @@ import androidx.room.Room
 import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
 import com.eemphasys.vitalconnect.data.localCache.LocalCacheProvider
 import com.eemphasys.vitalconnect.repository.ConversationsRepositoryImpl
+import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.google.firebase.FirebaseApp
 
 class ChatApplication : Application() {
@@ -27,12 +28,18 @@ class ChatApplication : Application() {
 //    }
     override fun onCreate() {
         super.onCreate()
-    appContext = applicationContext
-    FirebaseApp.initializeApp(this)
-    ConversationsClientWrapper.createInstance(this)
-    LocalCacheProvider.createInstance(this)
-    ConversationsRepositoryImpl.createInstance(ConversationsClientWrapper.INSTANCE, LocalCacheProvider.INSTANCE)
-    EmojiCompat.init(BundledEmojiCompatConfig(this))
+    EETLog.saveUserJourney("!!VitalConnect App Init launched!!")
+    try {
+        appContext = applicationContext
+        FirebaseApp.initializeApp(this)
+        ConversationsClientWrapper.createInstance(this)
+        LocalCacheProvider.createInstance(this)
+        ConversationsRepositoryImpl.createInstance(ConversationsClientWrapper.INSTANCE, LocalCacheProvider.INSTANCE)
+        EmojiCompat.init(BundledEmojiCompatConfig(this))
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+
 
 }
 
