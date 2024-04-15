@@ -48,8 +48,12 @@ class ConversationListActivity:AppCompatActivity() {
                 replaceFragment(ConversationListFragment())
             }
         }
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        binding.toolbar.setNavigationOnClickListener { onBackPressed() }
     }
-
+    override fun onBackPressed() {
+        super.onBackPressed()
+    }
     private fun replaceFragment(fragment: Fragment) {
 
         supportFragmentManager.findFragmentById(R.id.fragment_container)?.let { currentFragment ->

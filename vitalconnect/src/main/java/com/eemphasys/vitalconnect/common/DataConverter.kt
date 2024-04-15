@@ -110,7 +110,7 @@ fun MessageDataItem.toMessageListViewItem(authorChanged: Boolean): MessageListVi
 fun getReactions(attributes: String): Map<String, Set<String>> = try {
     Gson().fromJson(attributes, ReactionAttributes::class.java).reactions
 } catch (e: Exception) {
-    EETLog.error(
+    /*EETLog.error(
         SessionHelper.appContext, LogConstants.logDetails(
             e,
             LogConstants.LOG_LEVEL.ERROR.toString(),
@@ -119,7 +119,7 @@ fun getReactions(attributes: String): Map<String, Set<String>> = try {
         Constants.EX, LogTraceConstants.getUtilityData(
             SessionHelper.appContext!!
         )!!
-    );
+    );*/
     emptyMap()
 }
 
