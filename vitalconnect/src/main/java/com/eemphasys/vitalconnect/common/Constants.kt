@@ -18,5 +18,6 @@ class Constants   {
         var AUTH_TOKEN : String = ""
         var PROXY_NUMBER : String = ""
         var EX = "EX" //Exception
+        var FULL_NAME : String = ""
     }
 }

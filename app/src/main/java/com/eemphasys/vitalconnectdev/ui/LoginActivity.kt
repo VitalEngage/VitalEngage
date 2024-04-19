@@ -11,6 +11,7 @@ import com.eemphasys.vitalconnect.MainActivity
 import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.extensions.hideKeyboard
 import com.eemphasys.vitalconnect.data.localCache.LocalCacheProvider
+import com.eemphasys.vitalconnect.ui.activity.ConversationListActivity
 import com.eemphasys.vitalconnectdev.ChatApplication
 import com.eemphasys.vitalconnectdev.R
 import com.eemphasys.vitalconnectdev.common.enums.ConversationsError
@@ -138,7 +139,7 @@ class LoginActivity : AppCompatActivity() {
 //                binding.passwordInputLayout.error = getString(R.string.enter_password)
             }
 
-            //TOKEN_ACCESS_DENIED -> binding.passwordInputLayout.error = getString(R.string.token_access_denied)
+            TOKEN_ACCESS_DENIED -> binding.usernameInputLayout.error = getString(R.string.token_access_denied)
 
 //            NO_INTERNET_CONNECTION -> showNoInternetDialog()
 
@@ -150,7 +151,7 @@ class LoginActivity : AppCompatActivity() {
 
 
         fun start(context: Context){
-            val intent = Intent(context, MainActivity::class.java)
+            val intent = Intent(context, ConversationListActivity::class.java)
             intent.putExtra("username", LoginConstants.CURRENT_USER)
             intent.putExtra("clientID", LoginConstants.CLIENT_ID)
             intent.putExtra("clientSecret", LoginConstants.CLIENT_SECRET)
@@ -163,6 +164,7 @@ class LoginActivity : AppCompatActivity() {
             intent.putExtra("contacts", LoginConstants.CONTACTS)
             intent.putExtra("webusers", LoginConstants.WEBUSERS)
             intent.putExtra("authToken",LoginConstants.AUTH_TOKEN)
+            intent.putExtra("fullName",LoginConstants.FULL_NAME)
             context.startActivity(intent)
 
 

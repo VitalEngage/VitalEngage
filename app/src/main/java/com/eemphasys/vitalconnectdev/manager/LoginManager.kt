@@ -25,7 +25,9 @@ import java.util.concurrent.TimeUnit
 
 
 interface LoginManager {
-    suspend fun signIn(identity: String)
+    suspend fun getAuthenticationToken(identity: String)
+
+    suspend fun getTwilioToken()
     suspend fun signInUsingStoredCredentials()
     suspend fun signOut()
     //    suspend fun registerForFcm()
@@ -43,7 +45,7 @@ class LoginManagerImpl(
     private val conversationsClient: ConversationsClientWrapper,
 ): LoginManager {
 
-    override suspend fun signIn(identity: String) {
+    override suspend fun getAuthenticationToken(identity: String) {
         //conversationsClient.create
         val requestData = RequestToken(
             LoginConstants.TENANT_CODE,
@@ -51,21 +53,25 @@ class LoginManagerImpl(
             LoginConstants.CLIENT_SECRET,
             LoginConstants.CURRENT_USER,
             LoginConstants.PRODUCT,
-            ""
+            "",
+            false,
+            LoginConstants.FULL_NAME,
+            LoginConstants.PROXY_NUMBER
 
         )
 
-            val tokenApi = RetrofitHelper.getInstance().create(TwilioApi::class.java)
-            val result = tokenApi.getAuthToken(requestData)
-            Log.d("Authtoken: ", result.body()!!.jwtToken)
+        val tokenApi = RetrofitHelper.getInstance().create(TwilioApi::class.java)
+        val result = tokenApi.getAuthToken(requestData)
+        Log.d("Authtoken: ", result.body()!!.jwtToken)
+        LoginConstants.AUTH_TOKEN = result.body()!!.jwtToken
+    }
 
-            LoginConstants.AUTH_TOKEN = result.body()!!.jwtToken
-
+    override suspend fun getTwilioToken() {
             val httpClientWithToken = OkHttpClient.Builder()
                 .connectTimeout(300, TimeUnit.SECONDS)
                 .readTimeout(300, TimeUnit.SECONDS)
                 .writeTimeout(300, TimeUnit.SECONDS)
-                .addInterceptor(AuthInterceptor(result.body()!!.jwtToken))
+                .addInterceptor(AuthInterceptor(LoginConstants.AUTH_TOKEN))
                 .addInterceptor(RetryInterceptor())
                 .build()
             val retrofitWithToken =
@@ -83,7 +89,7 @@ class LoginManagerImpl(
             ChatAppModel.twilio_token = LoginConstants.TWILIO_TOKEN
 
 //        }
-        credentialStorage.storeCredentials(identity)
+        credentialStorage.storeCredentials(LoginConstants.CURRENT_USER)
     }
 
     override suspend fun signInUsingStoredCredentials() {

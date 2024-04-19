@@ -8,6 +8,9 @@ data class RequestToken(
     val clientSecret :String,
     val currentUser :String,
     val productCode: String,
-    val communicationMethod : String
+    val communicationMethod : String,
+    val autoRegistration : Boolean,
+    val fullName : String,
+    val proxyNumber: String
     //val jsonObject: JsonObject
 )

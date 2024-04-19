@@ -10,8 +10,7 @@
     <!-- Login Errors -->
     <string name="enter_username">Enter a username to sign in</string>
     <string name="enter_password">Enter a password to sign in</string>
-    <string name="token_access_denied">The username and password combination do not match our records, please re-enter
-        your username or password and sign in again.</string>
+    <string name="token_access_denied">Access Denied</string>
     <string name="sign_in_error">Sign in failed. Try again</string>
     <string name="no_internet_dialog_title">No internet connection</string>
     <string name="no_internet_dialog_message">Please check you are connected to wifi or have cellular signal</string>

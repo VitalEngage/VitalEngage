@@ -54,10 +54,16 @@ class LoginViewModel(
         isLoading.value = true
         viewModelScope.launch {
             try {
-                loginManager.signIn(identity)
-                loginManager.getTwilioclient()
-                loginManager.registerForFcm()
-                onSignInSuccess.call()
+                loginManager.getAuthenticationToken(identity)
+                if(!LoginConstants.AUTH_TOKEN.isNullOrEmpty()) {
+                    loginManager.getTwilioToken()
+                    loginManager.getTwilioclient()
+                    loginManager.registerForFcm()
+                    onSignInSuccess.call()
+                }else{
+                    isLoading.value = false
+                    onSignInError.value = ConversationsError.TOKEN_ACCESS_DENIED
+                }
             } catch (e: TwilioException) {
                 isLoading.value = false
                 //onSignInError.value = e.toConversationsError()

@@ -101,7 +101,10 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
                 Constants.CLIENT_SECRET,
                 username,
                 Constants.PRODUCT,
-                ""
+                "",
+                true,
+                Constants.FULL_NAME,
+                Constants.PROXY_NUMBER
             )
 
             val tokenApi = RetrofitHelper.getInstance().create(TwilioApi::class.java)

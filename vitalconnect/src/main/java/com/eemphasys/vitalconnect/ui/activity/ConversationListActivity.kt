@@ -5,8 +5,11 @@ import android.os.Bundle
 import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.eemphasys.vitalconnect.MainActivity
 import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.common.Constants
+import com.eemphasys.vitalconnect.common.extensions.lazyViewModel
+import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.databinding.ActivityConversationListBinding
 import com.eemphasys.vitalconnect.ui.fragment.ContactListFragment
 import com.eemphasys.vitalconnect.ui.fragment.ConversationListFragment
@@ -16,9 +19,39 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
 
 class ConversationListActivity:AppCompatActivity() {
+    val mainViewModel by lazyViewModel { injector.createMainViewModel(application) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         EETLog.saveUserJourney(this::class.java.simpleName + " onCreate Called")
+        val username = intent.getStringExtra("username")
+        val friendlyName = intent.getStringExtra("friendlyName")
+        val clientID = intent.getStringExtra("clientID")
+        val clientSecret = intent.getStringExtra("clientSecret")
+        val tenantcode = intent.getStringExtra("tenantcode")
+        val baseurl = intent.getStringExtra("baseurl")
+        val parentApp = intent.getStringExtra("parentApp")
+        val contacts = intent.getStringExtra("contacts")
+        val twilioToken = intent.getStringExtra("twilioToken")
+        val webusers = intent.getStringExtra("webusers")
+        val authToken = intent.getStringExtra("authToken")
+        val proxyNumber = intent.getStringExtra("proxyNumber")
+        val fullName = intent.getStringExtra("fullName")
+
+        Constants.AUTH_TOKEN = authToken!!
+        Constants.CONTACTS = contacts!!
+        Constants.WEBUSERS = webusers!!
+        Constants.BASE_URL = baseurl!!
+        Constants.TENANT_CODE = tenantcode!!
+        Constants.CLIENT_ID = clientID!!
+        Constants.CLIENT_SECRET = clientSecret!!
+        Constants.FRIENDLY_NAME = friendlyName!!
+        Constants.PRODUCT = parentApp!!
+        Constants.USERNAME = username!!
+        Constants.TWILIO_TOKEN = twilioToken!!
+        Constants.PROXY_NUMBER = proxyNumber!!
+        Constants.FULL_NAME = fullName!!
+
+        mainViewModel.create()
         val binding = ActivityConversationListBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

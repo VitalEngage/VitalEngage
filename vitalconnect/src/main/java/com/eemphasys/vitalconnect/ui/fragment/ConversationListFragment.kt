@@ -49,17 +49,17 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
         super.onCreate(savedInstanceState)
         EETLog.saveUserJourney(this::class.java.simpleName + " onCreate Called")
         setHasOptionsMenu(true)
-        activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                if(shouldInterceptBackPress()){
-                    Log.d("ConversationListFragment","ConversationListFragement back button pressed")
-                // in here you can do logic when backPress is clicked
-                }else{
-                    isEnabled = false
-                    activity?.onBackPressed()
-                }
-            }
-        })
+//        activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
+//            override fun handleOnBackPressed() {
+//                if(shouldInterceptBackPress()){
+//                    Log.d("ConversationListFragment","ConversationListFragement back button pressed")
+//                // in here you can do logic when backPress is clicked
+//                }else{
+//                    isEnabled = false
+//                    activity?.onBackPressed()
+//                }
+//            }
+//        })
     }
 
     fun shouldInterceptBackPress() = true

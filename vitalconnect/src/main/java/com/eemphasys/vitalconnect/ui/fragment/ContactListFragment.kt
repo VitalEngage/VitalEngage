@@ -67,17 +67,17 @@ val contactListViewModel by lazyActivityViewModel { injector.createContactListVi
                 )
             )
         }
-        activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                if(shouldInterceptBackPress()){
-                    Log.d("ContactListFragment","ConversationListFragement back button pressed")
-                    // in here you can do logic when backPress is clicked
-                }else{
-                    isEnabled = false
-                    activity?.onBackPressed()
-                }
-            }
-        })
+//        activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
+//            override fun handleOnBackPressed() {
+//                if(shouldInterceptBackPress()){
+//                    Log.d("ContactListFragment","ConversationListFragement back button pressed")
+//                    // in here you can do logic when backPress is clicked
+//                }else{
+//                    isEnabled = false
+//                    activity?.onBackPressed()
+//                }
+//            }
+//        })
 
     }
     fun shouldInterceptBackPress() = true
