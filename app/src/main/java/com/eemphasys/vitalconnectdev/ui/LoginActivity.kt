@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.View.GONE
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import androidx.appcompat.app.AppCompatActivity
@@ -12,6 +13,7 @@ import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.extensions.hideKeyboard
 import com.eemphasys.vitalconnect.data.localCache.LocalCacheProvider
 import com.eemphasys.vitalconnect.ui.activity.ConversationListActivity
+import com.eemphasys.vitalconnect.ui.activity.MessageListActivity
 import com.eemphasys.vitalconnectdev.ChatApplication
 import com.eemphasys.vitalconnectdev.R
 import com.eemphasys.vitalconnectdev.common.enums.ConversationsError
@@ -37,14 +39,14 @@ class LoginActivity : AppCompatActivity() {
         Snackbar.make(binding.loginCoordinatorLayout, R.string.no_internet_connection, Snackbar.LENGTH_INDEFINITE)
     }
 
-
+    override fun onStart() {
+        super.onStart()
+        setContentView(binding.root)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         EETLog.saveUserJourney(this::class.java.simpleName + " onCreate Called")
-        setContentView(binding.root)
-
-
 
 //        val items = listOf("e-servicetech", "e-logistics", "e-serviceplus")
 //        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, items)
@@ -72,12 +74,21 @@ class LoginActivity : AppCompatActivity() {
         binding.usernameTv.onSubmit {
             hideKeyboard()
             signInPressed() }
+        binding.passwordTv.onSubmit {
+            hideKeyboard()
+            signInPressed() }
         binding.signInBtn.setOnClickListener {
             hideKeyboard()
             signInPressed() }
         binding.settingsBtn.setOnClickListener { openSettings() }
 
+        loginViewModel.isAADEnabled.observe(this){
+            if(it) {
+                binding.usernameInputLayout.visibility = GONE
+            }
+        }
         initializeChatAppModel()
+        //loginViewModel.isAzureADEnabled()
 
     }
 
@@ -98,9 +109,9 @@ class LoginActivity : AppCompatActivity() {
         val identity = binding.usernameTv.text.toString()
         LoginConstants.CURRENT_USER = identity
         LoginConstants.FRIENDLY_NAME = identity
-//        val password = binding.passwordTv.text.toString()
+        val password = binding.passwordTv.text.toString()
 
-        loginViewModel.signIn(identity)
+        loginViewModel.signIn(identity,password)
     }
 
     private fun showProgress(show: Boolean) {
@@ -132,11 +143,11 @@ class LoginActivity : AppCompatActivity() {
         when (error) {
             EMPTY_USERNAME -> binding.usernameInputLayout.error = getString(R.string.enter_username)
 
-//            EMPTY_PASSWORD -> binding.passwordInputLayout.error = getString(R.string.enter_password)
+            EMPTY_PASSWORD -> binding.passwordInputLayout.error = getString(R.string.enter_password)
 
             EMPTY_USERNAME_AND_PASSWORD -> {
                 binding.usernameInputLayout.error = getString(R.string.enter_username)
-//                binding.passwordInputLayout.error = getString(R.string.enter_password)
+                binding.passwordInputLayout.error = getString(R.string.enter_password)
             }
 
             TOKEN_ACCESS_DENIED -> binding.usernameInputLayout.error = getString(R.string.token_access_denied)
@@ -151,7 +162,9 @@ class LoginActivity : AppCompatActivity() {
 
 
         fun start(context: Context){
+//            val intent = Intent(context, MessageListActivity::class.java)
             val intent = Intent(context, ConversationListActivity::class.java)
+//            val intent = Intent(context, MainActivity::class.java)
             intent.putExtra("username", LoginConstants.CURRENT_USER)
             intent.putExtra("clientID", LoginConstants.CLIENT_ID)
             intent.putExtra("clientSecret", LoginConstants.CLIENT_SECRET)

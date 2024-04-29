@@ -14,6 +14,7 @@ import com.eemphasys.vitalconnect.common.asConversationListViewItems
 import com.eemphasys.vitalconnect.common.call
 import com.eemphasys.vitalconnect.common.enums.ConversationsError
 import com.eemphasys.vitalconnect.common.merge
+import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
 import com.eemphasys.vitalconnect.data.models.ConversationListViewItem
 import com.eemphasys.vitalconnect.manager.ConnectivityMonitor
 import com.eemphasys.vitalconnect.manager.ConversationListManager
@@ -28,7 +29,12 @@ import com.eemphasys.vitalconnect.misc.log_trace.LogTraceHelper
 import com.eemphasys.vitalconnect.ui.activity.MessageListActivity
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
+import com.twilio.conversations.Attributes
+import com.twilio.conversations.extensions.addParticipantByAddress
+import com.twilio.conversations.extensions.getConversation
+import com.twilio.conversations.extensions.waitForSynchronization
 import kotlinx.coroutines.delay
+import org.json.JSONObject
 
 
 class ContactListViewModel(
@@ -137,7 +143,7 @@ class ContactListViewModel(
                 addNonChatParticipant(phoneNumber, Constants.PROXY_NUMBER,friendlyName,conversationSid)
                 delay(1000)
                 MessageListActivity.startfromFragment(applicationContext,conversationSid)
-
+                Log.d("nonchat participant","participant added")
             }
             else {
                 val conversationSid = conversationListManager.createConversation(friendlyName)

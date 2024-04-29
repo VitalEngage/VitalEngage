@@ -168,7 +168,8 @@ val contactListViewModel by lazyActivityViewModel { injector.createContactListVi
                         Constants.TENANT_CODE,
                         contact.number,
                         false,
-                        1
+                        1,
+                        Constants.PROXY_NUMBER
                     )
                     existingConversation.enqueue(object : Callback<List<ParticipantExistingConversation>> {
                         @SuppressLint("SuspiciousIndentation")

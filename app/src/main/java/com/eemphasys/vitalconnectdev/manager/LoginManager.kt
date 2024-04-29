@@ -1,11 +1,13 @@
 package com.eemphasys.vitalconnectdev.manager
 
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import com.eemphasys.vitalconnect.api.AuthInterceptor
 import com.eemphasys.vitalconnect.api.RetrofitHelper
 import com.eemphasys.vitalconnect.api.RetryInterceptor
 import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.RequestToken
+import com.eemphasys.vitalconnect.api.data.ValidateUserReq
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
@@ -21,11 +23,14 @@ import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.twilio.conversations.ConversationsClient
 import com.twilio.conversations.extensions.registerFCMToken
 import okhttp3.OkHttpClient
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 
 
 interface LoginManager {
-    suspend fun getAuthenticationToken(identity: String)
+    suspend fun getAuthenticationToken(identity: String, password: String)
 
     suspend fun getTwilioToken()
     suspend fun signInUsingStoredCredentials()
@@ -37,6 +42,8 @@ interface LoginManager {
 
     suspend fun getTwilioclient()
     suspend fun registerForFcm()
+
+//    suspend fun isAzureAdEnabled()
 }
 
 class LoginManagerImpl(
@@ -44,26 +51,23 @@ class LoginManagerImpl(
     private val firebaseTokenManager: FirebaseTokenManager,
     private val conversationsClient: ConversationsClientWrapper,
 ): LoginManager {
-
-    override suspend fun getAuthenticationToken(identity: String) {
+    override suspend fun getAuthenticationToken(identity: String, password: String) {
         //conversationsClient.create
-        val requestData = RequestToken(
+        val requestData = ValidateUserReq(
+            identity,
+            password,
             LoginConstants.TENANT_CODE,
-            LoginConstants.CLIENT_ID,
-            LoginConstants.CLIENT_SECRET,
-            LoginConstants.CURRENT_USER,
-            LoginConstants.PRODUCT,
-            "",
-            false,
-            LoginConstants.FULL_NAME,
-            LoginConstants.PROXY_NUMBER
-
+            "hmahajan@e-emphasys.com",
+            LoginConstants.TIMESTAMP,
+            true,
+            ""
         )
 
         val tokenApi = RetrofitHelper.getInstance().create(TwilioApi::class.java)
-        val result = tokenApi.getAuthToken(requestData)
+        val result = tokenApi.validateUser(requestData)
         Log.d("Authtoken: ", result.body()!!.jwtToken)
         LoginConstants.AUTH_TOKEN = result.body()!!.jwtToken
+        LoginConstants.PROXY_NUMBER = result.body()!!.proxyNumber
     }
 
     override suspend fun getTwilioToken() {
@@ -154,5 +158,13 @@ class LoginManagerImpl(
         }
 
     }
+
+//    override suspend fun isAzureAdEnabled() {
+//        val tokenApi = RetrofitHelper.getInstance().create(TwilioApi::class.java)
+//        val result = tokenApi.validateTenant(LoginConstants.TENANT_CODE)
+//        Log.d("isAzureAdenabled", result.body()!!.isAADEnabled.toString())
+//        LoginConstants.IS_AADENABLED = result.body()!!.isAADEnabled.toString()
+//        isAADEnabled.value = result.body()!!.isAADEnabled
+//    }
 
 }

@@ -84,7 +84,7 @@ class ParticipantListActivity : AppCompatActivity() {
 
             binding.participantDetailsSheet.participantDetailsName.text = participant.friendlyName
             binding.participantDetailsSheet.participantDetailsStatus.setText(if (participant.isOnline) R.string.participant_online else R.string.participant_offline)
-//            sheetBehavior.show()
+            sheetBehavior.show()
         }
 
         binding.participantRefresh.setOnRefreshListener { participantListViewModel.getConversationParticipants() }

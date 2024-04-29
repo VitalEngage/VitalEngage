@@ -94,30 +94,31 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
                 .toString()
 
             return@withContext URL(uri).readText()*/
+            if(Constants.AUTH_TOKEN.isNullOrEmpty()) {
+                val requestData = RequestToken(
+                    Constants.TENANT_CODE,
+                    Constants.CLIENT_ID,
+                    Constants.CLIENT_SECRET,
+                    username,
+                    Constants.PRODUCT,
+                    "",
+                    true,
+                    Constants.FULL_NAME,
+                    Constants.PROXY_NUMBER
+                )
 
-            val requestData = RequestToken(
-                Constants.TENANT_CODE,
-                Constants.CLIENT_ID,
-                Constants.CLIENT_SECRET,
-                username,
-                Constants.PRODUCT,
-                "",
-                true,
-                Constants.FULL_NAME,
-                Constants.PROXY_NUMBER
-            )
+                val tokenApi = RetrofitHelper.getInstance().create(TwilioApi::class.java)
+                val result = tokenApi.getAuthToken(requestData)
+                Log.d("Authtoken in clientwrapper: ", result.body()!!.jwtToken)
 
-            val tokenApi = RetrofitHelper.getInstance().create(TwilioApi::class.java)
-            val result = tokenApi.getAuthToken(requestData)
-            Log.d("Authtoken: ", result.body()!!.jwtToken)
-
-            Constants.AUTH_TOKEN = result.body()!!.jwtToken
+                Constants.AUTH_TOKEN = result.body()!!.jwtToken
+            }
 
             val httpClientWithToken = OkHttpClient.Builder()
                 .connectTimeout(300, TimeUnit.SECONDS)
                 .readTimeout(300, TimeUnit.SECONDS)
                 .writeTimeout(300, TimeUnit.SECONDS)
-                .addInterceptor(AuthInterceptor(result.body()!!.jwtToken))
+                .addInterceptor(AuthInterceptor(Constants.AUTH_TOKEN))
                 .addInterceptor(RetryInterceptor())
                 .build()
             val retrofitWithToken =

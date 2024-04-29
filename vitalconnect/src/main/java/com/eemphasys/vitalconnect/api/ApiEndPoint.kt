@@ -3,7 +3,9 @@ package com.eemphasys.vitalconnect.api
 import com.eemphasys.vitalconnect.api.data.AuthToken
 import com.eemphasys.vitalconnect.api.data.ParticipantExistingConversation
 import com.eemphasys.vitalconnect.api.data.RequestToken
+import com.eemphasys.vitalconnect.api.data.TenantDetails
 import com.eemphasys.vitalconnect.api.data.Token
+import com.eemphasys.vitalconnect.api.data.ValidateUserReq
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
@@ -20,8 +22,16 @@ interface TwilioApi {
      suspend fun getTwilioToken(@Query("tenantCode") tenantCode : String,@Query("user") user : String, @Query("friendlyName") friendlyName: String) : Response<Token>
 
      @GET("Conversation/FetchParticipantConversations")
-     fun fetchExistingConversation(@Query("tenantCode") tenantCode : String,@Query("identity") identity : String,@Query("isWebUser") isWebUser : Boolean,@Query("page") page : Int) : Call<List<ParticipantExistingConversation>>
+     fun fetchExistingConversation(@Query("tenantCode") tenantCode : String,@Query("identity") identity : String,@Query("isWebUser") isWebUser : Boolean,@Query("page") page : Int,@Query("proxyNumber") proxyNumber: String) : Call<List<ParticipantExistingConversation>>
 
      @GET("Conversation/AddParticipantToConversation")
      fun addParticipantToConversation(@Query("tenantCode") tenantCode : String,@Query("conversationSid") conversationSid : String,@Query("identity") identity : String, ) : Call<String>
+
+    @POST("User/ValidateTenant")
+    suspend fun validateTenant(@Query("tenantCode") tenantCode : String) : Response<TenantDetails>
+
+    @POST("User/ValidateUser")
+    suspend fun validateUser(@Body requestData : ValidateUserReq) : Response<AuthToken>
+
+
 }

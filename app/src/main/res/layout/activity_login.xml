@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
+<layout>
+<data>
 
+    <import type="android.view.View" />
+
+    <variable
+        name="tenant"
+        type="com.eemphasys.vitalconnect.api.data.TenantDetails" />
+
+</data>
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -68,15 +77,17 @@
 <!--                    android:inputType="text" />-->
 <!--            </com.google.android.material.textfield.TextInputLayout>-->
 
-      <!--      <com.google.android.material.textfield.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/passwordInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_marginTop="26dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:textColorHint="@color/text_demo_experience"
                 app:boxBackgroundMode="outline"
                 app:boxStrokeColor="#000000"
+                app:boxStrokeWidth="1dp"
+                app:hintEnabled="false"
                 app:passwordToggleEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -85,9 +96,10 @@
                     android:layout_height="match_parent"
                     android:hint="@string/password"
                     android:inputType="textPassword"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"
+                    app:hintEnabled="false"/>
 
-            </com.google.android.material.textfield.TextInputLayout>-->
+            </com.google.android.material.textfield.TextInputLayout>
 
             <!--<com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
@@ -139,3 +151,4 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>

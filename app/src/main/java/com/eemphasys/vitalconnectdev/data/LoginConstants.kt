@@ -18,6 +18,8 @@ class LoginConstants   {
         var TWILIO_TOKEN = ""
         var AUTH_TOKEN = ""
         var FULL_NAME =""
+        var IS_AADENABLED = "true"
+        var TIMESTAMP = ""
 
         val CONTACTS =
             """{

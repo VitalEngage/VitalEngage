@@ -14,8 +14,11 @@ data class AuthToken(
     val lastActivityDate: String,
     val vdPath: String,
     val userImgPath: String,
-    val userImgData: String,
+    //val userImgData: String,
     val isSuperAdmin: Boolean,
     val isNLogTracingEnable: Boolean,
-    val proxyNumber: String
+    val proxyNumber: String,
+    val department: String,
+    val countryCode: String,
+    val enableNotification : Boolean
 )
