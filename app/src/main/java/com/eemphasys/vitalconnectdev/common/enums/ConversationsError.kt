@@ -32,7 +32,8 @@ enum class ConversationsError(val code: Int, val message: String) {
     SIGN_OUT_SUCCEEDED(81, "Successfully signed out"),
     MESSAGE_REMOVE_FAILED(82, "Failed to remove message"),
     MESSAGE_COPY_FAILED(82, "Failed to copy message"),
-    NO_INTERNET_CONNECTION(83, "No internet connection");
+    NO_INTERNET_CONNECTION(83, "No internet connection"),
+    USERNAME_PASSWORD_INCORRECT(84,"Username or Password is incorrect");
 
     override fun toString() = "Error $code : $message"
 

@@ -105,7 +105,6 @@ open class Injector {
         val conversationListManager = ConversationListManagerImpl(ConversationsClientWrapper.INSTANCE)
         val connectivityMonitor = ConnectivityMonitorImpl(applicationContext)
         val autoparticipantListManager = AutoParticipantListManagerImpl(ConversationsClientWrapper.INSTANCE)
-
         return ContactListViewModel(
             applicationContext,
             ConversationsRepositoryImpl.INSTANCE,
@@ -119,7 +118,7 @@ open class Injector {
 
     open fun createProfileViewModel(applicationContext: Context) = ProfileViewModel(
         ConversationsRepositoryImpl.INSTANCE,
-        UserManagerImpl(ConversationsClientWrapper.INSTANCE),
+        UserManagerImpl(ConversationsClientWrapper.INSTANCE,ConversationsRepositoryImpl.INSTANCE)
 
     )
 

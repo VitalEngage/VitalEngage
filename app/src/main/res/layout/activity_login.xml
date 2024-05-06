@@ -52,6 +52,7 @@
                 android:textColorHint="@color/text_demo_experience"
                 app:boxBackgroundMode="outline"
                 app:boxStrokeColor="#000000"
+                app:boxStrokeErrorColor="#000000"
                 app:boxStrokeWidth="1dp"
                 app:hintEnabled="false">
 
@@ -86,6 +87,7 @@
                 android:textColorHint="@color/text_demo_experience"
                 app:boxBackgroundMode="outline"
                 app:boxStrokeColor="#000000"
+                app:boxStrokeErrorColor="#000000"
                 app:boxStrokeWidth="1dp"
                 app:hintEnabled="false"
                 app:passwordToggleEnabled="true">

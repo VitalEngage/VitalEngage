@@ -15,6 +15,7 @@
 
     <string name="sign_in">Sign in</string>
     <string name="sign_out">Sign out</string>
+    <string name="alerts">Enable Email/SMS Alerts</string>
 
     <!-- Login Errors -->
     <string name="enter_username">Enter a username to sign in</string>
@@ -201,10 +202,10 @@
     <string name="user_profile_update">Update</string>
 
     <!-- Notifications -->
-    <string name="notification_new_message">Twilio: New Message</string>
-    <string name="notification_added_to_conversation">Twilio: Added to Conversation</string>
-    <string name="notification_removed_from_conversation">Twilio: Removed from Conversation</string>
-    <string name="notification_generic">Twilio Notification</string>
+    <string name="notification_new_message">New Message</string>
+    <string name="notification_added_to_conversation">Added to Conversation</string>
+    <string name="notification_removed_from_conversation">Removed from Conversation</string>
+    <string name="notification_generic">Text Notification</string>
     <string name="twilio_conversations">Twilio Conversations</string>
     <string name="demo_experience">Demo experience</string>
 

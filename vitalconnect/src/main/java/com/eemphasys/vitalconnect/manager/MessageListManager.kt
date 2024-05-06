@@ -1,5 +1,6 @@
 package com.eemphasys.vitalconnect.manager
 
+import android.util.Log
 import com.eemphasys.vitalconnect.common.enums.DownloadState
 import com.eemphasys.vitalconnect.common.enums.SendStatus
 import com.google.gson.Gson
@@ -243,6 +244,8 @@ class MessageListManagerImpl(
     }
 
     override suspend fun notifyMessageRead(index: Long) {
+        Log.d("clientinmessagelistmanager",conversationsClient.getConversationsClient().myIdentity)
+        Log.d("sidinmessagelistmanager",conversationSid)
         val messages = conversationsClient.getConversationsClient().getConversation(conversationSid)
         if (index > messages.lastReadMessageIndex ?: -1) {
             messages.advanceLastReadMessageIndex(index)

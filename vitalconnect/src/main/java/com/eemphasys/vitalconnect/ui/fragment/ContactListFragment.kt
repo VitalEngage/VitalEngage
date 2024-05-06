@@ -13,6 +13,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.eemphasys.vitalconnect.R
@@ -29,12 +30,18 @@ import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.common.extensions.lazyActivityViewModel
 import com.eemphasys.vitalconnect.common.extensions.showSnackbar
 import com.eemphasys.vitalconnect.common.injector
+import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
 import com.eemphasys.vitalconnect.data.models.Contact
 import com.eemphasys.vitalconnect.data.models.ContactListViewItem
 import com.eemphasys.vitalconnect.data.models.WebUser
 import com.eemphasys.vitalconnect.databinding.FragmentContactListBinding
 import com.eemphasys.vitalconnect.ui.activity.MessageListActivity
 import com.eemphasys_enterprise.commonmobilelib.EETLog
+import com.twilio.conversations.CallbackListener
+import com.twilio.conversations.Conversation
+import com.twilio.conversations.extensions.getConversation
+import com.twilio.conversations.extensions.waitForSynchronization
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
 import org.json.JSONObject
@@ -46,8 +53,8 @@ import java.util.logging.Handler
 
 class ContactListFragment : Fragment() {
     var binding: FragmentContactListBinding? = null
-
-val contactListViewModel by lazyActivityViewModel { injector.createContactListViewModel(applicationContext) }
+    var conversationClientWrapper : ConversationsClientWrapper? = null
+    val contactListViewModel by lazyActivityViewModel { injector.createContactListViewModel(applicationContext) }
 
     var contactslist = arrayListOf<Contact>()
     var webuserlist = arrayListOf<WebUser>()
@@ -95,12 +102,12 @@ val contactListViewModel by lazyActivityViewModel { injector.createContactListVi
 
         // Convert Contact objects to ContactListViewItem
         val contactItems = contacts.map {
-            ContactListViewItem(it.name, "", it.number, "SMS")
+            ContactListViewItem(it.name, "", it.number, "SMS",it.customField1)
         }
 
         // Convert WebUser objects to ContactListViewItem
         val webUserItems = webUsers.map {
-            ContactListViewItem(it.name, it.userName, "", "Chat")
+            ContactListViewItem(it.name, it.userName, "", "Chat",it.customField1)
         }
 
         // Add all ContactListViewItem objects to the combined list
@@ -116,29 +123,30 @@ val contactListViewModel by lazyActivityViewModel { injector.createContactListVi
         super.onViewCreated(view, savedInstanceState)
         requireActivity().title = getString(R.string.contacts)
 
-
         contactslist = ArrayList<Contact>()
         webuserlist = ArrayList<WebUser>()
-
-        val jsonObjectcontacts = JSONObject(Constants.CONTACTS)
-        val jsonArrayContacts = jsonObjectcontacts.getJSONArray("contacts")
-        for (i in 0 until jsonArrayContacts.length()) {
-            val jsonObject = jsonArrayContacts.getJSONObject(i)
-            val name = jsonObject.getString("name")
-            val number = jsonObject.getString("number")
-            val customerName = jsonObject.getString("customerName")
-            contactslist.add(Contact(name,number,customerName,"","","",""))
-            //Log.d("contactname",name)
+        if(!Constants.CONTACTS.isNullOrEmpty()) {
+            val jsonObjectcontacts = JSONObject(Constants.CONTACTS)
+            val jsonArrayContacts = jsonObjectcontacts.getJSONArray("contacts")
+            for (i in 0 until jsonArrayContacts.length()) {
+                val jsonObject = jsonArrayContacts.getJSONObject(i)
+                val name = jsonObject.getString("name")
+                val number = jsonObject.getString("number")
+                val customerName = jsonObject.getString("customerName")
+                val initials = Constants.getInitials(name.trim { it <= ' ' })
+                contactslist.add(Contact(name, number, customerName, initials, "", "", ""))
+            }
         }
-
-        val jsonObjectwebusers = JSONObject(Constants.WEBUSERS)
-        val jsonArrayWebUsers = jsonObjectwebusers.getJSONArray("webUser")
-        for (i in 0 until jsonArrayWebUsers.length()) {
-            val jsonObject = jsonArrayWebUsers.getJSONObject(i)
-            val name = jsonObject.getString("name")
-            val userName = jsonObject.getString("userName")
-            webuserlist.add(WebUser(name,userName,"","","",""))
-            //Log.d("webusername",name)
+        if(!Constants.WEBUSERS.isNullOrEmpty()) {
+            val jsonObjectwebusers = JSONObject(Constants.WEBUSERS)
+            val jsonArrayWebUsers = jsonObjectwebusers.getJSONArray("webUser")
+            for (i in 0 until jsonArrayWebUsers.length()) {
+                val jsonObject = jsonArrayWebUsers.getJSONObject(i)
+                val name = jsonObject.getString("name")
+                val userName = jsonObject.getString("userName")
+                val initials = Constants.getInitials(name.trim { it <= ' ' })
+                webuserlist.add(WebUser(name, userName, initials, "", "", ""))
+            }
         }
 
         val combinedList = combineLists(contactslist, webuserlist)
@@ -186,7 +194,6 @@ val contactListViewModel by lazyActivityViewModel { injector.createContactListVi
                                     for (conversation in conversationList) {
                                         // Access properties of each Conversation object
                                         println("Conversation SID: ${conversation.conversationSid}")
-
                                         try{
                                         val participantSid = retrofitWithToken.addParticipantToConversation(Constants.TENANT_CODE,conversation.conversationSid,Constants.USERNAME)
 
@@ -211,7 +218,10 @@ val contactListViewModel by lazyActivityViewModel { injector.createContactListVi
                                         }
                                         //Starting and redirecting to Existing conversation
 //                                        delay(1000)
-                                        MessageListActivity.startfromFragment(applicationContext,conversation.conversationSid)
+                                            contactListViewModel.getSyncStatus(conversation.conversationSid)
+//                                            MessageListActivity.startfromFragment(applicationContext,conversation.conversationSid)
+//
+//
                                         binding?.progressBarID?.visibility = GONE
                                     }
                                 } else { //If there is no existing conversation with SMS user, create new

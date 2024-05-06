@@ -1,8 +1,14 @@
 package com.eemphasys.vitalconnect.viewModel
 
+import android.util.Log
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.eemphasys.vitalconnect.api.RetrofitHelper
+import com.eemphasys.vitalconnect.api.TwilioApi
+import com.eemphasys.vitalconnect.api.data.UserAlertRequest
+import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.SingleLiveEvent
 import com.eemphasys.vitalconnect.common.asUserViewItem
 import com.eemphasys.vitalconnect.common.call
@@ -35,8 +41,23 @@ class ProfileViewModel(
         }
     }
 
-    /*fun signOut() = viewModelScope.launch {
-        loginManager.signOut()
+    fun signOut() = viewModelScope.launch {
+        userManager.signOut()
         onSignedOut.call()
-    }*/
+    }
+
+    fun changeUserAlertStatus(isChecked : Boolean) = viewModelScope.launch {
+        val apicall = RetrofitHelper.getInstance().create(TwilioApi::class.java)
+        if(isChecked){
+            val requestData = UserAlertRequest(Constants.USERNAME,true, Constants.TENANT_CODE)
+            apicall.updateUserAlertStatus(requestData)
+            Log.d("apicall", "true")
+        }
+        else{
+            val requestData = UserAlertRequest(Constants.USERNAME,false, Constants.TENANT_CODE)
+            apicall.updateUserAlertStatus(requestData)
+            Log.d("apicall", "false")
+        }
+    }
+
 }

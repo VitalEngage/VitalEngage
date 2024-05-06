@@ -2,12 +2,15 @@ package com.eemphasys.vitalconnectdev.ui
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.View.GONE
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.eemphasys.vitalconnect.MainActivity
 import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.extensions.hideKeyboard
@@ -15,6 +18,10 @@ import com.eemphasys.vitalconnect.data.localCache.LocalCacheProvider
 import com.eemphasys.vitalconnect.ui.activity.ConversationListActivity
 import com.eemphasys.vitalconnect.ui.activity.MessageListActivity
 import com.eemphasys.vitalconnectdev.ChatApplication
+import android.Manifest
+import android.os.Handler
+import androidx.core.app.ActivityCompat
+import com.eemphasys.vitalconnect.common.extensions.enableErrorResettingOnTextChanged
 import com.eemphasys.vitalconnectdev.R
 import com.eemphasys.vitalconnectdev.common.enums.ConversationsError
 import com.eemphasys.vitalconnectdev.common.enums.ConversationsError.*
@@ -96,6 +103,83 @@ class LoginActivity : AppCompatActivity() {
 //        super.onDestroy()
 //    }
 
+    val REQUEST_ID_MULTIPLE_PERMISSIONS = 1
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if
+                (requestCode == REQUEST_ID_MULTIPLE_PERMISSIONS) {
+            for (permission in grantResults) {
+                var permission = permission;
+                var isPermitted = permission == PackageManager.PERMISSION_GRANTED;
+                if
+                        (permission == PackageManager.PERMISSION_DENIED
+                ) {
+// user rejected the permission
+                    checkAndRequestPermissions()
+                } else {
+// btnLogin.performClick()
+                }
+
+            }
+                }
+        }
+    private fun checkAndRequestPermissions(): Boolean {
+//        val camera = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+//        val storage =
+//            ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+//        val mic = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+//        val networkTypePermission =
+//            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)
+        val notificationPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            PackageManager.PERMISSION_GRANTED
+        }
+
+//        val loc =
+//            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+//        val loc2 = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+        val listPermissionsNeeded: MutableList<String> = ArrayList()
+//        if (camera != PackageManager.PERMISSION_GRANTED) {
+//            listPermissionsNeeded.add(Manifest.permission.CAMERA)
+//        }
+//        if (storage != PackageManager.PERMISSION_GRANTED) {
+//            listPermissionsNeeded.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+//        }
+//        if (mic != PackageManager.PERMISSION_GRANTED) {
+//            listPermissionsNeeded.add(Manifest.permission.RECORD_AUDIO)
+//        }
+//
+//        if (networkTypePermission != PackageManager.PERMISSION_GRANTED) {
+//            listPermissionsNeeded.add(Manifest.permission.READ_PHONE_STATE)
+//        }
+
+        if (notificationPermission != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                listPermissionsNeeded.add(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+
+        if (!listPermissionsNeeded.isEmpty()) {
+            ActivityCompat.requestPermissions(
+                this,
+                listPermissionsNeeded.toTypedArray(),
+                REQUEST_ID_MULTIPLE_PERMISSIONS
+            )
+            return false
+        } else {
+            Handler().postDelayed(Runnable {
+//                btnLogin.performClick()
+            }, 300)
+
+        }
+        return true
+    }
+
     private fun initializeChatAppModel(){
         ChatAppModel.init(
             LoginConstants.BASE_URL,
@@ -141,17 +225,28 @@ class LoginActivity : AppCompatActivity() {
 
     private fun signInFailed(error: ConversationsError) {
         when (error) {
-            EMPTY_USERNAME -> binding.usernameInputLayout.error = getString(R.string.enter_username)
+            EMPTY_USERNAME -> {binding.usernameInputLayout.error = getString(R.string.enter_username)
+                binding.usernameInputLayout.enableErrorResettingOnTextChanged()}
 
-            EMPTY_PASSWORD -> binding.passwordInputLayout.error = getString(R.string.enter_password)
+            EMPTY_PASSWORD -> {
+                binding.passwordInputLayout.error = getString(R.string.enter_password)
+                binding.passwordInputLayout.enableErrorResettingOnTextChanged()}
 
             EMPTY_USERNAME_AND_PASSWORD -> {
                 binding.usernameInputLayout.error = getString(R.string.enter_username)
+                binding.usernameInputLayout.enableErrorResettingOnTextChanged()
                 binding.passwordInputLayout.error = getString(R.string.enter_password)
+                binding.passwordInputLayout.enableErrorResettingOnTextChanged()
             }
 
-            TOKEN_ACCESS_DENIED -> binding.usernameInputLayout.error = getString(R.string.token_access_denied)
+            TOKEN_ACCESS_DENIED -> {binding.passwordInputLayout.error = getString(R.string.token_access_denied)
+                binding.passwordInputLayout.enableErrorResettingOnTextChanged()}
 
+            USERNAME_PASSWORD_INCORRECT -> {
+                binding.passwordInputLayout.error = "Username or password is incorrect."
+                binding.passwordInputLayout.enableErrorResettingOnTextChanged()
+                binding.passwordInputLayout.setErrorIconDrawable(null)
+            }
 //            NO_INTERNET_CONNECTION -> showNoInternetDialog()
 
             else -> binding.usernameInputLayout.error = getString( R.string.sign_in_error)
@@ -163,8 +258,8 @@ class LoginActivity : AppCompatActivity() {
 
         fun start(context: Context){
 //            val intent = Intent(context, MessageListActivity::class.java)
-            val intent = Intent(context, ConversationListActivity::class.java)
-//            val intent = Intent(context, MainActivity::class.java)
+//            val intent = Intent(context, ConversationListActivity::class.java)
+            val intent = Intent(context, MainActivity::class.java)
             intent.putExtra("username", LoginConstants.CURRENT_USER)
             intent.putExtra("clientID", LoginConstants.CLIENT_ID)
             intent.putExtra("clientSecret", LoginConstants.CLIENT_SECRET)
@@ -178,6 +273,8 @@ class LoginActivity : AppCompatActivity() {
             intent.putExtra("webusers", LoginConstants.WEBUSERS)
             intent.putExtra("authToken",LoginConstants.AUTH_TOKEN)
             intent.putExtra("fullName",LoginConstants.FULL_NAME)
+            intent.putExtra("showContacts",LoginConstants.SHOW_CONTACTS)
+            intent.putExtra("isStandalone",LoginConstants.IS_STANDALONE)
             context.startActivity(intent)
 
 

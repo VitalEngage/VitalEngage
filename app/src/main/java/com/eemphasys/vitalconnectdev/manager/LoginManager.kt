@@ -52,7 +52,6 @@ class LoginManagerImpl(
     private val conversationsClient: ConversationsClientWrapper,
 ): LoginManager {
     override suspend fun getAuthenticationToken(identity: String, password: String) {
-        //conversationsClient.create
         val requestData = ValidateUserReq(
             identity,
             password,
@@ -65,9 +64,11 @@ class LoginManagerImpl(
 
         val tokenApi = RetrofitHelper.getInstance().create(TwilioApi::class.java)
         val result = tokenApi.validateUser(requestData)
-        Log.d("Authtoken: ", result.body()!!.jwtToken)
-        LoginConstants.AUTH_TOKEN = result.body()!!.jwtToken
-        LoginConstants.PROXY_NUMBER = result.body()!!.proxyNumber
+        if(result.isSuccessful) {
+            Log.d("Authtoken: ", result.body()!!.jwtToken)
+            LoginConstants.AUTH_TOKEN = result.body()!!.jwtToken
+            LoginConstants.PROXY_NUMBER = result.body()!!.proxyNumber
+        }
     }
 
     override suspend fun getTwilioToken() {
@@ -87,11 +88,11 @@ class LoginManagerImpl(
                 LoginConstants.CURRENT_USER,
                 LoginConstants.FRIENDLY_NAME
             )
-
-            Log.d("twiliotoken", TwilioToken.body()!!.token)
-            LoginConstants.TWILIO_TOKEN = TwilioToken.body()!!.token
-            ChatAppModel.twilio_token = LoginConstants.TWILIO_TOKEN
-
+            if(TwilioToken.isSuccessful) {
+                Log.d("twiliotoken", TwilioToken.body()!!.token)
+                LoginConstants.TWILIO_TOKEN = TwilioToken.body()!!.token
+                ChatAppModel.twilio_token = LoginConstants.TWILIO_TOKEN
+            }
 //        }
         credentialStorage.storeCredentials(LoginConstants.CURRENT_USER)
     }

@@ -72,14 +72,14 @@ class LoginViewModel(
                     onSignInSuccess.call()
                 }else{
                     isLoading.value = false
-                    onSignInError.value = ConversationsError.TOKEN_ACCESS_DENIED
+                    onSignInError.value = ConversationsError.USERNAME_PASSWORD_INCORRECT
                 }
             } catch (e: TwilioException) {
                 isLoading.value = false
-                //onSignInError.value = e.toConversationsError()
+                onSignInError.value = ConversationsError.TOKEN_ACCESS_DENIED
                 //e.printStackTrace()
                 Log.d("Error",e.toString())
-                /*EETLog.error(
+                EETLog.error(
                     SessionHelper.appContext, LogConstants.logDetails(
                         e,
                         LogConstants.LOG_LEVEL.ERROR.toString(),
@@ -88,7 +88,7 @@ class LoginViewModel(
                     Constants.EX, LogTraceConstants.getUtilityData(
                         SessionHelper.appContext!!
                     )!!
-                );*/
+                );
             }
         }
     }

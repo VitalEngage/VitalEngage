@@ -7,21 +7,25 @@
     android:gravity="center_horizontal"
     android:orientation="vertical">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:src="@mipmap/ic_launcher_foreground" />
-
-    <TextView
-        style="@style/TextViewTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="VitalText"
-        android:textColor="@color/eetred"
-        android:textSize="30sp"
-        android:textStyle="bold" />
+<!--    <ImageView-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="16dp"-->
+<!--        android:src="@mipmap/ic_launcher_foreground" />-->
+<ImageView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="20dp"
+    android:src="@drawable/ic_vitaledge_foreground"/>
+<!--    <TextView-->
+<!--        style="@style/TextViewTitle"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="12dp"-->
+<!--        android:text="VitalText"-->
+<!--        android:textColor="@color/eetred"-->
+<!--        android:textSize="30sp"-->
+<!--        android:textStyle="bold" />-->
 
 <!--    <TextView-->
 <!--        style="@style/TextViewTitle"-->

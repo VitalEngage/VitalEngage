@@ -141,7 +141,7 @@ class FCMManagerImpl(
         }
 
         val notificationBuilder = NotificationCompat.Builder(context, NOTIFICATION_CONVERSATION_ID)
-            .setSmallIcon(R.drawable.ic_notification)
+            .setSmallIcon(R.mipmap.ic_vitaledge_logo_foreground)
             .setLargeIcon(payload.largeIcon)
             .setContentTitle(title)
             .setContentText(payload.textForNotification)
@@ -149,7 +149,8 @@ class FCMManagerImpl(
             .setPriority(PRIORITY_HIGH)
             .setVisibility(VISIBILITY_PUBLIC)
             .setContentIntent(pendingIntent)
-            .setColor(Color.rgb(214, 10, 37))
+//            .setColor(Color.WHITE)
+//            .setColor(Color.rgb(214, 10, 37))
 
         val soundFileName = payload.sound
         if (context.resources.getIdentifier(soundFileName, "raw", context.packageName) != 0) {

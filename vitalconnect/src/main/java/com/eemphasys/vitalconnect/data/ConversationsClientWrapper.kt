@@ -46,7 +46,6 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
 
         val client = createAndSyncConversationsClient(applicationContext, ChatAppModel.twilio_token!!)
         this.deferredClient.complete(client)
-
         Log.d("client", client.myIdentity)
         client.addListener(
             onTokenAboutToExpire = { Log.d("OntokenAboutToExpire","OnTokenAboutToExpire")

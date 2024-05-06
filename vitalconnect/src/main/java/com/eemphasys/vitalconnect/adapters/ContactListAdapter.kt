@@ -1,9 +1,15 @@
 package com.eemphasys.vitalconnect.adapters
 
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.ShapeDrawable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.data.models.ContactListViewItem
 import com.eemphasys.vitalconnect.databinding.RowContactItemBinding
 
@@ -27,6 +33,12 @@ class ContactListAdapter(val itemList : List<ContactListViewItem>,private val it
             fun bind(item: ContactListViewItem){
                 itemBinding.contactName.text = item.name + "  " + item.number
                 itemBinding.contactType.text = item.type
+                itemBinding.participantIcon.text = item.initials
+
+                changeButtonBackgroundColor(
+                    itemBinding.participantIcon,
+                    Constants.randomColor
+                )
 
             }
         }
@@ -45,6 +57,20 @@ class ContactListAdapter(val itemList : List<ContactListViewItem>,private val it
     }
 
 
+    private fun changeButtonBackgroundColor(textView: TextView?, colorid: Int) {
+        try {
+            val background = textView!!.background
+            if (background is ShapeDrawable) {
+                background.paint.color = colorid
+            } else if (background is GradientDrawable) {
+                background.setColor(colorid)
+            } else if (background is ColorDrawable) {
+                background.color = colorid
+            }
+        } catch (e: Exception) {
+            Log.e("Catchmessage", Log.getStackTraceString(e))
+        }
+    }
 }
 
 

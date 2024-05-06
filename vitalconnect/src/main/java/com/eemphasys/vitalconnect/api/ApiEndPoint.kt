@@ -5,6 +5,7 @@ import com.eemphasys.vitalconnect.api.data.ParticipantExistingConversation
 import com.eemphasys.vitalconnect.api.data.RequestToken
 import com.eemphasys.vitalconnect.api.data.TenantDetails
 import com.eemphasys.vitalconnect.api.data.Token
+import com.eemphasys.vitalconnect.api.data.UserAlertRequest
 import com.eemphasys.vitalconnect.api.data.ValidateUserReq
 import retrofit2.Call
 import retrofit2.Response
@@ -32,6 +33,9 @@ interface TwilioApi {
 
     @POST("User/ValidateUser")
     suspend fun validateUser(@Body requestData : ValidateUserReq) : Response<AuthToken>
+
+    @POST("User/UpdateUserAlertStatus")
+    suspend fun updateUserAlertStatus(@Body requestData : UserAlertRequest) : Response<UserAlertRequest>
 
 
 }

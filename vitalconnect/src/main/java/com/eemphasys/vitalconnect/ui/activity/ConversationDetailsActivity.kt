@@ -140,7 +140,8 @@ class ConversationDetailsActivity : AppCompatActivity() {
             if (show) {
                 progressDialog.show()
             } else {
-                progressDialog.hide()
+//                progressDialog.hide()
+                progressDialog.dismiss()
             }
         }
 

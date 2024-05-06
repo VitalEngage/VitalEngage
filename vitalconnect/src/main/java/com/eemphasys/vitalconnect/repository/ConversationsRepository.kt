@@ -1,5 +1,6 @@
 package com.eemphasys.vitalconnect.repository
 
+import android.util.Log
 import com.eemphasys.vitalconnect.data.localCache.entity.ConversationDataItem
 import com.eemphasys.vitalconnect.data.models.RepositoryResult
 import com.twilio.conversations.Conversation
@@ -57,6 +58,7 @@ import com.eemphasys.vitalconnect.common.toFlow
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
+import com.twilio.conversations.ConversationsClient
 import kotlinx.coroutines.flow.onStart
 
 import kotlinx.coroutines.SupervisorJob
@@ -131,7 +133,18 @@ class ConversationsRepositoryImpl(
         },
         onConversationSynchronizationChange = { conversation ->
             launch { insertOrUpdateConversation(conversation.sid) }
+        },
+
+    onClientSynchronization = { synchronizationstatus->
+        Log.d("inside listener", synchronizationstatus.toString())
+        launch{
+            if (synchronizationstatus == ConversationsClient.SynchronizationStatus.COMPLETED) {
+        Log.d("inside listener and if", "insidelistener")
+                getUserConversations()
+
+            }
         }
+    }
     )
 
     private val conversationListener = ConversationListener(
@@ -149,7 +162,7 @@ class ConversationsRepositoryImpl(
         },
         onParticipantAdded = { participant ->
             this@ConversationsRepositoryImpl.launch {
-                val user = participant.getAndSubscribeUser()
+                val user = if (participant.channel == "chat") participant.getAndSubscribeUser() else null
                 localCache.participantsDao().insertOrReplace(participant.asParticipantDataItem(user = user))
             }
         },
@@ -359,16 +372,16 @@ class ConversationsRepositoryImpl(
             emit(Error(e.toConversationsError()))
             e.printStackTrace()
 
-            EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
-                    e,
-                    LogConstants.LOG_LEVEL.ERROR.toString(),
-                    LogConstants.LOG_SEVERITY.HIGH.toString()
-                ),
-                Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
-                )!!
-            );
+//            EETLog.error(
+//                SessionHelper.appContext, LogConstants.logDetails(
+//                    e,
+//                    LogConstants.LOG_LEVEL.ERROR.toString(),
+//                    LogConstants.LOG_SEVERITY.HIGH.toString()
+//                ),
+//                Constants.EX, LogTraceConstants.getUtilityData(
+//                    SessionHelper.appContext!!
+//                )!!
+//            );
         }
     }
 
@@ -381,16 +394,16 @@ class ConversationsRepositoryImpl(
             emit(Error(e.toConversationsError()))
             e.printStackTrace()
 
-            EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
-                    e,
-                    LogConstants.LOG_LEVEL.ERROR.toString(),
-                    LogConstants.LOG_SEVERITY.HIGH.toString()
-                ),
-                Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
-                )!!
-            );
+//            EETLog.error(
+//                SessionHelper.appContext, LogConstants.logDetails(
+//                    e,
+//                    LogConstants.LOG_LEVEL.ERROR.toString(),
+//                    LogConstants.LOG_SEVERITY.HIGH.toString()
+//                ),
+//                Constants.EX, LogTraceConstants.getUtilityData(
+//                    SessionHelper.appContext!!
+//                )!!
+//            );
         }
     }
 
@@ -401,7 +414,9 @@ class ConversationsRepositoryImpl(
             conversation.waitForSynchronization()
             conversation.participantsList.forEach { participant ->
                 // Getting user is currently supported for chat participants only
+                Log.d("userabove", "insideit")
                 val user = if (participant.channel == "chat") participant.getAndSubscribeUser() else null
+                Log.d("user", user.toString())
                 localCache.participantsDao().insertOrReplace(participant.asParticipantDataItem(user = user))
             }
             emit(COMPLETE)

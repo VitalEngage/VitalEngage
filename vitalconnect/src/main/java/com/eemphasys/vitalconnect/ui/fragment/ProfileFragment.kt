@@ -10,14 +10,21 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.eemphasys.vitalconnect.R
+import com.eemphasys.vitalconnect.api.RetrofitHelper
+import com.eemphasys.vitalconnect.api.TwilioApi
+import com.eemphasys.vitalconnect.api.data.UserAlertRequest
+import com.eemphasys.vitalconnect.common.Constants
+import com.eemphasys.vitalconnect.common.enums.ConversationsError
 import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.common.extensions.getErrorMessage
 import com.eemphasys.vitalconnect.common.extensions.lazyActivityViewModel
 import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.databinding.FragmentProfileBinding
+import com.eemphasys.vitalconnect.ui.activity.ConversationListActivity
 import com.eemphasys.vitalconnect.ui.dialogs.EditProfileDialog
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 class ProfileFragment:Fragment() {
     lateinit var binding: FragmentProfileBinding
@@ -53,6 +60,7 @@ class ProfileFragment:Fragment() {
         profileViewModel.selfUser.observe(viewLifecycleOwner) { user ->
             binding.profileName.text = user.friendlyName
             binding.profileIdentity.text = user.identity
+            binding.profileImage.text = Constants.getInitials(user.friendlyName.trim { it <= ' '} )
         }
 
         profileViewModel.onUserUpdated.observe(viewLifecycleOwner) {
@@ -61,9 +69,12 @@ class ProfileFragment:Fragment() {
                 .show()
         }
 
-       /* profileViewModel.onSignedOut.observe(viewLifecycleOwner) {
-            LoginActivity.start(requireContext(), SIGN_OUT_SUCCEEDED)
-        }*/
+        profileViewModel.onSignedOut.observe(viewLifecycleOwner) {
+//            LoginActivity.start(requireContext())
+            activity?.let {
+                it.finish()
+            }
+        }
 
         profileViewModel.onError.observe(viewLifecycleOwner) { error ->
             val message = requireContext().getErrorMessage(error)
@@ -75,6 +86,12 @@ class ProfileFragment:Fragment() {
 
         binding.editProfile.setOnClickListener { showEditProfileDialog() }
         binding.signOut.setOnClickListener { showSignOutDialog() }
+
+        binding.switchbtn.setOnCheckedChangeListener{ buttonView,isChecked ->
+
+            profileViewModel.changeUserAlertStatus(isChecked)
+        }
+
     }
 
     fun showEditProfileDialog() = EditProfileDialog().showNow(childFragmentManager, null)
@@ -83,7 +100,7 @@ class ProfileFragment:Fragment() {
         val dialog = AlertDialog.Builder(requireContext())
             .setTitle(R.string.sign_out_dialog_title)
             .setMessage(R.string.sign_out_dialog_message)
-            //.setPositiveButton(R.string.sign_out) { _, _ -> profileViewModel.signOut() }
+            .setPositiveButton(R.string.sign_out) { _, _ -> profileViewModel.signOut() }
             .setNegativeButton(android.R.string.cancel, null)
             .create()
 

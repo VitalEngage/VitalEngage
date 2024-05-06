@@ -13,6 +13,7 @@ import com.eemphasys.vitalconnect.common.SingleLiveEvent
 import com.eemphasys.vitalconnect.common.asConversationListViewItems
 import com.eemphasys.vitalconnect.common.call
 import com.eemphasys.vitalconnect.common.enums.ConversationsError
+import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.common.merge
 import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
 import com.eemphasys.vitalconnect.data.models.ConversationListViewItem
@@ -27,9 +28,12 @@ import com.eemphasys.vitalconnect.manager.AutoParticipantListManager
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceHelper
 import com.eemphasys.vitalconnect.ui.activity.MessageListActivity
+import com.eemphasys.vitalconnect.ui.fragment.ContactListFragment
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.twilio.conversations.Attributes
+import com.twilio.conversations.CallbackListener
+import com.twilio.conversations.ConversationsClient
 import com.twilio.conversations.extensions.addParticipantByAddress
 import com.twilio.conversations.extensions.getConversation
 import com.twilio.conversations.extensions.waitForSynchronization
@@ -43,7 +47,6 @@ class ContactListViewModel(
     private val conversationListManager: ConversationListManager,
     connectivityMonitor: ConnectivityMonitor,
     private val autoParticipantListManager: AutoParticipantListManager
-
 ): ViewModel() {
     private val unfilteredUserConversationItems = MutableLiveData<List<ConversationListViewItem>>(emptyList())
     private val EXTRA_CONVERSATION_SID = "ExtraConversationSid"
@@ -141,7 +144,6 @@ class ContactListViewModel(
                 val conversationSid = conversationListManager.createConversation(friendlyName)
                 conversationListManager.joinConversation(conversationSid)
                 addNonChatParticipant(phoneNumber, Constants.PROXY_NUMBER,friendlyName,conversationSid)
-                delay(1000)
                 MessageListActivity.startfromFragment(applicationContext,conversationSid)
                 Log.d("nonchat participant","participant added")
             }
@@ -259,5 +261,11 @@ class ContactListViewModel(
         } finally {
             setShowProgress(false)
         }
+    }
+
+    fun getSyncStatus(sid: String) {
+        viewModelScope.launch {
+            delay(3000)
+            MessageListActivity.startfromFragment(applicationContext,sid) }
     }
 }
