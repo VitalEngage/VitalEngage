@@ -7,6 +7,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import android.text.format.Formatter
@@ -22,6 +23,7 @@ import com.twilio.conversations.ConversationsClient
 import com.twilio.conversations.NotificationPayload
 import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.common.Constants
+import com.eemphasys.vitalconnect.common.Constants.Companion.notificationIcon
 import com.eemphasys.vitalconnect.common.SessionHelper
 import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
 import com.eemphasys.vitalconnect.data.CredentialStorage
@@ -35,7 +37,7 @@ import com.twilio.util.TwilioException
 
 private const val NOTIFICATION_CONVERSATION_ID = "twilio_notification_id"
 private const val NOTIFICATION_NAME = "Twilio Notification"
-private const val NOTIFICATION_ID = 1234
+private var NOTIFICATION_ID = 0
 
 interface FCMManager : DefaultLifecycleObserver {
     suspend fun onNewToken(token: String)
@@ -59,10 +61,11 @@ class FCMManagerImpl(
 
     override suspend fun onNewToken(token: String) {
         try {
-            if (token != credentialStorage.fcmToken && conversationsClient.isClientCreated) {
+//            if (token != credentialStorage.fcmToken && conversationsClient.isClientCreated) {
+            if (conversationsClient.isClientCreated) {
                 conversationsClient.getConversationsClient().registerFCMToken(ConversationsClient.FCMToken(token))
             }
-            credentialStorage.fcmToken = token
+//            credentialStorage.fcmToken = token
         } catch (e: TwilioException) {
             e.printStackTrace()
 
@@ -85,10 +88,8 @@ class FCMManagerImpl(
         }
         // Ignore everything we don't support
         if (payload.type == NotificationPayload.Type.UNKNOWN) return
+        showNotification(payload)
 
-        if (isBackgrounded) {
-            showNotification(payload)
-        }
     }
 
     fun getTargetIntent(type: NotificationPayload.Type, conversationSid: String): Intent {
@@ -141,15 +142,17 @@ class FCMManagerImpl(
         }
 
         val notificationBuilder = NotificationCompat.Builder(context, NOTIFICATION_CONVERSATION_ID)
-            .setSmallIcon(R.mipmap.ic_vitaledge_logo_foreground)
-            .setLargeIcon(payload.largeIcon)
+            .setSmallIcon(notificationIcon)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(payload.textForNotification))
+//            .setLargeIcon(payload.largeIcon)
             .setContentTitle(title)
             .setContentText(payload.textForNotification)
             .setAutoCancel(true)
             .setPriority(PRIORITY_HIGH)
             .setVisibility(VISIBILITY_PUBLIC)
             .setContentIntent(pendingIntent)
-//            .setColor(Color.WHITE)
+            .setDefaults(Notification.DEFAULT_ALL)
+            .setColor(Color.RED)
 //            .setColor(Color.rgb(214, 10, 37))
 
         val soundFileName = payload.sound
@@ -175,7 +178,7 @@ class FCMManagerImpl(
         }
 
         val notification = buildNotification(payload)
-        notificationManager.notify(NOTIFICATION_ID, notification)
+        notificationManager.notify(++NOTIFICATION_ID, notification)
     }
 
     override fun onStop(owner: LifecycleOwner) {

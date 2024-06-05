@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Environment
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -26,6 +27,7 @@ import com.eemphasys.vitalconnect.common.SessionHelper
 import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.repository.ConversationsRepository
 import com.eemphasys.vitalconnect.common.SingleLiveEvent
+import com.eemphasys.vitalconnect.common.asParticipantListViewItems
 import com.eemphasys.vitalconnect.common.call
 import com.eemphasys.vitalconnect.common.enums.ConversationsError
 import com.eemphasys.vitalconnect.common.enums.DownloadState
@@ -75,7 +77,7 @@ class MessageListViewModel(
 
     val onMessageError = SingleLiveEvent<ConversationsError>()
 
-    val onMessageSent = SingleLiveEvent<Unit>()
+    private val onMessageSent = SingleLiveEvent<Unit>()
 
     val onShowRemoveMessageDialog = SingleLiveEvent<Unit>()
 
@@ -154,7 +156,7 @@ class MessageListViewModel(
                 Constants.EX, LogTraceConstants.getUtilityData(
                     SessionHelper.appContext!!
                 )!!
-            );
+            )
         }
     }
 
@@ -187,7 +189,7 @@ class MessageListViewModel(
                 Constants.EX, LogTraceConstants.getUtilityData(
                     SessionHelper.appContext!!
                 )!!
-            );
+            )
         }
     }
 
@@ -222,7 +224,7 @@ class MessageListViewModel(
                     Constants.EX, LogTraceConstants.getUtilityData(
                         SessionHelper.appContext!!
                     )!!
-                );
+                )
             }
         }
 
@@ -255,7 +257,7 @@ class MessageListViewModel(
                 Constants.EX, LogTraceConstants.getUtilityData(
                     SessionHelper.appContext!!
                 )!!
-            );
+            )
         }
     }
 
@@ -285,8 +287,7 @@ class MessageListViewModel(
                 Constants.EX, LogTraceConstants.getUtilityData(
                     SessionHelper.appContext!!
                 )!!
-            );
-            // Ignored
+            )
         }
     }
 
@@ -321,7 +322,7 @@ class MessageListViewModel(
                 Constants.EX, LogTraceConstants.getUtilityData(
                     SessionHelper.appContext!!
                 )!!
-            );
+            )
         }
     }
 
@@ -356,7 +357,7 @@ class MessageListViewModel(
                 Constants.EX, LogTraceConstants.getUtilityData(
                     SessionHelper.appContext!!
                 )!!
-            );
+            )
         }
     }
 
@@ -388,11 +389,11 @@ class MessageListViewModel(
                 Constants.EX, LogTraceConstants.getUtilityData(
                     SessionHelper.appContext!!
                 )!!
-            );
+            )
         }
     }
 
-    fun updateMessageMediaDownloadStatus(
+    private fun updateMessageMediaDownloadStatus(
         messageIndex: Long,
         downloadState: DownloadState,
         downloadedBytes: Long = 0,
@@ -508,6 +509,23 @@ class MessageListViewModel(
         cursor.close()
         return downloadInProgress
     }
+
+    fun initParticipant(channelSid : String) = viewModelScope.launch {
+        Log.d("insidemessagelist","already called")
+        conversationsRepository.getConversationParticipants(channelSid).collect{(list)->
+            var listOfParticipant = list.asParticipantListViewItems()
+//            Constants.PARTICIPANTS = list.asParticipantListViewItems()
+
+//            for(p in listOfParticipant){
+//                val friendlyName = conversationsRepository.updateFriendlyName(p.identity)
+//                Log.d("friendlyName",friendlyName)
+//            }
+                }
+
+        }
+
+
+
 
     private val ParticipantDataItem.typingIndicatorName get() = if (friendlyName.isNotEmpty()) friendlyName else identity
 }

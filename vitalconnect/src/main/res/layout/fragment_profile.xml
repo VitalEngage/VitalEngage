@@ -83,7 +83,6 @@
             android:id="@+id/switchbtn"
             android:layout_width="50dp"
             android:layout_height="20dp"
-            android:checked="true"
             android:layout_marginTop="10dp"
             app:thumbTint="@drawable/switch_thumb_selector"
             app:trackTint="@drawable/switch_track_selector"

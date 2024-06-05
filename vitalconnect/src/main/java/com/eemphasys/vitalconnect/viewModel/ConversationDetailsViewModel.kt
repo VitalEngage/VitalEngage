@@ -14,7 +14,6 @@ import com.eemphasys.vitalconnect.data.models.RepositoryRequestStatus
 import com.eemphasys.vitalconnect.manager.ConversationListManager
 import com.eemphasys.vitalconnect.manager.ParticipantListManager
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
-import com.eemphasys.vitalconnect.misc.log_trace.LogTraceHelper
 import com.eemphasys.vitalconnect.repository.ConversationsRepository
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
@@ -31,9 +30,9 @@ class ConversationDetailsViewModel(
     val conversationDetails = MutableLiveData<ConversationDetailsViewItem>()
     val isShowProgress = MutableLiveData<Boolean>()
     val onDetailsError = SingleLiveEvent<ConversationsError>()
-    val onConversationMuted = SingleLiveEvent<Boolean>()
+    private val onConversationMuted = SingleLiveEvent<Boolean>()
     val onConversationLeft = SingleLiveEvent<Unit>()
-    val onConversationRenamed = SingleLiveEvent<Unit>()
+    private val onConversationRenamed = SingleLiveEvent<Unit>()
     val onParticipantAdded = SingleLiveEvent<String>()
 
     init {
@@ -79,7 +78,7 @@ class ConversationDetailsViewModel(
                 Constants.EX, LogTraceConstants.getUtilityData(
                     SessionHelper.appContext!!
                 )!!
-            );
+            )
         } finally {
             setShowProgress(false)
         }
@@ -106,7 +105,7 @@ class ConversationDetailsViewModel(
                 Constants.EX, LogTraceConstants.getUtilityData(
                     SessionHelper.appContext!!
                 )!!
-            );
+            )
         } finally {
             setShowProgress(false)
         }
@@ -133,7 +132,7 @@ class ConversationDetailsViewModel(
                 Constants.EX, LogTraceConstants.getUtilityData(
                     SessionHelper.appContext!!
                 )!!
-            );
+            )
         } finally {
             setShowProgress(false)
         }
@@ -160,7 +159,7 @@ class ConversationDetailsViewModel(
                 Constants.EX, LogTraceConstants.getUtilityData(
                     SessionHelper.appContext!!
                 )!!
-            );
+            )
         } finally {
             setShowProgress(false)
         }
@@ -187,7 +186,7 @@ class ConversationDetailsViewModel(
                 Constants.EX, LogTraceConstants.getUtilityData(
                     SessionHelper.appContext!!
                 )!!
-            );
+            )
         } finally {
             setShowProgress(false)
         }
@@ -199,7 +198,7 @@ class ConversationDetailsViewModel(
         }
         try {
             setShowProgress(true)
-            participantListManager.addNonChatParticipant(phone, proxyPhone, friendlyName = "$phone")
+            participantListManager.addNonChatParticipant(phone, proxyPhone, friendlyName = phone)
             onParticipantAdded.value = phone
         } catch (e: TwilioException) {
             onDetailsError.value = ConversationsError.PARTICIPANT_ADD_FAILED
@@ -214,7 +213,7 @@ class ConversationDetailsViewModel(
                 Constants.EX, LogTraceConstants.getUtilityData(
                     SessionHelper.appContext!!
                 )!!
-            );
+            )
         } finally {
             setShowProgress(false)
         }

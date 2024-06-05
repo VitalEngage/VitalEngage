@@ -26,14 +26,14 @@ class FCMListenerService : FirebaseMessagingService() {
     private val fcmManager by lazy { injector.createFCMManager(application) }
     private val credentialStorage by lazy { injector.createCredentialStorage(applicationContext) }
     override fun onNewToken(token: String) {
-        //Log.d("fcmtoken in parent",token)
+        Log.d("fcmtoken in parent",token)
         super.onNewToken(token)
         launch {
             fcmManager.onNewToken(token)
         }
     }
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        //Log.d("onmessage",remoteMessage.data.toString())
+        Log.d("onmessage",remoteMessage.data.toString())
         super.onMessageReceived(remoteMessage)
         launch {
 // Check if message contains a data payload and we have saved FCM token

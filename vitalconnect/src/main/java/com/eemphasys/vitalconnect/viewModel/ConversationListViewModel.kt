@@ -1,7 +1,6 @@
 package com.eemphasys.vitalconnect.viewModel
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
@@ -21,7 +20,6 @@ import com.twilio.util.TwilioException
 import kotlinx.coroutines.launch
 import kotlin.properties.Delegates
 import com.eemphasys.vitalconnect.data.models.RepositoryRequestStatus
-import com.eemphasys.vitalconnect.data.models.RepositoryResult
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceHelper
 import com.eemphasys_enterprise.commonmobilelib.EETLog
@@ -37,7 +35,7 @@ class ConversationListViewModel(
 
     val userConversationItems = MutableLiveData<List<ConversationListViewItem>>(emptyList())
 
-    val isDataLoading = SingleLiveEvent<Boolean>()
+    private val isDataLoading = SingleLiveEvent<Boolean>()
     val isNoResultsFoundVisible = MutableLiveData(false)
     val isNoConversationsVisible = MutableLiveData(false)
     val isNetworkAvailable = connectivityMonitor.isNetworkAvailable.asLiveData(viewModelScope.coroutineContext)
@@ -128,7 +126,7 @@ class ConversationListViewModel(
                 Constants.EX, LogTraceConstants.getUtilityData(
                     SessionHelper.appContext!!
                 )!!
-            );
+            )
         } finally {
             setDataLoading(false)
         }
@@ -167,7 +165,7 @@ class ConversationListViewModel(
                 Constants.EX, LogTraceConstants.getUtilityData(
                     SessionHelper.appContext!!
                 )!!
-            );
+            )
         } finally {
             setConversationLoading(conversationSid, false)
         }
@@ -206,7 +204,7 @@ class ConversationListViewModel(
                 Constants.EX, LogTraceConstants.getUtilityData(
                     SessionHelper.appContext!!
                 )!!
-            );
+            )
         } finally {
             setConversationLoading(conversationSid, false)
         }
@@ -245,9 +243,14 @@ class ConversationListViewModel(
                 Constants.EX, LogTraceConstants.getUtilityData(
                     SessionHelper.appContext!!
                 )!!
-            );
+            )
         } finally {
             setConversationLoading(conversationSid, false)
         }
     }
+
+//    fun getTotalUnreadMessageCount() = viewModelScope.launch {
+//        val count = conversationsRepository.getTotalUnreadMessageCount()
+//        Constants.COUNT = count
+//    }
 }

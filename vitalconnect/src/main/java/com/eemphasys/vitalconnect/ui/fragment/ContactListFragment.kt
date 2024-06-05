@@ -1,19 +1,13 @@
 package com.eemphasys.vitalconnect.ui.fragment
 
 import android.annotation.SuppressLint
-import android.app.ProgressDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.eemphasys.vitalconnect.R
@@ -24,40 +18,29 @@ import com.eemphasys.vitalconnect.api.RetrofitHelper
 import com.eemphasys.vitalconnect.api.RetryInterceptor
 import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.ParticipantExistingConversation
-import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.common.extensions.lazyActivityViewModel
 import com.eemphasys.vitalconnect.common.extensions.showSnackbar
 import com.eemphasys.vitalconnect.common.injector
-import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
 import com.eemphasys.vitalconnect.data.models.Contact
 import com.eemphasys.vitalconnect.data.models.ContactListViewItem
 import com.eemphasys.vitalconnect.data.models.WebUser
 import com.eemphasys.vitalconnect.databinding.FragmentContactListBinding
-import com.eemphasys.vitalconnect.ui.activity.MessageListActivity
 import com.eemphasys_enterprise.commonmobilelib.EETLog
-import com.twilio.conversations.CallbackListener
-import com.twilio.conversations.Conversation
-import com.twilio.conversations.extensions.getConversation
-import com.twilio.conversations.extensions.waitForSynchronization
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.concurrent.TimeUnit
-import java.util.logging.Handler
 
 class ContactListFragment : Fragment() {
     var binding: FragmentContactListBinding? = null
-    var conversationClientWrapper : ConversationsClientWrapper? = null
     val contactListViewModel by lazyActivityViewModel { injector.createContactListViewModel(applicationContext) }
 
-    var contactslist = arrayListOf<Contact>()
-    var webuserlist = arrayListOf<WebUser>()
+    private var contactslist = arrayListOf<Contact>()
+    private var webuserlist = arrayListOf<WebUser>()
 
 
 

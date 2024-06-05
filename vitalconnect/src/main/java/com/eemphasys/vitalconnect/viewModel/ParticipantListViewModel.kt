@@ -86,7 +86,7 @@ class ParticipantListViewModel(
                 Constants.EX, LogTraceConstants.getUtilityData(
                     SessionHelper.appContext!!
                 )!!
-            );
+            )
         }
     }
 }

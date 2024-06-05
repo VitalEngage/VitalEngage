@@ -1,7 +1,9 @@
 package com.eemphasys.vitalconnect.common
 
+import android.content.Context
 import com.eemphasys.vitalconnect.common.enums.ConversationsError
 import com.eemphasys.vitalconnect.common.extensions.createTwilioException
+import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
@@ -41,6 +43,18 @@ class FirebaseTokenManager {
     fun deleteToken() = CompletableDeferred<Boolean>().apply {
         FirebaseMessaging.getInstance().deleteToken().addOnCompleteListener { task ->
             complete(task.isSuccessful)
+        }
+    }
+
+    companion object {
+
+        val INSTANCE get() = _instance ?: error("call FirebaseTokenManager.createInstance() first")
+
+        private var _instance: FirebaseTokenManager? = null
+
+        fun createInstance() {
+            check(_instance == null) { "FirebaseTokenManager singleton instance has been already created" }
+            _instance = FirebaseTokenManager()
         }
     }
 }

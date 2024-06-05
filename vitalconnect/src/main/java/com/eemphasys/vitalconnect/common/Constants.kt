@@ -1,8 +1,10 @@
 package com.eemphasys.vitalconnect.common
 
 import android.graphics.Color
+import android.os.Build
 import android.util.Log
-import com.eemphasys.vitalconnect.data.models.Contact
+import com.eemphasys.vitalconnect.R
+import com.eemphasys.vitalconnect.data.models.ParticipantListViewItem
 import java.util.Random
 
 class Constants   {
@@ -24,12 +26,18 @@ class Constants   {
         var FULL_NAME : String = ""
         var SHOW_CONTACTS : String = ""
         var IS_STANDALONE : String = ""
+        var CUSTOMER_NUMBER :String = ""
+        var CUSTOMER_NAME :String = ""
+        var SHOW_CONVERSATIONS :String=""
+        var USER_SMS_ALERT : String= ""
+//        var PARTICIPANTS : List<ParticipantListViewItem> = listOf()
+
 
         @JvmStatic
         fun getInitials(name: String): String {
             val nameInitials = StringBuilder()
             try {
-                if (name.length == 0) {
+                if (name.isEmpty()) {
                     return ""
                 }
 
@@ -59,6 +67,13 @@ class Constants   {
                     Log.e("Catchmessage", Log.getStackTraceString(e))
                 }
                 return color
+            }
+
+        @JvmStatic
+        val notificationIcon: Int
+            get() {
+                val useWhiteIcon = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                return if (useWhiteIcon) R.drawable.ic_eservicetech else R.drawable.icon_chat
             }
     }
 }

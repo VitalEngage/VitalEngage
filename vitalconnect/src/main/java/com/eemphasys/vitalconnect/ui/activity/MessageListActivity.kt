@@ -44,7 +44,10 @@ class MessageListActivity: AppCompatActivity() {
                 EETLog.saveUserJourney(this::class.java.simpleName + " onCreate Called")
                 setContentView(binding.root)
 
-                initViews()}
+                initViews()
+                messageListViewModel.initParticipant(intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
+
+            }
             catch(e : Exception){
                 println("${e.message}")
 

@@ -6,12 +6,12 @@ object ChatAppModel {
     var appId : String? = null
 
    fun init(
-    base_url: String?,
-    twilio_token : String?,
+    baseurl: String?,
+    twiliotoken : String?,
     appId : String?
     ){
-        this.base_url = base_url
-       this.twilio_token=twilio_token
+        this.base_url = baseurl
+       this.twilio_token=twiliotoken
        this.appId=appId
     }
 }

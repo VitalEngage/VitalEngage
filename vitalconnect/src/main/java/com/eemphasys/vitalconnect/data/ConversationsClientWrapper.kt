@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 
 import androidx.annotation.RestrictTo
+import androidx.lifecycle.ViewModelProvider
 import com.eemphasys.vitalconnect.api.AuthInterceptor
 import com.eemphasys.vitalconnect.api.RetrofitHelper
 import com.eemphasys.vitalconnect.api.RetryInterceptor
@@ -19,7 +20,9 @@ import com.eemphasys.vitalconnect.api.data.RequestToken
 import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.SessionHelper
 import com.eemphasys.vitalconnect.common.enums.ConversationsError
+import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.common.extensions.createTwilioException
+import com.eemphasys.vitalconnect.common.extensions.lazyActivityViewModel
 import com.twilio.conversations.extensions.addListener
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -27,6 +30,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.FileNotFoundException
 import com.eemphasys.vitalconnect.common.extensions.updateToken
+import com.eemphasys.vitalconnect.common.injector
+import com.eemphasys.vitalconnect.data.localCache.LocalCacheProvider
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
@@ -47,6 +52,9 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
         val client = createAndSyncConversationsClient(applicationContext, ChatAppModel.twilio_token!!)
         this.deferredClient.complete(client)
         Log.d("client", client.myIdentity)
+//        val conversationListViewModel by  { injector.createConversationListViewModel(applicationContext) }
+//        var count = LocalCacheProvider.INSTANCE.conversationsDao().getTotalUnreadMessages()
+//        Log.d("count in clientwrapper", count.toString())
         client.addListener(
             onTokenAboutToExpire = { Log.d("OntokenAboutToExpire","OnTokenAboutToExpire")
                 updateToken(client.myIdentity, notifyOnFailure = false) },

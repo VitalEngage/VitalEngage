@@ -8,7 +8,9 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.eemphasys.vitalconnect.api.RetrofitHelper
 import com.eemphasys.vitalconnect.api.TwilioApi
+import com.eemphasys.vitalconnect.api.data.SendOtpReq
 import com.eemphasys.vitalconnect.api.data.TenantDetails
+import com.eemphasys.vitalconnect.api.data.UpdatePasswordReq
 import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.SessionHelper
@@ -44,6 +46,7 @@ class LoginViewModel(
     val onSignInSuccess = SingleLiveEvent<Unit>()
 
     val isAADEnabled = MutableLiveData(false)
+    val isPasswordUpdated = MutableLiveData(false)
 
     fun signIn(identity: String, password :String) {
         if (isLoading.value == true) return
@@ -64,11 +67,11 @@ class LoginViewModel(
         viewModelScope.launch {
             try {
                 LoginConstants.TIMESTAMP = getTimeStamp()
-                loginManager.getAuthenticationToken(identity, password)
+                loginManager.getAuthenticationToken(identity, password, getTimeStamp())
                 if(!LoginConstants.AUTH_TOKEN.isNullOrEmpty()) {
                     loginManager.getTwilioToken()
-                    loginManager.getTwilioclient()
-                    loginManager.registerForFcm()
+//                    loginManager.getTwilioclient()
+//                    loginManager.registerForFcm()
                     onSignInSuccess.call()
                 }else{
                     isLoading.value = false
@@ -108,14 +111,54 @@ class LoginViewModel(
         }
     }
 
-    fun isAzureADEnabled (){
+    fun isAzureADEnabled (tenant : String){
         viewModelScope.launch {
             val tokenApi = RetrofitHelper.getInstance().create(TwilioApi::class.java)
-            val result = tokenApi.validateTenant("VitalEdge")
-            Log.d("isAzureAdenabled", result.body()!!.isAADEnabled.toString())
-            LoginConstants.IS_AADENABLED = result.body()!!.isAADEnabled.toString()
-            isAADEnabled.value = result.body()!!.isAADEnabled
+            val result = tokenApi.validateTenant(tenant)
+            if(result.isSuccessful) {
+                Log.d("isAzureAdenabled", result.body()!!.isAADEnabled.toString())
+                LoginConstants.IS_AADENABLED = result.body()!!.isAADEnabled.toString()
+                isAADEnabled.value = result.body()!!.isAADEnabled
+            }
+            else{
+                isAADEnabled.value = false
+            }
 
+        }
+    }
+
+//    fun sendOtp() {
+//        viewModelScope.launch {
+//            val retrofithelper = RetrofitHelper.getInstance().create(TwilioApi::class.java)
+//            val requestBody = SendOtpReq("hmahajan", "VitalConnectNonAzureAd")
+//            val response = retrofithelper.sendOTP(requestBody)
+//            Log.d("response", response.isSuccessful.toString())
+//        }
+//    }
+
+    fun sendOtp(tenantCode: String,userName: String,callback: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val retrofithelper = RetrofitHelper.getInstance().create(TwilioApi::class.java)
+            val requestBody = SendOtpReq(userName, tenantCode)
+            val response = retrofithelper.sendOTP(requestBody)
+            Log.d("responseforsendotp", response.isSuccessful.toString())
+            callback(response.isSuccessful)
+        }
+    }
+
+    fun updatePassword(tenantCode : String, userName:String,password:String,otp:String){
+        viewModelScope.launch {
+            val retrofithelper = RetrofitHelper.getInstance().create(TwilioApi::class.java)
+            val requestBody = UpdatePasswordReq(tenantCode, userName, password, otp)
+            val response = retrofithelper.updatePassword(requestBody)
+            Log.d("responsepass",response.code().toString())
+            if(response.isSuccessful) {
+                Log.d("responseforpasswordreset", response.body()!!.status.toString())
+                isPasswordUpdated.value = response.isSuccessful
+            }
+            else{
+                isPasswordUpdated.value = false
+            }
         }
     }
 }

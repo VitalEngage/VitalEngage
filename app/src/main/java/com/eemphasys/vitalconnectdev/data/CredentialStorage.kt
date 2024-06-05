@@ -9,10 +9,9 @@ import kotlin.reflect.KProperty
 class CredentialStorage(applicationContext: Context) {
 
     var identity by stringPreference()
-        private set
 
     var password by stringPreference()
-        private set
+
 
     var fcmToken by stringPreference()
 
@@ -38,9 +37,9 @@ class CredentialStorage(applicationContext: Context) {
         sharedPreferences.edit().clear().apply()
     }
 
-    fun storeCredentials(identity: String) {
+    fun storeCredentials(identity: String, password:String) {
         EETLog.saveUserJourney(this::class.java.simpleName + "store Credentials function ")
         this.identity = identity
-//        this.password = password
+        this.password = password
     }
 }

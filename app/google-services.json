@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "830347159408",
-    "project_id": "vitalconnectdev-e0d5f",
-    "storage_bucket": "vitalconnectdev-e0d5f.appspot.com"
+    "project_number": "948405595991",
+    "project_id": "eet-conversations",
+    "storage_bucket": "eet-conversations.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:830347159408:android:0aff75c29d6226f9e591b5",
+        "mobilesdk_app_id": "1:948405595991:android:5ff0eaefe72741c2425812",
         "android_client_info": {
           "package_name": "com.eemphasys.vitalconnectdev"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCbAkCscNVcrUMFUZu-iuSrI5sjh7JtvfA"
+          "current_key": "AIzaSyCZK_NPk1k5d83ho7XQFvvI62Y95LtkXDA"
         }
       ],
       "services": {

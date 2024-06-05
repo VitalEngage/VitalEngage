@@ -35,7 +35,7 @@ class MainManagerImpl(
         try {
             val token = firebaseTokenManager.retrieveToken()
 
-            credentialStorage.fcmToken = token
+            //credentialStorage.fcmToken = token
 
 //Timber.d("Registering for FCM: $token")
 

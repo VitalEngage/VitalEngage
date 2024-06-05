@@ -1,7 +1,6 @@
 package com.eemphasys.vitalconnect.api.data
 
-data class UserAlertRequest(
+data class SendOtpReq(
     val userName : String,
-    val status : String,
     val tenantCode : String
 )

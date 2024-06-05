@@ -1,22 +1,11 @@
 package com.eemphasys.vitalconnect.ui.activity
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.eemphasys.vitalconnect.MainActivity
 import com.eemphasys.vitalconnect.R
-import com.eemphasys.vitalconnect.api.AuthInterceptor
-import com.eemphasys.vitalconnect.api.RetrofitHelper
-import com.eemphasys.vitalconnect.api.RetryInterceptor
-import com.eemphasys.vitalconnect.api.TwilioApi
-import com.eemphasys.vitalconnect.api.data.ParticipantExistingConversation
 import com.eemphasys.vitalconnect.common.Constants
-import com.eemphasys.vitalconnect.common.extensions.applicationContext
-import com.eemphasys.vitalconnect.common.extensions.lazyActivityViewModel
 import com.eemphasys.vitalconnect.common.extensions.lazyViewModel
 import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.databinding.ActivityConversationListBinding
@@ -25,15 +14,11 @@ import com.eemphasys.vitalconnect.ui.fragment.ConversationListFragment
 import com.eemphasys.vitalconnect.ui.fragment.ProfileFragment
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import okhttp3.OkHttpClient
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import java.util.concurrent.TimeUnit
 
 
 class ConversationListActivity:AppCompatActivity() {
-    val mainViewModel by lazyViewModel { injector.createMainViewModel(application) }
+    private val mainViewModel by lazyViewModel { injector.createMainViewModel(application) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         EETLog.saveUserJourney(this::class.java.simpleName + " onCreate Called")
@@ -76,11 +61,22 @@ class ConversationListActivity:AppCompatActivity() {
                 replaceFragment(ConversationListFragment())
             }
         }
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        if(Constants.IS_STANDALONE == "false")
+        {
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        }
         binding.toolbar.setNavigationOnClickListener { onBackPressed() }
     }
     override fun onBackPressed() {
-        super.onBackPressed()
+
+        if(Constants.IS_STANDALONE == "true") {
+//            this.moveTaskToBack(true)
+        }
+        else
+        {
+            super.onBackPressed()
+//            profileViewModel.signOut()
+        }
     }
     private fun replaceFragment(fragment: Fragment) {
 

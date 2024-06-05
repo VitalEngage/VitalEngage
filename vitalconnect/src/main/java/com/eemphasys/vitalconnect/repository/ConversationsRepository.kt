@@ -11,7 +11,6 @@ import com.twilio.conversations.extensions.ConversationsClientListener
 import com.twilio.conversations.extensions.getLastMessages
 import com.twilio.conversations.extensions.getMessagesBefore
 import com.twilio.util.TwilioException
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
@@ -60,24 +59,10 @@ import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.twilio.conversations.ConversationsClient
 import kotlinx.coroutines.flow.onStart
-
-import kotlinx.coroutines.SupervisorJob
-
-import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
-import kotlinx.coroutines.channels.awaitClose
-
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.supervisorScope
 interface ConversationsRepository {
     fun getUserConversations(): Flow<RepositoryResult<List<ConversationDataItem>>>
     fun getConversation(conversationSid: String): Flow<RepositoryResult<ConversationDataItem?>>
@@ -107,6 +92,9 @@ interface ConversationsRepository {
     fun clear()
     fun subscribeToConversationsClientEvents()
     fun unsubscribeFromConversationsClientEvents()
+
+//    fun getTotalUnreadMessageCount() : Int
+    fun updateFriendlyName(identity : String) :String
 }
 
 class ConversationsRepositoryImpl(
@@ -136,10 +124,8 @@ class ConversationsRepositoryImpl(
         },
 
     onClientSynchronization = { synchronizationstatus->
-        Log.d("inside listener", synchronizationstatus.toString())
         launch{
             if (synchronizationstatus == ConversationsClient.SynchronizationStatus.COMPLETED) {
-        Log.d("inside listener and if", "insidelistener")
                 getUserConversations()
 
             }
@@ -192,7 +178,9 @@ class ConversationsRepositoryImpl(
         //context = CoroutineExceptionHandler { _, e -> Timber.e(e, "Coroutine failed ${e.localizedMessage}") },
         block = block
     )
-
+//    override fun getTotalUnreadMessageCount(): Int {
+//        return localCache.conversationsDao().getTotalUnreadMessages()
+//    }
     override fun getUserConversations(): Flow<RepositoryResult<List<ConversationDataItem>>> {
         val localDataFlow = localCache.conversationsDao().getUserConversations()
         val fetchStatusFlow = fetchConversations().flowOn(dispatchers.io())
@@ -286,7 +274,7 @@ class ConversationsRepositoryImpl(
     override fun getConversationParticipants(conversationSid: String): Flow<RepositoryResult<List<ParticipantDataItem>>> {
         val localDataFlow = localCache.participantsDao().getAllParticipants(conversationSid)
         val fetchStatusFlow = fetchParticipants(conversationSid).flowOn(dispatchers.io())
-
+Log.d("sid",conversationSid)
         return combine(localDataFlow, fetchStatusFlow) { data, status -> RepositoryResult(data, status) }
     }
 
@@ -410,8 +398,11 @@ class ConversationsRepositoryImpl(
     private fun fetchParticipants(conversationSid: String) = flow {
         emit(FETCHING)
         try {
+            Log.d("userabove", "416")
             val conversation = conversationsClientWrapper.getConversationsClient().getConversation(conversationSid)
+            Log.d("userabove", "418")
             conversation.waitForSynchronization()
+            Log.d("userabove", "420")
             conversation.participantsList.forEach { participant ->
                 // Getting user is currently supported for chat participants only
                 Log.d("userabove", "insideit")
@@ -433,7 +424,7 @@ class ConversationsRepositoryImpl(
                 Constants.EX, LogTraceConstants.getUtilityData(
                     SessionHelper.appContext!!
                 )!!
-            );
+            )
         }
     }
 
@@ -477,7 +468,7 @@ class ConversationsRepositoryImpl(
                 Constants.EX, LogTraceConstants.getUtilityData(
                     SessionHelper.appContext!!
                 )!!
-            );
+            )
         }
     }
 
@@ -491,6 +482,10 @@ class ConversationsRepositoryImpl(
         launch {
             conversationsClientWrapper.getConversationsClient().removeListener(clientListener)
         }
+    }
+
+    override fun updateFriendlyName(identity : String) : String {
+        return localCache.messagesDao().fetchFriendlyName(identity)
     }
 
     private suspend fun insertOrUpdateConversation(conversationSid: String) {

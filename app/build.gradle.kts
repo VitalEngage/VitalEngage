@@ -61,6 +61,7 @@ dependencies {
     implementation(project(":commonmobilelib2.6"))
     implementation("com.twilio:conversations-android:6.0.3")
     //implementation ("com.twilio:conversations-android-with-symbols:6.0.4")
+    implementation ("io.github.chaosleung:pinview:1.4.4")
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
