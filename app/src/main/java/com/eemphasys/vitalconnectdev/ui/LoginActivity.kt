@@ -7,19 +7,17 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.View.GONE
-import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.eemphasys.vitalconnect.MainActivity
 import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.extensions.hideKeyboard
-import com.eemphasys.vitalconnect.data.localCache.LocalCacheProvider
-import com.eemphasys.vitalconnect.ui.activity.ConversationListActivity
-import com.eemphasys.vitalconnect.ui.activity.MessageListActivity
-import com.eemphasys.vitalconnectdev.ChatApplication
 import android.Manifest
+import android.os.CountDownTimer
 import android.os.Handler
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.View.VISIBLE
 import androidx.core.app.ActivityCompat
 import com.eemphasys.vitalconnect.common.extensions.enableErrorResettingOnTextChanged
 import com.eemphasys.vitalconnectdev.R
@@ -29,12 +27,10 @@ import com.eemphasys.vitalconnectdev.common.extensions.lazyViewModel
 import com.eemphasys.vitalconnectdev.common.extensions.onSubmit
 import com.eemphasys.vitalconnectdev.common.injector
 import com.eemphasys.vitalconnectdev.data.LoginConstants
-import com.eemphasys.vitalconnectdev.data.model.Contact
-import com.eemphasys.vitalconnectdev.data.model.WebUser
 import com.eemphasys.vitalconnectdev.databinding.ActivityLoginBinding
 import com.google.android.material.snackbar.Snackbar
-import org.json.JSONObject
 import  com.eemphasys_enterprise.commonmobilelib.EETLog
+import java.util.Locale
 
 class LoginActivity : AppCompatActivity() {
 
@@ -42,13 +38,27 @@ class LoginActivity : AppCompatActivity() {
 
     val loginViewModel by lazyViewModel { injector.createLoginViewModel(application) }
 
+    private lateinit var countDownTimer: CountDownTimer
+    private val totalTimeInMillis: Long = 60000 // Total time for the timer (60 seconds)
+
     private val noInternetSnackBar by lazy {
         Snackbar.make(binding.loginCoordinatorLayout, R.string.no_internet_connection, Snackbar.LENGTH_INDEFINITE)
+    }
+    private val passwordUpdateSnackbar by lazy {
+        Snackbar.make(binding.loginCoordinatorLayout, "Password changed successfully", Snackbar.LENGTH_INDEFINITE)
     }
 
     override fun onStart() {
         super.onStart()
         setContentView(binding.root)
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        // Clear input fields when the activity is stopped
+        binding.usernameTv.text!!.clear()
+        binding.passwordTv.text!!.clear()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,6 +71,54 @@ class LoginActivity : AppCompatActivity() {
 //        val autoCompleteTextView = findViewById<AutoCompleteTextView>(R.id.dropdown_product)
 //
 //        autoCompleteTextView.setAdapter(adapter)
+
+                binding.usernameInputLayoutRP.visibility = GONE
+                binding.passwordInputLayoutRP.visibility = GONE
+                binding.confirmpasswordInputLayoutRP.visibility = GONE
+                binding.sendOTP.visibility= GONE
+
+        binding.TenantCodeInputLayoutRP.editText?.addTextChangedListener(object : TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                binding.progressBarID.visibility = VISIBLE
+                loginViewModel.isAzureADEnabled(s?.toString()!!)
+            }
+
+        })
+
+        binding.confirmpasswordInputLayoutRP.editText?.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                // Call the comparison logic
+                comparePasswords()
+            }
+        })
+
+        binding.pinview.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                val otp = s?.toString().orEmpty()
+                // Enable the button if the OTP field is full
+                binding.saveBtn.isEnabled = otp.length == 6
+            }
+        })
 
         loginViewModel.isLoading.observe(this) { isLoading ->
             showProgress(isLoading)
@@ -91,19 +149,51 @@ class LoginActivity : AppCompatActivity() {
 
         loginViewModel.isAADEnabled.observe(this){
             if(it) {
-                binding.usernameInputLayout.visibility = GONE
+                binding.progressBarID.visibility = GONE
+                binding.TenantCodeInputLayoutRP.error = "Password can't be changed for this tenant"
+                binding.TenantCodeInputLayoutRP.enableErrorResettingOnTextChanged()
+                binding.usernameInputLayoutRP.visibility = GONE
+                binding.passwordInputLayoutRP.visibility = GONE
+                binding.confirmpasswordInputLayoutRP.visibility = GONE
+                binding.sendOTP.visibility= GONE
+
+            }
+            else{
+                binding.progressBarID.visibility = GONE
+
+                binding.usernameInputLayoutRP.visibility = VISIBLE
+                binding.passwordInputLayoutRP.visibility = VISIBLE
+                binding.confirmpasswordInputLayoutRP.visibility = VISIBLE
+                binding.sendOTP.visibility= VISIBLE
+            }
+        }
+
+        loginViewModel.isPasswordUpdated.observe(this){
+            if(it){
+                passwordUpdateSnackbar.show()
+                binding.passwordresetLayout.visibility = GONE
+                binding.loginLayout.visibility= VISIBLE
+                passwordUpdateSnackbar.dismiss()
+            }
+            else{
+//                binding.confirmpasswordInputLayoutRP.error = "Failed to update password. Try again later."
             }
         }
         initializeChatAppModel()
-        //loginViewModel.isAzureADEnabled()
-
+        try
+        {
+            if
+                    (!checkAndRequestPermissions())
+                return
+        }
+        catch
+            (e:Exception){
+            e.printStackTrace()
+        }
     }
 
-//    override fun onDestroy() {
-//        super.onDestroy()
-//    }
 
-    val REQUEST_ID_MULTIPLE_PERMISSIONS = 1
+    private val REQUESTIDMULTIPLEPERMISSIONS = 1
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -111,10 +201,10 @@ class LoginActivity : AppCompatActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if
-                (requestCode == REQUEST_ID_MULTIPLE_PERMISSIONS) {
+                (requestCode == REQUESTIDMULTIPLEPERMISSIONS) {
             for (permission in grantResults) {
-                var permission = permission;
-                var isPermitted = permission == PackageManager.PERMISSION_GRANTED;
+                val permission = permission
+                var isPermitted = permission == PackageManager.PERMISSION_GRANTED
                 if
                         (permission == PackageManager.PERMISSION_DENIED
                 ) {
@@ -128,35 +218,13 @@ class LoginActivity : AppCompatActivity() {
                 }
         }
     private fun checkAndRequestPermissions(): Boolean {
-//        val camera = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-//        val storage =
-//            ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-//        val mic = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-//        val networkTypePermission =
-//            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)
         val notificationPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
         } else {
             PackageManager.PERMISSION_GRANTED
         }
 
-//        val loc =
-//            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-//        val loc2 = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
         val listPermissionsNeeded: MutableList<String> = ArrayList()
-//        if (camera != PackageManager.PERMISSION_GRANTED) {
-//            listPermissionsNeeded.add(Manifest.permission.CAMERA)
-//        }
-//        if (storage != PackageManager.PERMISSION_GRANTED) {
-//            listPermissionsNeeded.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-//        }
-//        if (mic != PackageManager.PERMISSION_GRANTED) {
-//            listPermissionsNeeded.add(Manifest.permission.RECORD_AUDIO)
-//        }
-//
-//        if (networkTypePermission != PackageManager.PERMISSION_GRANTED) {
-//            listPermissionsNeeded.add(Manifest.permission.READ_PHONE_STATE)
-//        }
 
         if (notificationPermission != PackageManager.PERMISSION_GRANTED) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -164,11 +232,11 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
-        if (!listPermissionsNeeded.isEmpty()) {
+        if (listPermissionsNeeded.isNotEmpty()) {
             ActivityCompat.requestPermissions(
                 this,
                 listPermissionsNeeded.toTypedArray(),
-                REQUEST_ID_MULTIPLE_PERMISSIONS
+                REQUESTIDMULTIPLEPERMISSIONS
             )
             return false
         } else {
@@ -189,18 +257,140 @@ class LoginActivity : AppCompatActivity() {
         )
     }
 
+    private fun comparePasswords(){
+        val password = binding.passwordTvRP.text.toString()
+        val confirmPassword = binding.confirmpasswordTvRP.text.toString()
+
+        if (password == confirmPassword) {
+            // Clear any existing error
+            binding.confirmpasswordInputLayoutRP.error = null
+        } else {
+            // Show error message
+            binding.confirmpasswordInputLayoutRP.error = "Passwords do not match"
+        }
+
+    }
+            private fun startCountdownTimer() {
+                countDownTimer.start()
+                binding.textViewTimer.visibility = VISIBLE
+            }
+
+            private fun updateTimerUI(secondsLeft: Long) {
+                val minutes = secondsLeft / 60
+                val seconds = secondsLeft % 60
+                val timerText = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
+
+                // Update your TextView with the timer text
+                binding.textViewTimer.text = "Resend OTP in " + timerText + " seconds"
+            }
+
+            private fun enableResendButton() {
+                binding.sendOTP.visibility = VISIBLE
+            }
+
+            private fun initCountDownTimer() {
+                countDownTimer = object : CountDownTimer(totalTimeInMillis, 1000) {
+                    override fun onTick(millisUntilFinished: Long) {
+                        val secondsLeft = millisUntilFinished / 1000
+                        updateTimerUI(secondsLeft)
+                    }
+
+                    override fun onFinish() {
+                        enableResendButton()
+                        binding.textViewTimer.visibility = GONE
+                    }
+                }
+            }
+
+
+    fun onTextViewClickForgotPassword(view: View){
+        binding.loginLayout.visibility = GONE
+        binding.passwordresetLayout.visibility = VISIBLE
+    }
+
+    private fun validateInputs(): Boolean{
+        val tenantCode = binding.tenantcodeTvRP.text.toString()
+        val username = binding.usernameTvRP.text.toString()
+        val password = binding.confirmpasswordTvRP.text.toString()
+
+        if(tenantCode.isBlank()){
+            binding.TenantCodeInputLayoutRP.error = "Tenant Code can't be empty."
+            binding.TenantCodeInputLayoutRP.enableErrorResettingOnTextChanged()
+            return false
+        }
+        if(username.isBlank()){
+            binding.usernameInputLayoutRP.error = "Username can't be empty."
+            binding.usernameInputLayoutRP.enableErrorResettingOnTextChanged()
+            return false
+        }
+        if(password.isBlank()){
+            binding.confirmpasswordInputLayoutRP.error = "Please enter password again"
+            binding.confirmpasswordInputLayoutRP.enableErrorResettingOnTextChanged()
+            return false
+        }
+
+        val passwordRegex = Regex("""^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()_+-=]).{8,}$""")
+
+        if (password.matches(passwordRegex) && password.length > 8) {
+        } else {
+           binding.passwordInputLayoutRP.error = "Password length should be greater than 8  and should have atleast 1 uppercase 1 lowercase 1 number and 1 special character"
+            binding.passwordInputLayoutRP.enableErrorResettingOnTextChanged()
+            return false
+        }
+
+        return true
+    }
+    fun onTextViewClickSendOTP(view: View){
+        val tenantCode = binding.tenantcodeTvRP.text.toString()
+        val username = binding.usernameTvRP.text.toString()
+        val valid = validateInputs()
+        if(valid) {
+            binding.progressBarID.visibility = VISIBLE
+            loginViewModel.sendOtp(tenantCode,username) { success ->
+                if (success) {
+                    binding.progressBarID.visibility = GONE
+                    binding.enterotp.visibility = VISIBLE
+                    binding.pinview.visibility = VISIBLE
+                    initCountDownTimer()  //timer starts
+                    startCountdownTimer()
+                    binding.sendOTP.visibility = GONE
+                } else {
+                    binding.progressBarID.visibility = GONE
+                    binding.usernameInputLayoutRP.error = "Enter valid tenant code or username."
+                    binding.usernameInputLayoutRP.errorIconDrawable = null
+                    binding.usernameInputLayoutRP.enableErrorResettingOnTextChanged()
+                }
+            }
+        }
+        }
+
+    fun updatePassword(view: View){
+        val tenantCode = binding.tenantcodeTvRP.text.toString()
+        val username = binding.usernameTvRP.text.toString()
+        val password = binding.confirmpasswordTvRP.text.toString()
+        val otp = binding.pinview.text.toString()
+        loginViewModel.updatePassword(tenantCode,username,password,otp)
+    }
+
+    fun goToLogin(view:View){
+        binding.passwordresetLayout.visibility= GONE
+        binding.loginLayout.visibility= VISIBLE
+    }
+
     private fun signInPressed() {
         val identity = binding.usernameTv.text.toString()
         LoginConstants.CURRENT_USER = identity
         LoginConstants.FRIENDLY_NAME = identity
         val password = binding.passwordTv.text.toString()
+//        credentialStorage.identity = identity
+//        credentialStorage.password= password
 
         loginViewModel.signIn(identity,password)
     }
 
     private fun showProgress(show: Boolean) {
-        binding.loginProgress.root.visibility = if (show) View.VISIBLE else View.GONE
-        binding.loginLayout.visibility = if (show) View.GONE else View.VISIBLE
+        binding.loginProgress.root.visibility = if (show) VISIBLE else GONE
+        binding.loginLayout.visibility = if (show) GONE else VISIBLE
     }
 
     private fun showNoInternetSnackbar(show: Boolean) {
@@ -213,6 +403,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun goToChildAppScreen() {
+        loginViewModel.isLoading.value = false
         start(this)
     }
 
@@ -245,7 +436,7 @@ class LoginActivity : AppCompatActivity() {
             USERNAME_PASSWORD_INCORRECT -> {
                 binding.passwordInputLayout.error = "Username or password is incorrect."
                 binding.passwordInputLayout.enableErrorResettingOnTextChanged()
-                binding.passwordInputLayout.setErrorIconDrawable(null)
+                binding.passwordInputLayout.errorIconDrawable = null
             }
 //            NO_INTERNET_CONNECTION -> showNoInternetDialog()
 
@@ -275,6 +466,10 @@ class LoginActivity : AppCompatActivity() {
             intent.putExtra("fullName",LoginConstants.FULL_NAME)
             intent.putExtra("showContacts",LoginConstants.SHOW_CONTACTS)
             intent.putExtra("isStandalone",LoginConstants.IS_STANDALONE)
+            intent.putExtra("customerNumber","9876543210")
+            intent.putExtra("customerName","DummyUser")
+            intent.putExtra("showConversations","true")
+            intent.putExtra("userSMSAlert",LoginConstants.USER_SMS_ALERT)
             context.startActivity(intent)
 
 

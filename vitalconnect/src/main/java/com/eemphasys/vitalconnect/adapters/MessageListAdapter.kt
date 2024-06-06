@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.eemphasys.vitalconnect.common.enums.SendStatus
 import com.eemphasys.vitalconnect.R
+import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.enums.Direction
 import com.eemphasys.vitalconnect.common.enums.DownloadState.COMPLETED
 import com.eemphasys.vitalconnect.common.enums.DownloadState.DOWNLOADING
@@ -23,6 +24,7 @@ import com.eemphasys.vitalconnect.data.models.MessageListViewItem
 import com.eemphasys.vitalconnect.databinding.RowMessageItemIncomingBinding
 import com.eemphasys.vitalconnect.databinding.RowMessageItemOutgoingBinding
 import com.eemphasys.vitalconnect.databinding.ViewReactionItemBinding
+import com.eemphasys.vitalconnect.repository.ConversationsRepositoryImpl
 
 class MessageListAdapter(
     private val onDisplaySendError: (message: MessageListViewItem) -> Unit,
@@ -58,6 +60,9 @@ class MessageListAdapter(
             return
         }
 
+//        for(p in Constants.PARTICIPANTS) {
+//            message.friendlyName = ConversationsRepositoryImpl.INSTANCE.updateFriendlyName(p.identity)
+//        }
         val binding = holder.binding
         val context = binding.root.context
 

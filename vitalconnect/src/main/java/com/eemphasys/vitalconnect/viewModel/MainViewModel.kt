@@ -30,7 +30,7 @@ class MainViewModel(private val mainManager: MainManager) : ViewModel() {
                         Constants.EX, LogTraceConstants.getUtilityData(
                             SessionHelper.appContext!!
                         )!!
-                    );
+                    )
                 }
             }
         }
@@ -51,7 +51,7 @@ class MainViewModel(private val mainManager: MainManager) : ViewModel() {
                     Constants.EX, LogTraceConstants.getUtilityData(
                         SessionHelper.appContext!!
                     )!!
-                );
+                )
             }
         }
     }

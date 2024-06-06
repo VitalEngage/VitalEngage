@@ -4,18 +4,14 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.SessionHelper
 import com.eemphasys.vitalconnect.common.SingleLiveEvent
 import com.eemphasys.vitalconnect.common.asConversationListViewItems
 import com.eemphasys.vitalconnect.common.call
 import com.eemphasys.vitalconnect.common.enums.ConversationsError
-import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.common.merge
-import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
 import com.eemphasys.vitalconnect.data.models.ConversationListViewItem
 import com.eemphasys.vitalconnect.manager.ConnectivityMonitor
 import com.eemphasys.vitalconnect.manager.ConversationListManager
@@ -28,17 +24,9 @@ import com.eemphasys.vitalconnect.manager.AutoParticipantListManager
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceHelper
 import com.eemphasys.vitalconnect.ui.activity.MessageListActivity
-import com.eemphasys.vitalconnect.ui.fragment.ContactListFragment
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
-import com.twilio.conversations.Attributes
-import com.twilio.conversations.CallbackListener
-import com.twilio.conversations.ConversationsClient
-import com.twilio.conversations.extensions.addParticipantByAddress
-import com.twilio.conversations.extensions.getConversation
-import com.twilio.conversations.extensions.waitForSynchronization
 import kotlinx.coroutines.delay
-import org.json.JSONObject
 
 
 class ContactListViewModel(
@@ -49,23 +37,19 @@ class ContactListViewModel(
     private val autoParticipantListManager: AutoParticipantListManager
 ): ViewModel() {
     private val unfilteredUserConversationItems = MutableLiveData<List<ConversationListViewItem>>(emptyList())
-    private val EXTRA_CONVERSATION_SID = "ExtraConversationSid"
-    val userConversationItems = MutableLiveData<List<ConversationListViewItem>>(emptyList())
+    private val userConversationItems = MutableLiveData<List<ConversationListViewItem>>(emptyList())
 
-    val isDataLoading = SingleLiveEvent<Boolean>()
-    val isNoResultsFoundVisible = MutableLiveData(false)
-    val isNoConversationsVisible = MutableLiveData(false)
-    val isNetworkAvailable = connectivityMonitor.isNetworkAvailable.asLiveData(viewModelScope.coroutineContext)
+    private val isDataLoading = SingleLiveEvent<Boolean>()
+    private val isNoResultsFoundVisible = MutableLiveData(false)
+    private val isNoConversationsVisible = MutableLiveData(false)
 
-    val onConversationCreated = SingleLiveEvent<Unit>()
-    val onConversationLeft = SingleLiveEvent<Unit>()
-    val onConversationMuted = SingleLiveEvent<Boolean>()
-    val onConversationError = SingleLiveEvent<ConversationsError>()
+    private val onConversationCreated = SingleLiveEvent<Unit>()
+    private val onConversationError = SingleLiveEvent<ConversationsError>()
 
-    var conversationFilter by Delegates.observable("") { _, _, _ -> updateUserConversationItems() }
-    val isShowProgress = MutableLiveData<Boolean>()
+    private var conversationFilter by Delegates.observable("") { _, _, _ -> updateUserConversationItems() }
+    private val isShowProgress = MutableLiveData<Boolean>()
     val onParticipantAdded = SingleLiveEvent<String>()
-    val onDetailsError = SingleLiveEvent<ConversationsError>()
+    private val onDetailsError = SingleLiveEvent<ConversationsError>()
 
     init {
         getUserConversations()
@@ -93,7 +77,7 @@ class ContactListViewModel(
         )
     }
 
-    fun getUserConversations() = viewModelScope.launch {
+    private fun getUserConversations() = viewModelScope.launch {
         conversationsRepository.getUserConversations().collect { (list, status) ->
 
             unfilteredUserConversationItems.value = list
@@ -180,13 +164,13 @@ class ContactListViewModel(
                 Constants.EX, LogTraceConstants.getUtilityData(
                     SessionHelper.appContext!!
                 )!!
-            );
+            )
         } finally {
             setDataLoading(false)
         }
     }
 
-    fun addChatParticipant(identity: String,sid:String) = viewModelScope.launch {
+    private fun addChatParticipant(identity: String, sid:String) = viewModelScope.launch {
         if (isShowProgress.value == true) {
             return@launch
         }
@@ -219,18 +203,19 @@ class ContactListViewModel(
                 Constants.EX, LogTraceConstants.getUtilityData(
                     SessionHelper.appContext!!
                 )!!
-            );
+            )
         } finally {
             setShowProgress(false)
         }
     }
 
-    fun addNonChatParticipant(phone: String, proxyPhone: String,friendlyName: String,sid:String) = viewModelScope.launch {
+    private fun addNonChatParticipant(phone: String, proxyPhone: String, friendlyName: String, sid:String) = viewModelScope.launch {
         if (isShowProgress.value == true) {
             return@launch
         }
         try {
             setShowProgress(true)
+            Log.d("addnonchatparticipant", "$phone $proxyPhone $friendlyName $sid")
             autoParticipantListManager.addNonChatParticipant(phone, proxyPhone,friendlyName,sid)
             onParticipantAdded.value = phone
             LogTraceHelper.trace(
@@ -257,7 +242,7 @@ class ContactListViewModel(
                 Constants.EX, LogTraceConstants.getUtilityData(
                     SessionHelper.appContext!!
                 )!!
-            );
+            )
         } finally {
             setShowProgress(false)
         }

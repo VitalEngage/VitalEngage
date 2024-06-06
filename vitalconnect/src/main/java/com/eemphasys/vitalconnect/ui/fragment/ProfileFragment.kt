@@ -1,35 +1,27 @@
 package com.eemphasys.vitalconnect.ui.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.eemphasys.vitalconnect.R
-import com.eemphasys.vitalconnect.api.RetrofitHelper
-import com.eemphasys.vitalconnect.api.TwilioApi
-import com.eemphasys.vitalconnect.api.data.UserAlertRequest
 import com.eemphasys.vitalconnect.common.Constants
-import com.eemphasys.vitalconnect.common.enums.ConversationsError
 import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.common.extensions.getErrorMessage
 import com.eemphasys.vitalconnect.common.extensions.lazyActivityViewModel
 import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.databinding.FragmentProfileBinding
-import com.eemphasys.vitalconnect.ui.activity.ConversationListActivity
 import com.eemphasys.vitalconnect.ui.dialogs.EditProfileDialog
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.switchmaterial.SwitchMaterial
 
 class ProfileFragment:Fragment() {
     lateinit var binding: FragmentProfileBinding
 
-    val profileViewModel by lazyActivityViewModel { injector.createProfileViewModel(applicationContext) }
+    private val profileViewModel by lazyActivityViewModel { injector.createProfileViewModel(applicationContext) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         EETLog.saveUserJourney(this::class.java.simpleName + " onCreate Called")
@@ -71,9 +63,7 @@ class ProfileFragment:Fragment() {
 
         profileViewModel.onSignedOut.observe(viewLifecycleOwner) {
 //            LoginActivity.start(requireContext())
-            activity?.let {
-                it.finish()
-            }
+            activity?.finish()
         }
 
         profileViewModel.onError.observe(viewLifecycleOwner) { error ->
@@ -86,7 +76,12 @@ class ProfileFragment:Fragment() {
 
         binding.editProfile.setOnClickListener { showEditProfileDialog() }
         binding.signOut.setOnClickListener { showSignOutDialog() }
-
+        if(Constants.USER_SMS_ALERT =="true"){
+            binding.switchbtn.isChecked = true
+        }
+        else if(Constants.USER_SMS_ALERT =="false") {
+            binding.switchbtn.isChecked = false
+        }
         binding.switchbtn.setOnCheckedChangeListener{ buttonView,isChecked ->
 
             profileViewModel.changeUserAlertStatus(isChecked)

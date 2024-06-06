@@ -1,10 +1,14 @@
 package com.eemphasys.vitalconnect.api
 
 import com.eemphasys.vitalconnect.api.data.AuthToken
+import com.eemphasys.vitalconnect.api.data.EncryptionRequest
 import com.eemphasys.vitalconnect.api.data.ParticipantExistingConversation
 import com.eemphasys.vitalconnect.api.data.RequestToken
+import com.eemphasys.vitalconnect.api.data.SendOtpReq
 import com.eemphasys.vitalconnect.api.data.TenantDetails
 import com.eemphasys.vitalconnect.api.data.Token
+import com.eemphasys.vitalconnect.api.data.UpdatePasswordReq
+import com.eemphasys.vitalconnect.api.data.UpdatePasswordResp
 import com.eemphasys.vitalconnect.api.data.UserAlertRequest
 import com.eemphasys.vitalconnect.api.data.ValidateUserReq
 import retrofit2.Call
@@ -37,5 +41,12 @@ interface TwilioApi {
     @POST("User/UpdateUserAlertStatus")
     suspend fun updateUserAlertStatus(@Body requestData : UserAlertRequest) : Response<UserAlertRequest>
 
+    @POST("User/SendOtp")
+    suspend fun sendOTP(@Body requestData : SendOtpReq) : Response<String>
 
+    @POST("User/SavePassword")
+    suspend fun updatePassword(@Body requestData : UpdatePasswordReq) : Response<UpdatePasswordResp>
+
+    @POST("GetEncryptedValues")
+    suspend fun getEncryptedValues(@Body requestData : EncryptionRequest) : Response<EncryptionRequest>
 }

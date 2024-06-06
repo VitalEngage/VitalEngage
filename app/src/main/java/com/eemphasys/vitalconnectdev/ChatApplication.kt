@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.emoji.bundled.BundledEmojiCompatConfig
 import androidx.emoji.text.EmojiCompat
 import androidx.room.Room
+import com.eemphasys.vitalconnect.common.FirebaseTokenManager
 import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
 import com.eemphasys.vitalconnect.data.localCache.LocalCacheProvider
 import com.eemphasys.vitalconnect.repository.ConversationsRepositoryImpl
@@ -33,6 +34,7 @@ class ChatApplication : Application() {
         appContext = applicationContext
         FirebaseApp.initializeApp(this)
         ConversationsClientWrapper.createInstance(this)
+        FirebaseTokenManager.createInstance()
         LocalCacheProvider.createInstance(this)
         ConversationsRepositoryImpl.createInstance(ConversationsClientWrapper.INSTANCE, LocalCacheProvider.INSTANCE)
         EmojiCompat.init(BundledEmojiCompatConfig(this))

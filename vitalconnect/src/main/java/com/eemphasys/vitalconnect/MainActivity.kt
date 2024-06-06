@@ -3,38 +3,27 @@ package com.eemphasys.vitalconnect
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.eemphasys.vitalconnect.api.AuthInterceptor
 import com.eemphasys.vitalconnect.api.RetrofitHelper
 import com.eemphasys.vitalconnect.api.RetryInterceptor
 import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.ParticipantExistingConversation
-import com.eemphasys.vitalconnect.api.data.RequestToken
-import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.common.extensions.lazyViewModel
-import com.eemphasys.vitalconnect.data.models.Contact
-import com.eemphasys.vitalconnect.data.models.WebUser
+import com.eemphasys.vitalconnect.databinding.ActivityMainBinding
 import com.eemphasys.vitalconnect.ui.activity.ConversationListActivity
-import com.eemphasys.vitalconnect.ui.activity.MessageListActivity
 import com.eemphasys_enterprise.commonmobilelib.EETLog
-import com.google.gson.reflect.TypeToken
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
-import org.json.JSONArray
-import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.concurrent.TimeUnit
 
-class MainActivity() : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
 
-    val mainViewModel by lazyViewModel { injector.createMainViewModel(application) }
+    private val mainViewModel by lazyViewModel { injector.createMainViewModel(application) }
     val contactListViewModel by lazyViewModel { injector.createContactListViewModel(applicationContext) }
     override fun onCreate(savedInstanceState: Bundle?) {
         EETLog.saveUserJourney(this::class.java.simpleName + " onCreate Called")
@@ -53,6 +42,10 @@ class MainActivity() : AppCompatActivity() {
         val fullName = intent.getStringExtra("fullName")
         val showContacts = intent.getStringExtra("showContacts")
         val isStandalone = intent.getStringExtra("isStandalone")
+        val customerNumber = intent.getStringExtra("customerNumber")
+        val customerName = intent.getStringExtra("customerName")
+        val showConversations = intent.getStringExtra("showConversations")
+        val userSMSAlert = intent.getStringExtra("userSMSAlert")
 
         Constants.AUTH_TOKEN = authToken!!
         Constants.CONTACTS = contacts!!
@@ -69,11 +62,15 @@ class MainActivity() : AppCompatActivity() {
         Constants.FULL_NAME = fullName!!
         Constants.SHOW_CONTACTS = showContacts!!
         Constants.IS_STANDALONE = isStandalone!!
+        Constants.CUSTOMER_NUMBER = customerNumber!!
+        Constants.CUSTOMER_NAME = customerName!!
+        Constants.SHOW_CONVERSATIONS = showConversations!!
+        Constants.USER_SMS_ALERT = userSMSAlert!!
 
         mainViewModel.create()
         super.onCreate(savedInstanceState)
 //        mainViewModel.registerForFcm()
-        if(Constants.SHOW_CONTACTS == "false") {
+        if(Constants.SHOW_CONTACTS == "false" && Constants.IS_STANDALONE == "false" && Constants.SHOW_CONVERSATIONS == "false") {
             val httpClientWithToken = OkHttpClient.Builder()
                 .connectTimeout(300, TimeUnit.SECONDS)
                 .readTimeout(300, TimeUnit.SECONDS)
@@ -86,7 +83,7 @@ class MainActivity() : AppCompatActivity() {
 
             val existingConversation = retrofitWithToken.fetchExistingConversation(
                 Constants.TENANT_CODE,
-                "+919175346961",
+                customerNumber,
                 false,
                 1,
                 Constants.PROXY_NUMBER
@@ -145,9 +142,9 @@ class MainActivity() : AppCompatActivity() {
                             }
                         } else { //If there is no existing conversation with SMS user, create new
                             contactListViewModel.createConversation(
-                                "Himanshu" + " " + "+919175346961",
-                                "mahajanhimanshu3@gmail.com",
-                                "+919175346961"
+                                "$customerName $customerNumber",
+                                " ",
+                                "$customerNumber"
                             )
                             //contactListViewModel.createConversation(contact.name + " " + contact.number ,contact.email,contact.number)
                             //binding?.progressBarID?.visibility = View.GONE
@@ -173,7 +170,7 @@ class MainActivity() : AppCompatActivity() {
 //            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
         }
-
-
+        val binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         }
     }

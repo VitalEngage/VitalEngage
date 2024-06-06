@@ -1,7 +1,5 @@
 package com.eemphasys.vitalconnect.viewModel
 
-import android.util.Log
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -49,14 +47,14 @@ class ProfileViewModel(
     fun changeUserAlertStatus(isChecked : Boolean) = viewModelScope.launch {
         val apicall = RetrofitHelper.getInstance().create(TwilioApi::class.java)
         if(isChecked){
-            val requestData = UserAlertRequest(Constants.USERNAME,true, Constants.TENANT_CODE)
-            apicall.updateUserAlertStatus(requestData)
-            Log.d("apicall", "true")
+            val requestData = UserAlertRequest(Constants.USERNAME,"true", Constants.TENANT_CODE)
+            val response = apicall.updateUserAlertStatus(requestData)
+            Constants.USER_SMS_ALERT = response.body()!!.status
         }
         else{
-            val requestData = UserAlertRequest(Constants.USERNAME,false, Constants.TENANT_CODE)
-            apicall.updateUserAlertStatus(requestData)
-            Log.d("apicall", "false")
+            val requestData = UserAlertRequest(Constants.USERNAME,"false", Constants.TENANT_CODE)
+            val response= apicall.updateUserAlertStatus(requestData)
+            Constants.USER_SMS_ALERT = response.body()!!.status
         }
     }
 

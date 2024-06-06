@@ -29,7 +29,7 @@ abstract class LocalCacheProvider: RoomDatabase() {
             _instance = Room.inMemoryDatabaseBuilder(
                 context.applicationContext,
                 LocalCacheProvider::class.java
-            ).build()
+            ).allowMainThreadQueries().build()
         }
     }
 }

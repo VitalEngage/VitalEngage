@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ConversationsDao {
     // Get User Conversations
+//    @Query("SELECT SUM(unreadMessagesCount) AS total_sum FROM conversation_table")
+//    fun getTotalUnreadMessages(): Int
     @Query("SELECT * FROM conversation_table WHERE participatingStatus = 1 ORDER BY lastMessageDate DESC")
     fun getUserConversations(): Flow<List<ConversationDataItem>>
 

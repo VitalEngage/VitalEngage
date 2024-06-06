@@ -74,7 +74,7 @@ fun Message.toMessageDataItem(currentUserIdentity: String = participant.identity
         media?.sid,
         media?.filename,
         media?.contentType,
-        media?.size
+        media?.size,
     )
 }
 
@@ -103,7 +103,8 @@ fun MessageDataItem.toMessageListViewItem(authorChanged: Boolean): MessageListVi
         this.mediaUploading,
         this.mediaUploadedBytes,
         this.mediaUploadUri?.toUri(),
-        this.errorCode
+        this.errorCode,
+//        this.friendlyName ?: ""
     )
 }
 

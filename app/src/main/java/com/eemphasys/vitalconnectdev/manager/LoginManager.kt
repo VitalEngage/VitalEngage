@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit
 
 
 interface LoginManager {
-    suspend fun getAuthenticationToken(identity: String, password: String)
+    suspend fun getAuthenticationToken(identity: String, password: String, timeStamp:String)
 
     suspend fun getTwilioToken()
     suspend fun signInUsingStoredCredentials()
@@ -51,13 +51,13 @@ class LoginManagerImpl(
     private val firebaseTokenManager: FirebaseTokenManager,
     private val conversationsClient: ConversationsClientWrapper,
 ): LoginManager {
-    override suspend fun getAuthenticationToken(identity: String, password: String) {
+    override suspend fun getAuthenticationToken(identity: String, password: String, timeStamp: String) {
         val requestData = ValidateUserReq(
             identity,
             password,
             LoginConstants.TENANT_CODE,
-            "hmahajan@e-emphasys.com",
-            LoginConstants.TIMESTAMP,
+            "",
+            timeStamp,
             true,
             ""
         )
@@ -68,6 +68,8 @@ class LoginManagerImpl(
             Log.d("Authtoken: ", result.body()!!.jwtToken)
             LoginConstants.AUTH_TOKEN = result.body()!!.jwtToken
             LoginConstants.PROXY_NUMBER = result.body()!!.proxyNumber
+            LoginConstants.USER_SMS_ALERT = result.body()!!.enableNotification.toString()
+            credentialStorage.storeCredentials(identity,password)
         }
     }
 
@@ -94,7 +96,7 @@ class LoginManagerImpl(
                 ChatAppModel.twilio_token = LoginConstants.TWILIO_TOKEN
             }
 //        }
-        credentialStorage.storeCredentials(LoginConstants.CURRENT_USER)
+        getTwilioclient()
     }
 
     override suspend fun signInUsingStoredCredentials() {
@@ -130,6 +132,7 @@ class LoginManagerImpl(
 
     override suspend fun getTwilioclient() {
         conversationsClient.getclient()
+        registerForFcm()
     }
 
 
@@ -137,7 +140,7 @@ class LoginManagerImpl(
         try {
             val token = firebaseTokenManager.retrieveToken()
 
-            credentialStorage.fcmToken = token
+//            credentialStorage.fcmToken = token
             conversationsClient.getConversationsClient().registerFCMToken(
 
                 ConversationsClient.FCMToken(token)
