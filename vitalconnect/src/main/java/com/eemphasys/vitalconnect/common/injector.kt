@@ -111,7 +111,6 @@ open class Injector {
             conversationListManager,
             connectivityMonitor,
             autoparticipantListManager
-
         )
     }
 
@@ -119,7 +118,6 @@ open class Injector {
     open fun createProfileViewModel(applicationContext: Context) = ProfileViewModel(
         ConversationsRepositoryImpl.INSTANCE,
         UserManagerImpl(ConversationsClientWrapper.INSTANCE,ConversationsRepositoryImpl.INSTANCE)
-
     )
 
 }
