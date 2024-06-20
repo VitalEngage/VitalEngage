@@ -23,8 +23,10 @@ class LoginConstants   {
         var TIMESTAMP = ""
         var IS_STANDALONE = "true"
         var USER_SMS_ALERT = ""
+        var SHOW_DESIGNATION = ""
+        var SHOW_DEPARTMENT = ""
 
-        val CONTACTS =
+        val CONTACTS1 =
             """{
             "contacts" : 
             [
@@ -32,47 +34,51 @@ class LoginConstants   {
                      "name":"Ankush Belorkar",
                      "number":"+919422855735",
                      "customerName":"",
-                     "customField1":"",
-                     "customField2":"",
-                     "customField3":"",
-                     "customField4":""
+                     "initials":"",
+                     "designation":"Technician",
+                     "department":"Service",
+                     "customer":"Customer",
+                     "countryCode":""
                   },
                   {
                      "name":"Himanshu Mahajan",
                      "number":"+919175346961",
                      "customerName":"",
-                     "customField1":"",
-                     "customField2":"",
-                     "customField3":"",
-                     "customField4":""
+                     "initials":"",
+                     "designation":"Supervisor",
+                     "department":"Service",
+                     "customer":"Customer",
+                     "countryCode":""
                   }
             ]
        } """.trimIndent()
 
-        val WEBUSERS = """{
+        val WEBUSERS1 = """{
             "webUser":[
             {
                 "name":"Ankush Belorkar",
                 "userName":"abelorkar@e-emphasys.com",
-                "customField1":"",
-                "customField2":"",
-                "customField3":"",
-                "customField4":""
+                "initials":"",
+                "designation":"Technician",
+                "department":"",
+                "customer":"",
+                "countryCode":""
             },
             {
                 "name":"Hardik Kothari",
                 "userName":"hkothari",
-                "customField1":"",
-                "customField2":"",
-                "customField3":"",
-                "customField4":""
+                "initials":"",
+                "designation":"Supervisor",
+                "department":"",
+                "customer":"",
+                "countryCode":""
             }
             ]
         }
         """.trimIndent()
 
-        val CONTACTS1 = ""
-        val WEBUSERS1 = ""
+        val CONTACTS = ""
+        val WEBUSERS = ""
 
     }
 }

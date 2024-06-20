@@ -12,5 +12,8 @@ data class ConversationListViewItem (
     val lastMessageColor: Int,
     val lastMessageDate: String,
     val isMuted: Boolean = false,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val department : String,
+    val designation: String,
+    val customer: String
 )

@@ -11,6 +11,7 @@ import com.eemphasys.vitalconnect.common.SingleLiveEvent
 import com.eemphasys.vitalconnect.common.asUserViewItem
 import com.eemphasys.vitalconnect.common.call
 import com.eemphasys.vitalconnect.common.enums.ConversationsError
+import com.eemphasys.vitalconnect.manager.ConnectivityMonitor
 import com.eemphasys.vitalconnect.repository.ConversationsRepository
 import com.twilio.util.TwilioException
 import kotlinx.coroutines.flow.map
@@ -20,6 +21,7 @@ import com.eemphasys.vitalconnect.manager.UserManager
 class ProfileViewModel(
     private val conversationsRepository: ConversationsRepository,
     private val userManager: UserManager,
+    connectivityMonitor: ConnectivityMonitor
     /*private val loginManager: LoginManager,*/
 ): ViewModel() {
     val selfUser = conversationsRepository.getSelfUser()
@@ -29,6 +31,7 @@ class ProfileViewModel(
     val onUserUpdated = SingleLiveEvent<Unit>()
     val onSignedOut = SingleLiveEvent<Unit>()
     val onError = SingleLiveEvent<ConversationsError>()
+    val isNetworkAvailable = connectivityMonitor.isNetworkAvailable.asLiveData(viewModelScope.coroutineContext)
 
     fun setFriendlyName(friendlyName: String) = viewModelScope.launch {
         try {

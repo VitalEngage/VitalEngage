@@ -29,6 +29,7 @@ import com.eemphasys.vitalconnect.ui.dialogs.AttachFileDialog
 import com.eemphasys.vitalconnect.ui.dialogs.MessageActionsDialog
 import com.eemphasys.vitalconnect.ui.dialogs.ReactionDetailsDialog
 import com.eemphasys_enterprise.commonmobilelib.EETLog
+import com.google.android.material.snackbar.Snackbar
 
 class MessageListActivity: AppCompatActivity() {
 
@@ -37,7 +38,9 @@ class MessageListActivity: AppCompatActivity() {
         val messageListViewModel by lazyViewModel {
             injector.createMessageListViewModel(applicationContext, intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
         }
-
+        private val noInternetSnackBar by lazy {
+            Snackbar.make(binding.messageListLayout, R.string.no_internet_connection, Snackbar.LENGTH_INDEFINITE)
+        }
         override fun onCreate(savedInstanceState: Bundle?) {
             try{
                 super.onCreate(savedInstanceState)
@@ -159,6 +162,11 @@ class MessageListActivity: AppCompatActivity() {
                 AttachFileDialog.getInstance(messageListViewModel.conversationSid)
                     .showNow(supportFragmentManager, null)
             }
+            messageListViewModel.isNetworkAvailable.observe(this) { isNetworkAvailable ->
+                showNoInternetSnackbar(!isNetworkAvailable)
+                if(!isNetworkAvailable)
+                    this.finish()
+            }
         }
 
         private fun showRemoveMessageDialog() {
@@ -247,6 +255,15 @@ class MessageListActivity: AppCompatActivity() {
             ReactionDetailsDialog.getInstance(messageListViewModel.conversationSid)
                 .showNow(supportFragmentManager, null)
         }
+
+    private fun showNoInternetSnackbar(show: Boolean) {
+
+        if (show) {
+            noInternetSnackBar.show()
+        } else {
+            noInternetSnackBar.dismiss()
+        }
+    }
 
         companion object {
 

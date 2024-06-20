@@ -35,10 +35,6 @@ class MainManagerImpl(
         try {
             val token = firebaseTokenManager.retrieveToken()
 
-            //credentialStorage.fcmToken = token
-
-//Timber.d("Registering for FCM: $token")
-
             conversationsClient.getConversationsClient().registerFCMToken(
 
                 ConversationsClient.FCMToken(token)
@@ -63,19 +59,7 @@ class MainManagerImpl(
     }
     override suspend fun unregisterFromFcm() {
 
-// We don't call `conversationsClient.getConversationsClient().unregisterFCMToken(token)` here
-
-// because it fails with commandTimeout (60s by default) if device is offline or token is expired.
-
-// Instead we try to delete token on FCM async. Which leads to the same result if device is online,
-
-// but we can shutdown `conversationsClient`immediately without waiting a result.
-
         firebaseTokenManager.deleteToken()
 
     }
-
-
-
-
 }

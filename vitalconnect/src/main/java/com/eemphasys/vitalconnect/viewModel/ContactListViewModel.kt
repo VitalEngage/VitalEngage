@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.SessionHelper
@@ -26,6 +27,7 @@ import com.eemphasys.vitalconnect.misc.log_trace.LogTraceHelper
 import com.eemphasys.vitalconnect.ui.activity.MessageListActivity
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
+import com.twilio.conversations.Attributes
 import kotlinx.coroutines.delay
 
 
@@ -37,58 +39,17 @@ class ContactListViewModel(
     private val autoParticipantListManager: AutoParticipantListManager
 ): ViewModel() {
     private val unfilteredUserConversationItems = MutableLiveData<List<ConversationListViewItem>>(emptyList())
-    private val userConversationItems = MutableLiveData<List<ConversationListViewItem>>(emptyList())
+
 
     private val isDataLoading = SingleLiveEvent<Boolean>()
-    private val isNoResultsFoundVisible = MutableLiveData(false)
-    private val isNoConversationsVisible = MutableLiveData(false)
 
     private val onConversationCreated = SingleLiveEvent<Unit>()
     private val onConversationError = SingleLiveEvent<ConversationsError>()
 
-    private var conversationFilter by Delegates.observable("") { _, _, _ -> updateUserConversationItems() }
     private val isShowProgress = MutableLiveData<Boolean>()
     val onParticipantAdded = SingleLiveEvent<String>()
     private val onDetailsError = SingleLiveEvent<ConversationsError>()
-
-    init {
-        getUserConversations()
-
-        unfilteredUserConversationItems.observeForever { updateUserConversationItems() }
-    }
-
-    private fun updateUserConversationItems() {
-        val filteredItems = unfilteredUserConversationItems.value?.filterByName(conversationFilter) ?: emptyList()
-        userConversationItems.value = filteredItems
-
-        isNoResultsFoundVisible.value = conversationFilter.isNotEmpty() && filteredItems.isEmpty()
-        isNoConversationsVisible.value = conversationFilter.isEmpty() && filteredItems.isEmpty()
-
-        LogTraceHelper.trace(
-            applicationContext,
-            LogTraceConstants.traceDetails(
-                Thread.currentThread().stackTrace,
-                "Activity Selected :",
-                LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
-                LogConstants.LOG_SEVERITY.NORMAL.toString()
-            ),
-            LogTraceConstants.chatappmodel,
-            LogTraceConstants.getUtilityData(applicationContext)!!
-        )
-    }
-
-    private fun getUserConversations() = viewModelScope.launch {
-        conversationsRepository.getUserConversations().collect { (list, status) ->
-
-            unfilteredUserConversationItems.value = list
-                .asConversationListViewItems(applicationContext)
-                .merge(unfilteredUserConversationItems.value)
-
-            if (status is RepositoryRequestStatus.Error) {
-                onConversationError.value = ConversationsError.CONVERSATION_FETCH_USER_FAILED
-            }
-        }
-    }
+    val isNetworkAvailable = connectivityMonitor.isNetworkAvailable.asLiveData(viewModelScope.coroutineContext)
 
     private fun setDataLoading(loading: Boolean) {
         if (isDataLoading.value != loading) {
@@ -102,15 +63,6 @@ class ContactListViewModel(
         }
     }
 
-
-   /* private fun setConversationLoading(conversationSid: String, loading: Boolean) {
-        fun ConversationListViewItem.transform() = if (sid == conversationSid) copy(isLoading = loading) else this
-        unfilteredUserConversationItems.value = unfilteredUserConversationItems.value?.map { it.transform() }
-    }
-
-    private fun isConversationLoading(conversationSid: String): Boolean =
-        unfilteredUserConversationItems.value?.find { it.sid == conversationSid }?.isLoading == true*/
-
     private fun List<ConversationListViewItem>.filterByName(name: String): List<ConversationListViewItem> =
         if (name.isEmpty()) {
             this
@@ -119,20 +71,20 @@ class ContactListViewModel(
         }
 
 
-    fun createConversation(friendlyName: String, identity : String, phoneNumber : String) = viewModelScope.launch {
+    fun createConversation(friendlyName: String, identity : String, phoneNumber : String,attributes: Attributes) = viewModelScope.launch {
         try {
             setDataLoading(true)
 
             if(phoneNumber != "")
             {
-                val conversationSid = conversationListManager.createConversation(friendlyName)
+                val conversationSid = conversationListManager.createConversation(friendlyName,attributes)
                 conversationListManager.joinConversation(conversationSid)
                 addNonChatParticipant(phoneNumber, Constants.PROXY_NUMBER,friendlyName,conversationSid)
                 MessageListActivity.startfromFragment(applicationContext,conversationSid)
                 Log.d("nonchat participant","participant added")
             }
             else {
-                val conversationSid = conversationListManager.createConversation(friendlyName)
+                val conversationSid = conversationListManager.createConversation(friendlyName,attributes)
                 conversationListManager.joinConversation(conversationSid)
                 addChatParticipant(identity, conversationSid)
                 MessageListActivity.startfromFragment(applicationContext,conversationSid)
@@ -253,4 +205,27 @@ class ContactListViewModel(
             delay(3000)
             MessageListActivity.startfromFragment(applicationContext,sid) }
     }
+
+    fun setAttributes(conversationSid : String, attributes: Attributes){
+        viewModelScope.launch {
+            conversationListManager.setAttributes(conversationSid,attributes)
+        }
+    }
+
+    fun getAttributes(conversationSid: String, callback: AttributesCallback) {
+        viewModelScope.launch {
+            try {
+                val attributes = conversationListManager.getAttributes(conversationSid)
+                // Call the callback with the fetched attributes
+                callback(attributes)
+            } catch (e: Exception) {
+                // Handle exception
+                println("Error: ${e.message}")
+                // Optionally, inform the caller of the error
+                callback("") // Passing an empty string or null depending on your error handling strategy
+            }
+        }
+    }
 }
+
+typealias AttributesCallback = (String) -> Unit

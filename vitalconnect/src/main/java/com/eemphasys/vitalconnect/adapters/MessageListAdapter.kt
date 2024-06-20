@@ -1,11 +1,16 @@
 package com.eemphasys.vitalconnect.adapters
 
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.ShapeDrawable
 import android.net.Uri
 import android.text.format.Formatter
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.databinding.ViewDataBinding
 import androidx.paging.PagedListAdapter
@@ -14,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.eemphasys.vitalconnect.common.enums.SendStatus
 import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.common.Constants
+import com.eemphasys.vitalconnect.common.ParticipantColorManager
 import com.eemphasys.vitalconnect.common.enums.Direction
 import com.eemphasys.vitalconnect.common.enums.DownloadState.COMPLETED
 import com.eemphasys.vitalconnect.common.enums.DownloadState.DOWNLOADING
@@ -61,7 +67,7 @@ class MessageListAdapter(
         }
 
 //        for(p in Constants.PARTICIPANTS) {
-//            message.friendlyName = ConversationsRepositoryImpl.INSTANCE.updateFriendlyName(p.identity)
+//            message.friendlyName = ConversationsRepositoryImpl.INSTANCE.getFriendlyName(message.author)
 //        }
         val binding = holder.binding
         val context = binding.root.context
@@ -133,6 +139,13 @@ class MessageListAdapter(
                 binding.attachmentInfo.setTextColor(attachmentInfoColor)
                 binding.attachmentBackground.setOnClickListener(attachmentOnClickListener)
                 binding.attachmentBackground.setOnLongClickListener(longClickListener)
+                binding.participantIcon.text = Constants.getInitials(message.friendlyName.trim { it <= ' '} )
+
+
+                changeButtonBackgroundColor(
+                    binding.participantIcon,
+                    ParticipantColorManager.getColorForParticipant(message.author)
+                )
             }
             is RowMessageItemOutgoingBinding -> {
                 binding.message = message
@@ -166,6 +179,20 @@ class MessageListAdapter(
 
     class ViewHolder(val binding: ViewDataBinding) : RecyclerView.ViewHolder(binding.root)
 
+    private fun changeButtonBackgroundColor(textView: TextView?, colorid: Int) {
+        try {
+            val background = textView!!.background
+            if (background is ShapeDrawable) {
+                background.paint.color = colorid
+            } else if (background is GradientDrawable) {
+                background.setColor(colorid)
+            } else if (background is ColorDrawable) {
+                background.color = colorid
+            }
+        } catch (e: Exception) {
+            Log.e("Catchmessage", Log.getStackTraceString(e))
+        }
+    }
     companion object {
         val MESSAGE_COMPARATOR = object : DiffUtil.ItemCallback<MessageListViewItem>() {
             override fun areContentsTheSame(oldItem: MessageListViewItem, newItem: MessageListViewItem) =

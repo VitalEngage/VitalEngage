@@ -94,7 +94,9 @@ interface ConversationsRepository {
     fun unsubscribeFromConversationsClientEvents()
 
 //    fun getTotalUnreadMessageCount() : Int
-    fun updateFriendlyName(identity : String) :String
+    fun getFriendlyName(identity : String) :String
+
+    fun updateFriendlyName()
 }
 
 class ConversationsRepositoryImpl(
@@ -484,8 +486,12 @@ Log.d("sid",conversationSid)
         }
     }
 
-    override fun updateFriendlyName(identity : String) : String {
+    override fun getFriendlyName(identity : String) : String {
         return localCache.messagesDao().fetchFriendlyName(identity)
+    }
+
+    override fun updateFriendlyName() {
+        localCache.messagesDao().updateFriendlyName()
     }
 
     private suspend fun insertOrUpdateConversation(conversationSid: String) {

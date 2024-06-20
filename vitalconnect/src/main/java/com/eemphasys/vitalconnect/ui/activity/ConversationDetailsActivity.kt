@@ -14,6 +14,7 @@ import com.eemphasys.vitalconnect.common.extensions.*
 import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.databinding.ActivityConversationDetailsBinding
 import com.eemphasys_enterprise.commonmobilelib.EETLog
+import com.google.android.material.snackbar.Snackbar
 
 class ConversationDetailsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityConversationDetailsBinding
@@ -29,7 +30,10 @@ class ConversationDetailsActivity : AppCompatActivity() {
     }
 
     val conversationDetailsViewModel by lazyViewModel {
-        injector.createConversationDetailsViewModel(intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
+        injector.createConversationDetailsViewModel(applicationContext, intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
+    }
+    private val noInternetSnackBar by lazy {
+        Snackbar.make(binding.conversationDetailsLayout, R.string.no_internet_connection, Snackbar.LENGTH_INDEFINITE)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,6 +46,8 @@ class ConversationDetailsActivity : AppCompatActivity() {
             }
 
         initViews()
+//        val friendlyName = conversationDetailsViewModel.getFriendlyName(binding.textView3.text.toString())
+//        binding.textView3.text = "Created by: " + friendlyName
     }
 
     override fun onBackPressed() {
@@ -146,7 +152,10 @@ class ConversationDetailsActivity : AppCompatActivity() {
         }
 
         conversationDetailsViewModel.conversationDetails.observe(this) { conversationDetails ->
+//            conversationDetails.friendlyName = conversationDetailsViewModel.getFriendlyName(binding.details!!.createdBy)
             binding.details = conversationDetails
+//            val friendlyName = conversationDetailsViewModel.getFriendlyName(binding.details.createdBy)
+//            binding.textView3.text = "Created by: " + friendlyName
             binding.renameConversationSheet.renameConversationInput.setText(conversationDetails.conversationName)
         }
 
@@ -170,6 +179,19 @@ class ConversationDetailsActivity : AppCompatActivity() {
                     identity
                 )
             )
+        }
+        conversationDetailsViewModel.isNetworkAvailable.observe(this) { isNetworkAvailable ->
+            showNoInternetSnackbar(!isNetworkAvailable)
+            if(!isNetworkAvailable)
+                this.finish()
+        }
+    }
+    private fun showNoInternetSnackbar(show: Boolean) {
+
+        if (show) {
+            noInternetSnackBar.show()
+        } else {
+            noInternetSnackBar.dismiss()
         }
     }
 

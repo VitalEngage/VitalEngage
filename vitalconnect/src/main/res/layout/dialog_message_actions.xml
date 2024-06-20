@@ -25,7 +25,8 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:text="@string/message_action_share"
-        app:drawableStartCompat="@drawable/ic_share" />
+        app:drawableStartCompat="@drawable/ic_share"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/delete"
@@ -34,6 +35,7 @@
         android:layout_height="48dp"
         android:text="@string/message_action_delete"
         android:textColor="@color/colorAccent"
-        app:drawableStartCompat="@drawable/ic_trash" />
+        app:drawableStartCompat="@drawable/ic_trash"
+        android:visibility="gone"/>
 
 </LinearLayout>

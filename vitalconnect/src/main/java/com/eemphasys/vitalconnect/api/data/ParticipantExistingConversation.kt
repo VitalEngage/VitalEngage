@@ -5,5 +5,13 @@ data class ParticipantExistingConversation(
     val conversationName: String,
     val conversationDate:String,
     val participantCount:Int,
-    val messagesCount:Int
+    val messagesCount:Int,
+    val attributes: Attributes
+)
+
+
+data class Attributes(
+    val Designation: String,
+    val Department: String,
+    val CustomerName: String
 )

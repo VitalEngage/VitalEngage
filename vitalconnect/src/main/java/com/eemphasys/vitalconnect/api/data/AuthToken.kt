@@ -20,5 +20,8 @@ data class AuthToken(
     val proxyNumber: String,
     val department: String,
     val countryCode: String,
-    val enableNotification : Boolean
+    val enableNotification : Boolean,
+    val mobileNumber: String ,
+    val showDesignation: Boolean,
+    val showDepartment: Boolean
 )

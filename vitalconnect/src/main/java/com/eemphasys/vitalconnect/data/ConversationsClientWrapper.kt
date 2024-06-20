@@ -35,6 +35,7 @@ import com.eemphasys.vitalconnect.data.localCache.LocalCacheProvider
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
+import com.twilio.util.TwilioException
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 
@@ -52,9 +53,6 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
         val client = createAndSyncConversationsClient(applicationContext, ChatAppModel.twilio_token!!)
         this.deferredClient.complete(client)
         Log.d("client", client.myIdentity)
-//        val conversationListViewModel by  { injector.createConversationListViewModel(applicationContext) }
-//        var count = LocalCacheProvider.INSTANCE.conversationsDao().getTotalUnreadMessages()
-//        Log.d("count in clientwrapper", count.toString())
         client.addListener(
             onTokenAboutToExpire = { Log.d("OntokenAboutToExpire","OnTokenAboutToExpire")
                 updateToken(client.myIdentity, notifyOnFailure = false) },
@@ -70,6 +68,16 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
 
     suspend fun shutdown() {
         getConversationsClient().shutdown()
+//        try{
+//            var client = getConversationsClient().myIdentity
+//            Log.d("after shutting client in try",client)
+//        }
+//        catch (e:Exception){
+//            Log.d("after shutting client in catch",e.message.toString())
+//        }
+//        var client = getConversationsClient().myIdentity
+//        Log.d("after shutting client",client)
+
         deferredClient = CompletableDeferred()
     }
 
@@ -93,14 +101,6 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
 
     private suspend fun getToken(username: String) = withContext(Dispatchers.IO) {
         try {
-            /*val uri = Uri.parse(TOKEN_URL)
-                .buildUpon()
-                .appendQueryParameter(QUERY_IDENTITY, username)
-                .appendQueryParameter(QUERY_PASSWORD, password)
-                .build()
-                .toString()
-
-            return@withContext URL(uri).readText()*/
             if(Constants.AUTH_TOKEN.isNullOrEmpty()) {
                 val requestData = RequestToken(
                     Constants.TENANT_CODE,
@@ -172,16 +172,5 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
             _instance = ConversationsClientWrapper(applicationContext)
         }
 
-        @DelicateCoroutinesApi
-        @RestrictTo(RestrictTo.Scope.TESTS)
-        fun recreateInstance(applicationContext: Context) {
-            _instance?.let { instance ->
-                // Shutdown old client if it will ever be created
-                GlobalScope.launch { instance.getConversationsClient().shutdown() }
-            }
-
-            _instance = null
-            createInstance(applicationContext)
-        }
     }
 }

@@ -20,23 +20,15 @@ import com.google.android.material.snackbar.Snackbar
 
 class ProfileFragment:Fragment() {
     lateinit var binding: FragmentProfileBinding
-
+    private val noInternetSnackBar by lazy {
+        Snackbar.make(binding.root, R.string.no_internet_connection, Snackbar.LENGTH_INDEFINITE)
+    }
     private val profileViewModel by lazyActivityViewModel { injector.createProfileViewModel(applicationContext) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         EETLog.saveUserJourney(this::class.java.simpleName + " onCreate Called")
         setHasOptionsMenu(true)
-//        activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
-//            override fun handleOnBackPressed() {
-//                if(shouldInterceptBackPress()){
-//                    Log.d("ProfileFragment","Profile back button pressed")
-//                    // in here you can do logic when backPress is clicked
-//                }else{
-//                    isEnabled = false
-//                    activity?.onBackPressed()
-//                }
-//            }
-//        })
+
     }
 
     fun shouldInterceptBackPress() = true
@@ -87,6 +79,16 @@ class ProfileFragment:Fragment() {
             profileViewModel.changeUserAlertStatus(isChecked)
         }
 
+        profileViewModel.isNetworkAvailable.observe(viewLifecycleOwner) { isNetworkAvailable ->
+            showNoInternetSnackbar(!isNetworkAvailable)
+            if(!isNetworkAvailable)
+                activity?.finish()
+        }
+
+        if(Constants.IS_STANDALONE == "false") {
+            binding.signOut.visibility= View.GONE
+        }
+
     }
 
     fun showEditProfileDialog() = EditProfileDialog().showNow(childFragmentManager, null)
@@ -108,5 +110,13 @@ class ProfileFragment:Fragment() {
         }
 
         dialog.show()
+    }
+    private fun showNoInternetSnackbar(show: Boolean) {
+
+        if (show) {
+            noInternetSnackBar.show()
+        } else {
+            noInternetSnackBar.dismiss()
+        }
     }
 }

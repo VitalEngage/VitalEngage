@@ -65,13 +65,6 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         EETLog.saveUserJourney(this::class.java.simpleName + " onCreate Called")
 
-//        val items = listOf("e-servicetech", "e-logistics", "e-serviceplus")
-//        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, items)
-//
-//        val autoCompleteTextView = findViewById<AutoCompleteTextView>(R.id.dropdown_product)
-//
-//        autoCompleteTextView.setAdapter(adapter)
-
                 binding.usernameInputLayoutRP.visibility = GONE
                 binding.passwordInputLayoutRP.visibility = GONE
                 binding.confirmpasswordInputLayoutRP.visibility = GONE
@@ -208,10 +201,10 @@ class LoginActivity : AppCompatActivity() {
                 if
                         (permission == PackageManager.PERMISSION_DENIED
                 ) {
-// user rejected the permission
+                // user rejected the permission
                     checkAndRequestPermissions()
                 } else {
-// btnLogin.performClick()
+                // btnLogin.performClick()
                 }
 
             }
@@ -445,11 +438,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     companion object{
-
-
         fun start(context: Context){
-//            val intent = Intent(context, MessageListActivity::class.java)
-//            val intent = Intent(context, ConversationListActivity::class.java)
             val intent = Intent(context, MainActivity::class.java)
             intent.putExtra("username", LoginConstants.CURRENT_USER)
             intent.putExtra("clientID", LoginConstants.CLIENT_ID)
@@ -470,9 +459,13 @@ class LoginActivity : AppCompatActivity() {
             intent.putExtra("customerName","DummyUser")
             intent.putExtra("showConversations","true")
             intent.putExtra("userSMSAlert",LoginConstants.USER_SMS_ALERT)
+            intent.putExtra("showDepartment",LoginConstants.SHOW_DEPARTMENT)
+            intent.putExtra("showDesignation",LoginConstants.SHOW_DESIGNATION)
+            intent.putExtra("department","")
+            intent.putExtra("designation","")
+            intent.putExtra("customer", "")
+            intent.putExtra("countryCode","")
             context.startActivity(intent)
-
-
         }
     }
 

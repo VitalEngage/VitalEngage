@@ -31,9 +31,30 @@ class ContactListAdapter(val itemList : List<ContactListViewItem>,private val it
         }
 
             fun bind(item: ContactListViewItem){
-                itemBinding.contactName.text = item.name + "  " + item.number
+                itemBinding.contactName.text = item.name
+                itemBinding.contactNumber.text = item.number
                 itemBinding.contactType.text = item.type
                 itemBinding.participantIcon.text = item.initials
+                itemBinding.designation.text = item.designation
+                itemBinding.department.text = "(" + item.department + ")"
+                itemBinding.customerName.text = item.customerName
+
+               if( itemBinding.department.text.isNullOrBlank() || Constants.SHOW_DEPARTMENT == "false" ){
+                   itemBinding.department.visibility = View.GONE
+               }
+                if( itemBinding.designation.text.isNullOrBlank() || Constants.SHOW_DESIGNATION == "false" ){
+                    itemBinding.designation.visibility = View.GONE
+                }
+                if( itemBinding.contactNumber.text.isNullOrBlank()){
+                    itemBinding.contactNumber.visibility = View.GONE
+                }
+                if( itemBinding.customerName.text.isNullOrBlank()){
+                    itemBinding.customerName.visibility = View.GONE
+                }
+
+                if(itemBinding.contactName.text == Constants.CUSTOMER_NAME){
+                    itemBinding.defaultContact.visibility = View.VISIBLE
+                }
 
                 changeButtonBackgroundColor(
                     itemBinding.participantIcon,
