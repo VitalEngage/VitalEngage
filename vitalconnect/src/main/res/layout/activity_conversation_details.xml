@@ -78,10 +78,10 @@
                                 android:id="@+id/textView3"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:text="@{@string/details_created_by(details.createdBy)}"
+                                android:text="@{@string/details_created_by(details.friendlyName)}"
                                 tools:text="Created by: Eddy"
                                 style="@style/ConversationDetails_Subtext"
-                                android:layout_weight="1"/>
+                                android:layout_weight="0.7"/>
                             <TextView
                                 android:id="@+id/textView2"
                                 android:layout_width="0dp"
@@ -90,7 +90,7 @@
                                 android:textAlignment="textEnd"
                                 tools:text="23 May 2020"
                                 style="@style/ConversationDetails_Subtext"
-                                android:layout_weight="1"/>
+                                android:layout_weight="0.3"/>
                     </LinearLayout>
                     </LinearLayout>
 

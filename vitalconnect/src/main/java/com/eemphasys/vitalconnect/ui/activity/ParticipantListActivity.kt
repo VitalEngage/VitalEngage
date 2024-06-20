@@ -15,6 +15,7 @@ import com.eemphasys.vitalconnect.common.extensions.*
 import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.databinding.ActivityParticipantsBinding
 import com.eemphasys_enterprise.commonmobilelib.EETLog
+import com.google.android.material.snackbar.Snackbar
 
 class ParticipantListActivity : AppCompatActivity() {
     private val binding by lazy { ActivityParticipantsBinding.inflate(layoutInflater) }
@@ -22,7 +23,10 @@ class ParticipantListActivity : AppCompatActivity() {
     private val sheetListener by lazy { SheetListener(binding.sheetBackground) }
 
     val participantListViewModel by lazyViewModel {
-        injector.createParticipantListViewModel(intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
+        injector.createParticipantListViewModel(applicationContext, intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
+    }
+    private val noInternetSnackBar by lazy {
+        Snackbar.make(binding.participantListLayout, R.string.no_internet_connection, Snackbar.LENGTH_INDEFINITE)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -105,6 +109,19 @@ class ParticipantListActivity : AppCompatActivity() {
         }
         participantListViewModel.onParticipantError.observe(this) { error ->
             binding.participantListLayout.showSnackbar(getErrorMessage(error))
+        }
+        participantListViewModel.isNetworkAvailable.observe(this) { isNetworkAvailable ->
+            showNoInternetSnackbar(!isNetworkAvailable)
+            if(!isNetworkAvailable)
+                this.finish()
+        }
+    }
+    private fun showNoInternetSnackbar(show: Boolean) {
+
+        if (show) {
+            noInternetSnackBar.show()
+        } else {
+            noInternetSnackBar.dismiss()
         }
     }
 

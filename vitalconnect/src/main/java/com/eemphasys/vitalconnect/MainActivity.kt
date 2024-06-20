@@ -3,6 +3,7 @@ package com.eemphasys.vitalconnect
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.eemphasys.vitalconnect.api.AuthInterceptor
 import com.eemphasys.vitalconnect.api.RetrofitHelper
@@ -15,7 +16,10 @@ import com.eemphasys.vitalconnect.common.extensions.lazyViewModel
 import com.eemphasys.vitalconnect.databinding.ActivityMainBinding
 import com.eemphasys.vitalconnect.ui.activity.ConversationListActivity
 import com.eemphasys_enterprise.commonmobilelib.EETLog
+import com.google.gson.Gson
+import com.twilio.conversations.Attributes
 import okhttp3.OkHttpClient
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -46,6 +50,12 @@ class MainActivity : AppCompatActivity() {
         val customerName = intent.getStringExtra("customerName")
         val showConversations = intent.getStringExtra("showConversations")
         val userSMSAlert = intent.getStringExtra("userSMSAlert")
+        val showDepartment = intent.getStringExtra("showDepartment")
+        val showDesignation = intent.getStringExtra("showDesignation")
+        val department = intent.getStringExtra("department")
+        val designation = intent.getStringExtra("designation")
+        val customer = intent.getStringExtra("customer")
+        val countryCode = intent.getStringExtra("countryCode")
 
         Constants.AUTH_TOKEN = authToken!!
         Constants.CONTACTS = contacts!!
@@ -62,10 +72,16 @@ class MainActivity : AppCompatActivity() {
         Constants.FULL_NAME = fullName!!
         Constants.SHOW_CONTACTS = showContacts!!
         Constants.IS_STANDALONE = isStandalone!!
-        Constants.CUSTOMER_NUMBER = customerNumber!!
+        Constants.CUSTOMER_NUMBER = Constants.formatPhoneNumber(customerNumber!!,countryCode!!)
         Constants.CUSTOMER_NAME = customerName!!
         Constants.SHOW_CONVERSATIONS = showConversations!!
         Constants.USER_SMS_ALERT = userSMSAlert!!
+        Constants.SHOW_DEPARTMENT = showDepartment!!
+        Constants.SHOW_DESIGNATION =showDesignation!!
+        Constants.DEPARTMENT= department!!
+        Constants.DESIGNATION=designation!!
+        Constants.CUSTOMER=customer!!
+        Constants.COUNTRYCODE=countryCode
 
         mainViewModel.create()
         super.onCreate(savedInstanceState)
@@ -83,7 +99,7 @@ class MainActivity : AppCompatActivity() {
 
             val existingConversation = retrofitWithToken.fetchExistingConversation(
                 Constants.TENANT_CODE,
-                customerNumber,
+                Constants.cleanedNumber(Constants.formatPhoneNumber(customerNumber!!,countryCode)),
                 false,
                 1,
                 Constants.PROXY_NUMBER
@@ -104,50 +120,140 @@ class MainActivity : AppCompatActivity() {
                             for (conversation in conversationList) {
                                 // Access properties of each Conversation object
                                 println("Conversation SID: ${conversation.conversationSid}")
+                                //when conversation exists
+                                if(!conversation.conversationSid.isNullOrEmpty()) {
+                                    try {
+                                        val participantSid =
+                                            retrofitWithToken.addParticipantToConversation(
+                                                Constants.TENANT_CODE,
+                                                conversation.conversationSid,
+                                                Constants.USERNAME
+                                            )
 
-                                try {
-                                    val participantSid =
-                                        retrofitWithToken.addParticipantToConversation(
-                                            Constants.TENANT_CODE,
-                                            conversation.conversationSid,
-                                            Constants.USERNAME
-                                        )
-
-                                    participantSid.enqueue(object : Callback<String> {
-                                        override fun onResponse(
-                                            call: Call<String>,
-                                            response: Response<String>
-                                        ) {
-                                            if (response.isSuccessful) {
-                                                val responseBody: String? = response.body()
-                                                // Handle the string value as needed
-                                                println("Response body: $responseBody")
-                                            } else {
-                                                println("Response was not successful: ${response.code()}")
+                                        participantSid.enqueue(object : Callback<String> {
+                                            override fun onResponse(
+                                                call: Call<String>,
+                                                response: Response<String>
+                                            ) {
+                                                if (response.isSuccessful) {
+                                                    val responseBody: String? = response.body()
+                                                    // Handle the string value as needed
+                                                    println("Response body: $responseBody")
+                                                } else {
+                                                    println("Response was not successful: ${response.code()}")
+                                                }
                                             }
-                                        }
 
-                                        override fun onFailure(call: Call<String>, t: Throwable) {
-                                            println("Failed to execute request: ${t.message}")
-                                        }
-                                    })
-                                } catch (e: Exception) {
-                                    println("Exception :  ${e.message}")
+                                            override fun onFailure(
+                                                call: Call<String>,
+                                                t: Throwable
+                                            ) {
+                                                println("Failed to execute request: ${t.message}")
+                                            }
+                                        })
+                                    } catch (e: Exception) {
+                                        println("Exception :  ${e.message}")
+                                    }
+                                    //set attrtibute fetched from parent if blank in response
+                                    if(conversation.attributes.Department.isNullOrEmpty() &&
+                                        conversation.attributes.Designation.isNullOrEmpty() &&
+                                        conversation.attributes.CustomerName.isNullOrEmpty()){
+                                        //add attributes from parent
+                                        var customer = Constants.CUSTOMER
+                                        var department = Constants.DEPARTMENT
+                                        var designation = Constants.DESIGNATION
+
+                                        val attributes = mapOf(
+                                            "Designation" to designation,
+                                            "Department" to department,
+                                            "CustomerName" to customer
+                                        )
+//                                        val gson = Gson()
+//                                        val jsonAttributes = gson.toJson(attributes)
+                                        val jsonObject = JSONObject(attributes)
+                                        Log.d("setting attributes", jsonObject.toString())
+                                        contactListViewModel.setAttributes(conversation.conversationSid,Attributes(jsonObject))
+                                    }
+                                    //Starting and redirecting to Existing conversation
+                                    contactListViewModel.getSyncStatus(conversation.conversationSid)
                                 }
-                                //Starting and redirecting to Existing conversation
-//                                        delay(1000)
-                                contactListViewModel.getSyncStatus(conversation.conversationSid)
-                                //MessageListActivity.startfromFragment(applicationContext,conversation.conversationSid)
-                                //binding?.progressBarID?.visibility = View.GONE
+                                //conversation doesnt exist
+                                else {
+                                    var customer = ""
+                                    var department =""
+                                    var designation = ""
+
+                                    if (conversation.attributes.Department.isNullOrEmpty() &&
+                                        conversation.attributes.Designation.isNullOrEmpty() &&
+                                        conversation.attributes.CustomerName.isNullOrEmpty()
+                                    ) {
+                                         customer = Constants.CUSTOMER
+                                         department = Constants.DEPARTMENT
+                                         designation = Constants.DESIGNATION
+                                    }
+                                    else{
+                                        customer = conversation.attributes.CustomerName
+                                        department = conversation.attributes.Department
+                                        designation = conversation.attributes.Designation
+                                    }
+                                    val attributes = mapOf(
+                                        "Designation" to designation,
+                                        "Department" to department,
+                                        "CustomerName" to customer
+                                    )
+//
+                                    val jsonObject = JSONObject(attributes)
+                                    Log.d("setting attributes", jsonObject.toString())
+                                    contactListViewModel.createConversation(
+                                        "$customerName ${
+                                            Constants.formatPhoneNumber(
+                                                customerNumber!!,
+                                                countryCode
+                                            )
+                                        }",
+                                        " ",
+                                        "${
+                                            Constants.cleanedNumber(
+                                                Constants.formatPhoneNumber(
+                                                    customerNumber!!,
+                                                    countryCode
+                                                )
+                                            )
+                                        }",
+                                        Attributes(jsonObject)
+                                    )
+
+                                }
                             }
-                        } else { //If there is no existing conversation with SMS user, create new
-                            contactListViewModel.createConversation(
-                                "$customerName $customerNumber",
-                                " ",
-                                "$customerNumber"
-                            )
-                            //contactListViewModel.createConversation(contact.name + " " + contact.number ,contact.email,contact.number)
-                            //binding?.progressBarID?.visibility = View.GONE
+                        } else {
+                            try {
+
+                                //If there is no existing conversation with SMS user, create new
+                                //set attributes fetched from parent
+                                var customer = Constants.CUSTOMER
+                                var department = Constants.DEPARTMENT
+                                var designation = Constants.DESIGNATION
+
+                                val attributes = mapOf(
+                                    "Designation" to designation,
+                                    "Department" to department,
+                                    "CustomerName" to customer
+                                )
+//                                val gson = Gson()
+//                                val jsonAttributes = gson.toJson(attributes)
+                                val jsonObject = JSONObject(attributes)
+                                Log.d("setting attributes", jsonObject.toString())
+                                contactListViewModel.createConversation(
+                                    "$customerName ${Constants.formatPhoneNumber(customerNumber!!,countryCode)}",
+                                    " ",
+                                    "${Constants.cleanedNumber(Constants.formatPhoneNumber(customerNumber!!,countryCode))}",
+                                    Attributes(jsonObject)
+                                )
+                                //contactListViewModel.createConversation(contact.name + " " + contact.number ,contact.email,contact.number)
+                                //binding?.progressBarID?.visibility = View.GONE
+                            } catch(e:Exception){
+                                println("Exception :  ${e.message}")
+                            }
                         }
                     } else {
                         println("Response was not successful: ${response.code()}")

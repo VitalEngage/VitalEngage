@@ -77,6 +77,6 @@ interface MessagesDao {
     @Query("SELECT friendlyName FROM participant_table WHERE identity= :identity ")
     fun fetchFriendlyName(identity : String) : String
 
-//    @Query("UPDATE message_table SET friendlyName = ( SELECT friendlyName FROM participant_table WHERE identity = message_table.author)")
-//    fun updateFriendlyName()
+    @Query("UPDATE message_table SET friendlyName = ( SELECT friendlyName FROM participant_table WHERE identity = message_table.author)")
+    fun updateFriendlyName()
 }

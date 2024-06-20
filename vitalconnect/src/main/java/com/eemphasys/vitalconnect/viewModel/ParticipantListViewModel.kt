@@ -2,6 +2,7 @@ package com.eemphasys.vitalconnect.viewModel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.SessionHelper
@@ -11,6 +12,7 @@ import com.eemphasys.vitalconnect.common.call
 import com.eemphasys.vitalconnect.common.enums.ConversationsError
 import com.eemphasys.vitalconnect.data.models.ParticipantListViewItem
 import com.eemphasys.vitalconnect.data.models.RepositoryRequestStatus
+import com.eemphasys.vitalconnect.manager.ConnectivityMonitor
 import com.eemphasys.vitalconnect.manager.ParticipantListManager
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys.vitalconnect.repository.ConversationsRepository
@@ -27,7 +29,8 @@ import kotlin.properties.Delegates
 class ParticipantListViewModel(
     val conversationSid: String,
     private val conversationsRepository: ConversationsRepository,
-    private val participantListManager: ParticipantListManager
+    private val participantListManager: ParticipantListManager,
+    connectivityMonitor: ConnectivityMonitor
 ) : ViewModel() {
 
     private var unfilteredParticipantsList by Delegates.observable(listOf<ParticipantListViewItem>()) { _, _, _ ->
@@ -40,7 +43,7 @@ class ParticipantListViewModel(
     val onParticipantError = SingleLiveEvent<ConversationsError>()
     val onParticipantRemoved = SingleLiveEvent<Unit>()
     var selectedParticipant: ParticipantListViewItem? = null
-
+    val isNetworkAvailable = connectivityMonitor.isNetworkAvailable.asLiveData(viewModelScope.coroutineContext)
     init {
         getConversationParticipants()
     }

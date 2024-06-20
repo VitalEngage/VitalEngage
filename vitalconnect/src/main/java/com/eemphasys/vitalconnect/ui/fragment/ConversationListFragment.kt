@@ -83,6 +83,8 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
 
         conversationListViewModel.isNetworkAvailable.observe(viewLifecycleOwner) { isNetworkAvailable ->
             showNoInternetSnackbar(!isNetworkAvailable)
+            if(!isNetworkAvailable)
+                activity?.finish()
         }
 
         conversationListViewModel.onConversationCreated.observe(viewLifecycleOwner) {

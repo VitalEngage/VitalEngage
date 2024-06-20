@@ -28,10 +28,6 @@ import com.eemphasys.vitalconnect.viewModel.ProfileViewModel
 var injector = Injector()
     private set
 
-@RestrictTo(RestrictTo.Scope.TESTS)
-fun setupTestInjector(testInjector: Injector) {
-    injector = testInjector
-}
 open class Injector {
 
     private var fcmManagerImpl: FCMManagerImpl? = null
@@ -69,28 +65,34 @@ open class Injector {
             ConversationsClientWrapper.INSTANCE,
             ConversationsRepositoryImpl.INSTANCE
         )
+        val connectivityMonitor = ConnectivityMonitorImpl(appContext)
         return MessageListViewModel(
             appContext,
             conversationSid,
             ConversationsRepositoryImpl.INSTANCE,
-            messageListManager
+            messageListManager,
+            connectivityMonitor
         )
     }
 
-    open fun createConversationDetailsViewModel(conversationSid: String): ConversationDetailsViewModel {
+    open fun createConversationDetailsViewModel(applicationContext: Context,conversationSid: String): ConversationDetailsViewModel {
         val conversationListManager = ConversationListManagerImpl(ConversationsClientWrapper.INSTANCE)
         val participantListManager = ParticipantListManagerImpl(conversationSid, ConversationsClientWrapper.INSTANCE)
+        val connectivityMonitor = ConnectivityMonitorImpl(applicationContext)
         return ConversationDetailsViewModel(
             conversationSid,
             ConversationsRepositoryImpl.INSTANCE,
             conversationListManager,
-            participantListManager
+            participantListManager,
+            connectivityMonitor
+
         )
     }
 
-    open fun createParticipantListViewModel(conversationSid: String): ParticipantListViewModel {
+    open fun createParticipantListViewModel(applicationContext: Context,conversationSid: String): ParticipantListViewModel {
         val participantListManager = ParticipantListManagerImpl(conversationSid, ConversationsClientWrapper.INSTANCE)
-        return ParticipantListViewModel(conversationSid, ConversationsRepositoryImpl.INSTANCE, participantListManager)
+        val connectivityMonitor = ConnectivityMonitorImpl(applicationContext)
+        return ParticipantListViewModel(conversationSid, ConversationsRepositoryImpl.INSTANCE, participantListManager,connectivityMonitor)
     }
 
     open fun createFCMManager(context: Context): FCMManager {
@@ -118,7 +120,8 @@ open class Injector {
 
     open fun createProfileViewModel(applicationContext: Context) = ProfileViewModel(
         ConversationsRepositoryImpl.INSTANCE,
-        UserManagerImpl(ConversationsClientWrapper.INSTANCE,ConversationsRepositoryImpl.INSTANCE,FirebaseTokenManager())
+        UserManagerImpl(ConversationsClientWrapper.INSTANCE,ConversationsRepositoryImpl.INSTANCE,FirebaseTokenManager()),
+        ConnectivityMonitorImpl(applicationContext)
 
     )
 

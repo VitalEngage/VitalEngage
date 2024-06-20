@@ -2,6 +2,7 @@ package com.eemphasys.vitalconnect.viewModel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.SessionHelper
@@ -11,6 +12,7 @@ import com.eemphasys.vitalconnect.common.call
 import com.eemphasys.vitalconnect.common.enums.ConversationsError
 import com.eemphasys.vitalconnect.data.models.ConversationDetailsViewItem
 import com.eemphasys.vitalconnect.data.models.RepositoryRequestStatus
+import com.eemphasys.vitalconnect.manager.ConnectivityMonitor
 import com.eemphasys.vitalconnect.manager.ConversationListManager
 import com.eemphasys.vitalconnect.manager.ParticipantListManager
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
@@ -24,7 +26,8 @@ class ConversationDetailsViewModel(
     val conversationSid: String,
     private val conversationsRepository: ConversationsRepository,
     private val conversationListManager: ConversationListManager,
-    private val participantListManager: ParticipantListManager
+    private val participantListManager: ParticipantListManager,
+    connectivityMonitor : ConnectivityMonitor
 ) : ViewModel() {
 
     val conversationDetails = MutableLiveData<ConversationDetailsViewItem>()
@@ -34,7 +37,7 @@ class ConversationDetailsViewModel(
     val onConversationLeft = SingleLiveEvent<Unit>()
     private val onConversationRenamed = SingleLiveEvent<Unit>()
     val onParticipantAdded = SingleLiveEvent<String>()
-
+    val isNetworkAvailable = connectivityMonitor.isNetworkAvailable.asLiveData(viewModelScope.coroutineContext)
     init {
         viewModelScope.launch {
             getConversationResult()
@@ -217,6 +220,10 @@ class ConversationDetailsViewModel(
         } finally {
             setShowProgress(false)
         }
+    }
+
+    fun getFriendlyName(identity : String): String {
+        return conversationsRepository.getFriendlyName(identity)
     }
 
     fun isConversationMuted() = conversationDetails.value?.isMuted == true

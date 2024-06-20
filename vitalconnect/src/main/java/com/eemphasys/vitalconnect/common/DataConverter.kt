@@ -2,9 +2,11 @@ package com.eemphasys.vitalconnect.common
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import com.google.gson.Gson
 import com.twilio.conversations.Conversation.NotificationLevel
 import androidx.core.net.toUri
+import com.eemphasys.vitalconnect.api.data.Attributes
 import com.eemphasys.vitalconnect.common.enums.DownloadState
 import com.eemphasys.vitalconnect.common.enums.Reaction
 import com.eemphasys.vitalconnect.common.enums.SendStatus
@@ -29,12 +31,15 @@ import com.eemphasys.vitalconnect.data.models.MessageListViewItem
 import com.eemphasys.vitalconnect.data.models.ReactionAttributes
 import com.eemphasys.vitalconnect.manager.friendlyName
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
+import com.eemphasys.vitalconnect.repository.ConversationsRepositoryImpl
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
+import com.google.gson.JsonParser
 import com.twilio.conversations.Conversation
 import com.twilio.conversations.Message
 import com.twilio.conversations.Participant
 import com.twilio.conversations.User
+import org.json.JSONObject
 
 fun Conversation.toConversationDataItem(): ConversationDataItem {
     return ConversationDataItem(
@@ -104,7 +109,7 @@ fun MessageDataItem.toMessageListViewItem(authorChanged: Boolean): MessageListVi
         this.mediaUploadedBytes,
         this.mediaUploadUri?.toUri(),
         this.errorCode,
-//        this.friendlyName ?: ""
+        this.friendlyName ?: ""
     )
 }
 
@@ -175,7 +180,26 @@ fun ConversationDataItem.asConversationListViewItem(
     this.lastMessageText,
     lastMessageColor = SendStatus.fromInt(this.lastMessageSendStatus).asLastMessageTextColor(context),
     this.lastMessageDate.asLastMessageDateString(context),
-    isMuted = this.notificationLevel == NotificationLevel.MUTED.value
+    isMuted = this.notificationLevel == NotificationLevel.MUTED.value,
+    false,
+    try {
+        JSONObject(this.attributes).optString("Department", "")
+    } catch (e: Exception) {
+        Log.d("Exception1@DataConverter",e.message.toString())
+        ""
+    },
+    try {
+        JSONObject(this.attributes).optString("Designation", "")
+    } catch (e: Exception) {
+        Log.d("Exception2@DataConverter",e.message.toString())
+        ""
+    },
+    try {
+        JSONObject(this.attributes).optString("CustomerName", "")
+    } catch (e: Exception) {
+        Log.d("Exception3@DataConverter",e.message.toString())
+        ""
+    }
 )
 
 fun ConversationDataItem.asConversationDetailsViewItem() = ConversationDetailsViewItem(
@@ -183,7 +207,8 @@ fun ConversationDataItem.asConversationDetailsViewItem() = ConversationDetailsVi
     this.friendlyName,
     this.createdBy,
     this.dateCreated.asDateString(),
-    this.notificationLevel == NotificationLevel.MUTED.value
+    this.notificationLevel == NotificationLevel.MUTED.value,
+    ConversationsRepositoryImpl.INSTANCE.getFriendlyName(this.createdBy)
 )
 
 fun ParticipantDataItem.toParticipantListViewItem() = ParticipantListViewItem(

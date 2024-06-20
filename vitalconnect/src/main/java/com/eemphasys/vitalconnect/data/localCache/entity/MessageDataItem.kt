@@ -28,5 +28,5 @@ data class MessageDataItem (
     val mediaUploadedBytes: Long? = null,
     val mediaUploadUri: String? = null,
     val errorCode: Int = 0,
-//    val friendlyName: String? = null
+    val friendlyName: String? = null
 )

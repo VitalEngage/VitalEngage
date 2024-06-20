@@ -35,13 +35,18 @@ class ConversationListActivity:AppCompatActivity() {
         menubottom.itemIconTintList = null
         val isDataAvailable = !Constants.CONTACTS.isNullOrEmpty() || !Constants.WEBUSERS.isNullOrEmpty()
         menuItem.isVisible = isDataAvailable
+
+        if(Constants.SHOW_CONTACTS == "false"){
+            menuItem.isVisible == false
+        }
+
         if(!isDataAvailable) {
             menu.findItem(R.id.page_conversation_list).setChecked(true)
         }
-        if(Constants.IS_STANDALONE == "false") {
-            val profileMenuItem = menu.findItem(R.id.page_profile)
-            profileMenuItem.isVisible = false
-        }
+//        if(Constants.IS_STANDALONE == "false") {
+//            val profileMenuItem = menu.findItem(R.id.page_profile)
+//            profileMenuItem.isVisible = false
+//        }
 
         binding.bottomNavigation.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId) {

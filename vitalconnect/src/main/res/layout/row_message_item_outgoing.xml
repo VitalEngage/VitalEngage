@@ -45,7 +45,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/icon_single_user_conversation"
-            android:visibility="@{message.type == MessageType.MEDIA ? View.INVISIBLE : View.GONE}"
+            android:visibility="@{message.type == MessageType.MEDIA ? View.INVISIBLE : View.INVISIBLE}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/message_header"
             tools:visibility="visible" />
@@ -69,7 +69,8 @@
             app:barrierMargin="-8dp"
             app:constraint_referenced_ids="
                 message_body,
-                attachment_background" />
+                attachment_background,
+                message_date"/>
 
         <TextView
             android:id="@+id/message_body"
@@ -171,6 +172,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:singleLine="true"
+            android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="@id/attachment_background"
             app:layout_constraintStart_toEndOf="@+id/attachment_failed"
             app:layout_constraintTop_toBottomOf="@+id/attachment_file_name"
@@ -185,7 +187,7 @@
             app:layout_constraintTop_toBottomOf="@+id/attachment_info" />
 
         <TextView
-            android:id="@+id/message_datedummy"
+            android:id="@+id/message_date"
             style="@style/TextViewSubtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -197,10 +199,10 @@
             android:textSize="12sp"
             app:layout_constraintBottom_toTopOf="@+id/message_reaction_holder"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
-            app:layout_constraintStart_toStartOf="@+id/message_background"
+            app:layout_constraintEnd_toEndOf="@+id/message_background"
             app:layout_constraintTop_toBottomOf="@+id/attachment_background"
             tools:text="15:58"
-            android:visibility="gone"/>
+            android:visibility="visible"/>
 
         <!--<androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/message_send_status"
@@ -218,10 +220,10 @@
         <Space
             android:id="@+id/message_footer"
             android:layout_width="0dp"
-            android:layout_height="12dp"
+            android:layout_height="1dp"
             app:layout_constraintEnd_toEndOf="@id/message_background"
             app:layout_constraintStart_toStartOf="@+id/message_background"
-            app:layout_constraintTop_toBottomOf="@+id/message_datedummy" />
+            app:layout_constraintTop_toBottomOf="@+id/message_date" />
 
         <TextView
             android:id="@+id/message_send_error"
@@ -246,7 +248,7 @@
             android:gravity="center_vertical|end"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="@+id/message_background"
-            app:layout_constraintTop_toBottomOf="@+id/message_datedummy" />
+            app:layout_constraintTop_toBottomOf="@+id/message_date" />
 
         <Space
             android:id="@+id/reactions_footer"
@@ -270,20 +272,20 @@
             tools:visibility="gone" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-        <TextView
-            android:id="@+id/message_date"
-            style="@style/TextViewSubtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="8dp"
-            android:singleLine="true"
-            android:text="@{message.dateCreated}"
-            android:textColor="@color/black"
-            android:textSize="12sp"
-            app:layout_constraintHorizontal_chainStyle="spread_inside"
-            app:layout_constraintTop_toBottomOf="@+id/message_item"
-            app:layout_constraintEnd_toStartOf="@id/message_send_status"
-            tools:text="15:58" />
+<!--        <TextView-->
+<!--            android:id="@+id/message_date"-->
+<!--            style="@style/TextViewSubtitle"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginHorizontal="8dp"-->
+<!--            android:singleLine="true"-->
+<!--            android:text="@{message.dateCreated}"-->
+<!--            android:textColor="@color/black"-->
+<!--            android:textSize="12sp"-->
+<!--            app:layout_constraintHorizontal_chainStyle="spread_inside"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/message_item"-->
+<!--            app:layout_constraintEnd_toStartOf="@id/message_send_status"-->
+<!--            tools:text="15:58" />-->
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/message_send_status"
             android:layout_width="wrap_content"

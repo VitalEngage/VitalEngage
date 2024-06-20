@@ -30,7 +30,13 @@ class Constants   {
         var CUSTOMER_NAME :String = ""
         var SHOW_CONVERSATIONS :String=""
         var USER_SMS_ALERT : String= ""
-//        var PARTICIPANTS : List<ParticipantListViewItem> = listOf()
+        var PARTICIPANTS : List<ParticipantListViewItem> = listOf()
+        var SHOW_DEPARTMENT :String = ""
+        var SHOW_DESIGNATION :String = ""
+        var DEPARTMENT: String = ""
+        var DESIGNATION: String = ""
+        var CUSTOMER : String= ""
+        var COUNTRYCODE :String=""
 
 
         @JvmStatic
@@ -75,5 +81,24 @@ class Constants   {
                 val useWhiteIcon = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
                 return if (useWhiteIcon) R.drawable.ic_eservicetech else R.drawable.icon_chat
             }
+
+        @JvmStatic
+        fun formatPhoneNumber(phoneNumber: String,countryCode: String): String {
+             if (phoneNumber.startsWith("+")) {
+               return phoneNumber // If the string starts with '+', keep it as it is
+            }else if(!countryCode.isNullOrEmpty()) {
+                return countryCode + phoneNumber
+            }
+            else {
+               return "+1$phoneNumber" // Prepend '+1' if the string doesn't start with '+'
+            }
+        }
+
+        @JvmStatic
+        fun cleanedNumber(phoneNumber:String): String{
+            // Remove spaces, brackets, and hyphens
+            return  phoneNumber.replace("[\\s()\\-]".toRegex(), "")
+
+        }
     }
 }

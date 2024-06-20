@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:focusableInTouchMode="false"
-        tools:background="@color/white"
+        tools:background="@color/conversation_details_background"
         tools:ignore="MissingConstraints">
 
         <TextView
@@ -39,7 +39,7 @@
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:singleLine="true"
-            android:text="@{message.author}"
+            android:text='@{message.friendlyName == "" ? message.author : message.friendlyName}'
             android:visibility="@{message.authorChanged ? View.VISIBLE : View.GONE}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/message_background"
@@ -55,7 +55,27 @@
             android:src="@drawable/icon_single_user_conversation"
             app:layout_constraintEnd_toStartOf="@+id/message_background"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/message_author" />
+            app:layout_constraintTop_toBottomOf="@+id/message_author"
+            android:visibility="invisible"/>
+        <TextView
+            android:id="@+id/participant_icon"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="1dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/bg_participant_icon"
+            android:gravity="center"
+            android:text="E E T"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toStartOf="@+id/message_background"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/message_author"
+            android:visibility="@{message.authorChanged ? View.VISIBLE : View.INVISIBLE}"
+            tools:ignore="MissingConstraints" />
 
         <androidx.constraintlayout.widget.Barrier
             android:id="@+id/message_background_barrier"
@@ -100,10 +120,9 @@
 
         <View
             android:id="@+id/attachment_background"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_width="311dp"
+            android:layout_height="61dp"
             android:layout_marginHorizontal="8dp"
-            android:layout_marginTop="0dp"
             android:background="@color/white"
             app:layout_constraintBottom_toBottomOf="@+id/attachment_footer"
             app:layout_constraintEnd_toEndOf="@+id/message_background"
@@ -194,12 +213,12 @@
             android:id="@+id/message_reaction_holder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="22dp"
+            android:layout_marginStart="1dp"
             android:background="@drawable/bg_reactions_incoming"
             android:elevation="2dp"
             android:gravity="center_vertical|end"
             android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="@+id/message_background"
+            app:layout_constraintStart_toStartOf="@+id/message_background"
             app:layout_constraintTop_toBottomOf="@+id/attachment_info" />
 
         <Space
@@ -223,21 +242,33 @@
                 attachment_background,
                 attachment_footer"
             tools:visibility="visible" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
         <TextView
             android:id="@+id/message_date"
-            style="@style/TextViewSubtitle"
+            style="@style/TextViewIncomingTimeStamp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="75dp"
+            android:layout_marginRight="5dp"
             android:singleLine="true"
             android:text="@{message.dateCreated}"
             android:textSize="12sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/message_item"
+            app:layout_constraintEnd_toEndOf="@id/message_background"
+            app:layout_constraintBottom_toBottomOf="@+id/message_background"
             tools:text="15:58" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+<!--        <TextView-->
+<!--            android:id="@+id/message_date"-->
+<!--            style="@style/TextViewSubtitle"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginLeft="75dp"-->
+<!--            android:singleLine="true"-->
+<!--            android:text="@{message.dateCreated}"-->
+<!--            android:textSize="12sp"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/message_item"-->
+<!--            tools:text="15:58" />-->
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

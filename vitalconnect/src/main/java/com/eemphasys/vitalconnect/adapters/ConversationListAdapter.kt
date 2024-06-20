@@ -1,9 +1,11 @@
 package com.eemphasys.vitalconnect.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.data.models.ConversationListViewItem
 import com.eemphasys.vitalconnect.databinding.RowConversationItemBinding
 import kotlin.properties.Delegates
@@ -23,6 +25,17 @@ class ConversationListAdapter(private val callback: OnConversationEvent) : Recyc
         holder.binding.conversationItem.setOnClickListener {
             holder.binding.conversation?.sid?.let { callback.onConversationClicked(it) }
         }
+
+        if(Constants.SHOW_DEPARTMENT == "false" ) {
+            holder.binding.department.visibility = View.GONE
+        }
+        if(Constants.SHOW_DESIGNATION == "false") {
+            holder.binding.designation.visibility = View.GONE
+        }
+//        if(holder.binding.customer.text.isNullOrBlank()){
+//            holder.binding.customer.visibility = View.GONE
+//        }
+
     }
     fun isMuted(position: Int) = conversations[position].isMuted
 

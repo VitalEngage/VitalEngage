@@ -5,5 +5,6 @@ data class ConversationDetailsViewItem(
     val conversationName: String,
     val createdBy: String,
     val dateCreated: String,
-    val isMuted: Boolean = false
+    val isMuted: Boolean = false,
+    var friendlyName : String
 )

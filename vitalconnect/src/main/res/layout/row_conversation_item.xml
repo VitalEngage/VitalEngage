@@ -96,9 +96,8 @@
         android:ellipsize="end"
         android:text="@{conversation.lastMessageText}"
         android:textColor="@{conversation.lastMessageColor}"
-        app:layout_constraintEnd_toEndOf="@+id/conversationName"
         app:layout_constraintStart_toStartOf="@+id/conversationName"
-        app:layout_constraintTop_toBottomOf="@+id/conversationName"
+        app:layout_constraintTop_toBottomOf="@+id/customer"
         tools:text="This is a waiting message bla bla bla bla bla" />
 
     <TextView
@@ -130,10 +129,49 @@
         android:gravity="center"
         android:text="@{conversation.unreadMessageCount}"
         android:visibility="@{conversation.showUnreadMessageCount ? View.VISIBLE : View.GONE}"
-        app:layout_constraintBottom_toBottomOf="@+id/messageText"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/messageText"
+        app:layout_constraintTop_toBottomOf="@+id/conversationName"
         tools:text="99+"
         />
+    <TextView
+        android:id="@+id/designation"
+        style="@style/TextViewChildSubTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:text="@{conversation.designation}"
+        android:textColor="@{conversation.lastMessageColor}"
+        app:layout_constraintStart_toStartOf="@+id/conversationName"
+        app:layout_constraintTop_toBottomOf="@+id/conversationName"
+        tools:text="Designation"
+        android:visibility="@{conversation.designation.isEmpty() ? View.GONE : View.VISIBLE}"/>
+    <TextView
+        android:id="@+id/department"
+        style="@style/TextViewChildSubTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:layout_marginLeft="5dp"
+        android:text='@{`(` + conversation.department + `)`}'
+        android:textColor="@{conversation.lastMessageColor}"
+        app:layout_constraintStart_toEndOf="@+id/designation"
+        app:layout_constraintTop_toBottomOf="@+id/conversationName"
+        tools:text="Department"
+        android:visibility="@{conversation.department.isEmpty() ? View.GONE : View.VISIBLE}"/>
+    <TextView
+        android:id="@+id/customer"
+        style="@style/TextViewChildSubTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:text="@{conversation.customer}"
+        android:textColor="@{conversation.lastMessageColor}"
+        app:layout_constraintStart_toStartOf="@+id/conversationName"
+        app:layout_constraintTop_toBottomOf="@+id/department"
+        tools:text="Customer"
+        android:visibility="@{conversation.customer.isEmpty() ? View.GONE : View.VISIBLE}"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

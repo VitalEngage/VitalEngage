@@ -40,6 +40,7 @@ import com.eemphasys.vitalconnect.common.extensions.queryById
 import com.eemphasys.vitalconnect.data.localCache.entity.ParticipantDataItem
 import com.eemphasys.vitalconnect.data.models.MessageListViewItem
 import com.eemphasys.vitalconnect.data.models.RepositoryRequestStatus
+import com.eemphasys.vitalconnect.manager.ConnectivityMonitor
 import com.eemphasys.vitalconnect.manager.MessageListManager
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceHelper
@@ -59,7 +60,8 @@ class MessageListViewModel(
     private val appContext: Context,
     val conversationSid: String,
     private val conversationsRepository: ConversationsRepository,
-    private val messageListManager: MessageListManager
+    private val messageListManager: MessageListManager,
+    connectivityMonitor : ConnectivityMonitor
 ) : ViewModel() {
 
     val conversationName = MutableLiveData<String>()
@@ -86,6 +88,8 @@ class MessageListViewModel(
     val onMessageCopied = SingleLiveEvent<Unit>()
 
     var selectedMessageIndex: Long = -1
+
+    val isNetworkAvailable = connectivityMonitor.isNetworkAvailable.asLiveData(viewModelScope.coroutineContext)
 
     val selectedMessage: MessageListViewItem? get() = messageItems.value?.firstOrNull { it.index == selectedMessageIndex }
 
@@ -511,13 +515,12 @@ class MessageListViewModel(
     }
 
     fun initParticipant(channelSid : String) = viewModelScope.launch {
-        Log.d("insidemessagelist","already called")
         conversationsRepository.getConversationParticipants(channelSid).collect{(list)->
-            var listOfParticipant = list.asParticipantListViewItems()
-//            Constants.PARTICIPANTS = list.asParticipantListViewItems()
-
-//            for(p in listOfParticipant){
-//                val friendlyName = conversationsRepository.updateFriendlyName(p.identity)
+//            var listOfParticipant = list.asParticipantListViewItems()
+            Constants.PARTICIPANTS = list.asParticipantListViewItems()
+            conversationsRepository.updateFriendlyName()
+//            for(p in Constants.PARTICIPANTS){
+//                val friendlyName = conversationsRepository.getFriendlyName(p.identity)
 //                Log.d("friendlyName",friendlyName)
 //            }
                 }

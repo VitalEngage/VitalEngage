@@ -1,12 +1,10 @@
 package com.eemphasys.vitalconnectdev.manager
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import com.eemphasys.vitalconnect.api.AuthInterceptor
 import com.eemphasys.vitalconnect.api.RetrofitHelper
 import com.eemphasys.vitalconnect.api.RetryInterceptor
 import com.eemphasys.vitalconnect.api.TwilioApi
-import com.eemphasys.vitalconnect.api.data.RequestToken
 import com.eemphasys.vitalconnect.api.data.ValidateUserReq
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.ChatAppModel
@@ -23,9 +21,6 @@ import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.twilio.conversations.ConversationsClient
 import com.twilio.conversations.extensions.registerFCMToken
 import okhttp3.OkHttpClient
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 
 
@@ -69,6 +64,8 @@ class LoginManagerImpl(
             LoginConstants.AUTH_TOKEN = result.body()!!.jwtToken
             LoginConstants.PROXY_NUMBER = result.body()!!.proxyNumber
             LoginConstants.USER_SMS_ALERT = result.body()!!.enableNotification.toString()
+            LoginConstants.SHOW_DEPARTMENT = result.body()!!.showDepartment.toString()
+            LoginConstants.SHOW_DESIGNATION = result.body()!!.showDesignation.toString()
             credentialStorage.storeCredentials(identity,password)
         }
     }
@@ -85,14 +82,14 @@ class LoginManagerImpl(
                 RetrofitHelper.getInstance(httpClientWithToken).create(TwilioApi::class.java)
 
         Log.d("username", LoginConstants.CURRENT_USER)
-            val TwilioToken = retrofitWithToken.getTwilioToken(
+            val twilioToken = retrofitWithToken.getTwilioToken(
                 LoginConstants.TENANT_CODE,
                 LoginConstants.CURRENT_USER,
                 LoginConstants.FRIENDLY_NAME
             )
-            if(TwilioToken.isSuccessful) {
-                Log.d("twiliotoken", TwilioToken.body()!!.token)
-                LoginConstants.TWILIO_TOKEN = TwilioToken.body()!!.token
+            if(twilioToken.isSuccessful) {
+                Log.d("twiliotoken", twilioToken.body()!!.token)
+                LoginConstants.TWILIO_TOKEN = twilioToken.body()!!.token
                 ChatAppModel.twilio_token = LoginConstants.TWILIO_TOKEN
             }
 //        }

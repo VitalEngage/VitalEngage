@@ -5,5 +5,9 @@ data class ContactListViewItem(
     val email : String,
     val number : String,
     val type : String,
-    val initials : String
+    val initials : String,
+    val designation : String,
+    val department : String,
+    val customerName : String,
+    val countryCode: String
 )

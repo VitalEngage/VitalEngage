@@ -1,5 +1,6 @@
 package com.eemphasys.vitalconnect.manager
 
+import android.util.Log
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.SessionHelper
 import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
@@ -35,29 +36,31 @@ class AutoParticipantListManagerImpl(
     }
 
     override suspend fun addNonChatParticipant(phone: String, proxyPhone: String, friendlyName: String,conversationSid: String) {
-        val conversation = conversationsClient.getConversationsClient().getConversation(conversationSid)
-        conversation.waitForSynchronization()
-        val json = JSONObject("{ \"$FRIENDLY_NAME_ATTRIBUTE\": \"$friendlyName\" }")
+        if (!conversationSid.isNullOrEmpty()) {
+            val conversation =
+                conversationsClient.getConversationsClient().getConversation(conversationSid)
+            conversation.waitForSynchronization()
+            val json = JSONObject("{ \"$FRIENDLY_NAME_ATTRIBUTE\": \"$friendlyName\" }")
 
-        try {
-            conversation.addParticipantByAddress(phone, proxyPhone, Attributes(json))
+            try {
+                Log.d("addnonchatparticipant", "$phone $proxyPhone ${Attributes(json)}" )
+                conversation.addParticipantByAddress(phone, proxyPhone, Attributes(json))
+            } catch (e: Exception) {
+                /*Log.d("exception", e.localizedMessage)*/
+                e.printStackTrace()
+
+                EETLog.error(
+                    SessionHelper.appContext, LogConstants.logDetails(
+                        e,
+                        LogConstants.LOG_LEVEL.ERROR.toString(),
+                        LogConstants.LOG_SEVERITY.HIGH.toString()
+                    ),
+                    Constants.EX, LogTraceConstants.getUtilityData(
+                        SessionHelper.appContext!!
+                    )!!
+                )
+            }
+
         }
-        catch ( e: Exception){
-            /*Log.d("exception", e.localizedMessage)*/
-            e.printStackTrace()
-
-            EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
-                    e,
-                    LogConstants.LOG_LEVEL.ERROR.toString(),
-                    LogConstants.LOG_SEVERITY.HIGH.toString()
-                ),
-                Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
-                )!!
-            )
-        }
-
     }
-
 }

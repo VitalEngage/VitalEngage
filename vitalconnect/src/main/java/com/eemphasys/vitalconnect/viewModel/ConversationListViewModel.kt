@@ -95,42 +95,42 @@ class ConversationListViewModel(
             filter { it.name.contains(name, ignoreCase = true) }
         }
 
-    fun createConversation(friendlyName: String) = viewModelScope.launch {
-        try {
-            setDataLoading(true)
-            val conversationSid = conversationListManager.createConversation(friendlyName)
-            conversationListManager.joinConversation(conversationSid)
-            onConversationCreated.call()
-
-            LogTraceHelper.trace(
-                applicationContext,
-                LogTraceConstants.traceDetails(
-                    Thread.currentThread().stackTrace,
-                    "Activity Selected :",
-                    LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
-                    LogConstants.LOG_SEVERITY.NORMAL.toString()
-                ),
-                LogTraceConstants.chatappmodel,
-                LogTraceConstants.getUtilityData(applicationContext)!!
-            )
-        } catch (e: TwilioException) {
-            onConversationError.value = ConversationsError.CONVERSATION_CREATE_FAILED
-            e.printStackTrace()
-
-            EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
-                    e,
-                    LogConstants.LOG_LEVEL.ERROR.toString(),
-                    LogConstants.LOG_SEVERITY.HIGH.toString()
-                ),
-                Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
-                )!!
-            )
-        } finally {
-            setDataLoading(false)
-        }
-    }
+//    fun createConversation(friendlyName: String) = viewModelScope.launch {
+//        try {
+//            setDataLoading(true)
+//            val conversationSid = conversationListManager.createConversation(friendlyName)
+//            conversationListManager.joinConversation(conversationSid)
+//            onConversationCreated.call()
+//
+//            LogTraceHelper.trace(
+//                applicationContext,
+//                LogTraceConstants.traceDetails(
+//                    Thread.currentThread().stackTrace,
+//                    "Activity Selected :",
+//                    LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
+//                    LogConstants.LOG_SEVERITY.NORMAL.toString()
+//                ),
+//                LogTraceConstants.chatappmodel,
+//                LogTraceConstants.getUtilityData(applicationContext)!!
+//            )
+//        } catch (e: TwilioException) {
+//            onConversationError.value = ConversationsError.CONVERSATION_CREATE_FAILED
+//            e.printStackTrace()
+//
+//            EETLog.error(
+//                SessionHelper.appContext, LogConstants.logDetails(
+//                    e,
+//                    LogConstants.LOG_LEVEL.ERROR.toString(),
+//                    LogConstants.LOG_SEVERITY.HIGH.toString()
+//                ),
+//                Constants.EX, LogTraceConstants.getUtilityData(
+//                    SessionHelper.appContext!!
+//                )!!
+//            )
+//        } finally {
+//            setDataLoading(false)
+//        }
+//    }
 
     fun muteConversation(conversationSid: String) = viewModelScope.launch {
         if (isConversationLoading(conversationSid)) {
