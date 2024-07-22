@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/page_contact_list"
+        android:enabled="true"
+        android:icon="@drawable/bottom_menu_contacts"
+        android:title="@string/contacts" />
+    <item
+        android:id="@+id/page_conversation_list"
+        android:enabled="true"
+        android:icon="@drawable/bottom_menu_conversations"
+        android:title="@string/page_conversation_list" />
+
+    <item
+        android:id="@+id/page_profile"
+        android:enabled="true"
+        android:icon="@drawable/bottom_menu_settings"
+        android:title="@string/settings" />
+</menu>

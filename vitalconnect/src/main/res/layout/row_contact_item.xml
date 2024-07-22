@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/contactItem"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:focusableInTouchMode="false"
+    android:padding="16dp"
+    >
+
+    <ImageView
+        android:id="@+id/participant_icon1"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/icon_single_user_conversation"
+        android:layout_marginRight="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/contactName"
+        android:visibility="gone"/>
+    <TextView
+        android:id="@+id/participant_icon"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginBottom="5dp"
+        android:background="@drawable/bg_participant_icon"
+        android:gravity="center"
+        android:text="E E T"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        tools:ignore="MissingConstraints" />
+    <TextView
+        android:id="@+id/contactName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        style="@style/TextViewChildTitle"
+        tools:text="Contact friendly name"
+        app:layout_constraintStart_toEndOf="@id/participant_icon"
+        app:layout_constraintTop_toTopOf="@id/participant_icon"
+        tools:ignore="MissingConstraints" />
+
+    <TextView
+        android:id="@+id/contactType"
+        style="@style/ConversationDetails_Subtext"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="middle"
+        android:textColor="@color/text_title_weak"
+        app:layout_constraintStart_toStartOf="@+id/contactName"
+        app:layout_constraintTop_toBottomOf="@id/contactName"
+        tools:text="Type"
+        tools:ignore="MissingConstraints"
+        android:visibility="gone"/>
+    <TextView
+        android:id="@+id/contactNumber"
+        style="@style/ConversationDetails_Subtext"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="middle"
+        android:textColor="@color/text_title_weak"
+        app:layout_constraintStart_toStartOf="@+id/contactName"
+        app:layout_constraintTop_toBottomOf="@id/contactName"
+        tools:text="Type"
+        tools:ignore="MissingConstraints" />
+    <TextView
+        android:id="@+id/designation"
+        style="@style/ConversationDetails_Subtext"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="middle"
+        android:textColor="@color/text_title_weak"
+        app:layout_constraintStart_toStartOf="@+id/contactName"
+        app:layout_constraintTop_toBottomOf="@id/contactNumber"
+        tools:text="Type"
+        tools:ignore="MissingConstraints"
+        android:visibility="visible"/>
+    <TextView
+        android:id="@+id/department"
+        style="@style/ConversationDetails_Subtext"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="middle"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:textColor="@color/text_title_weak"
+        app:layout_constraintStart_toEndOf="@+id/designation"
+        app:layout_constraintTop_toBottomOf="@id/contactNumber"
+        tools:text="Type"
+        tools:ignore="MissingConstraints"
+        android:visibility="visible"/>
+    <TextView
+        android:id="@+id/customerName"
+        style="@style/ConversationDetails_Subtext"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="middle"
+        android:textColor="@color/text_title_weak"
+        app:layout_constraintStart_toStartOf="@+id/contactName"
+        app:layout_constraintTop_toBottomOf="@id/department"
+        tools:text="Type"
+        tools:ignore="MissingConstraints"
+        android:visibility="visible"/>
+    <ImageView
+        android:id="@+id/defaultContact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/icon_default_star"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/contactName"
+        android:visibility="gone"
+        />
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

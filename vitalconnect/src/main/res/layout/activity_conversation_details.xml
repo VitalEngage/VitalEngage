@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="details"
+            type="com.eemphasys.vitalconnect.data.models.ConversationDetailsViewItem" />
+    </data>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/conversationDetailsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.ConversationDetailsActivity">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/conversation_details_app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/conversation_details_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/white"
+                app:titleCentered="true"
+                app:titleTextAppearance="@style/AppBar_Title"/>
+<!--            style="@style/Widget.MaterialComponents.Toolbar.Primary"-->
+<!--            android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"-->
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/conversation_details_holder"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:layout_margin="0dp"
+                    android:elevation="0dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:backgroundTint="@color/conversation_details_background"
+                    >
+
+                    <LinearLayout
+                        android:id="@+id/linearLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp"
+                        app:layout_constraintEnd_toStartOf="@+id/textView"
+                        app:layout_constraintStart_toStartOf="@+id/textView">
+
+                        <TextView
+                            android:id="@+id/textView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{details.conversationName}"
+                            style="@style/TextViewChildTitle"
+                            tools:text="Conversation Name" />
+                        <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                            <TextView
+                                android:id="@+id/textView3"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:text="@{@string/details_created_by(details.friendlyName)}"
+                                tools:text="Created by: Eddy"
+                                style="@style/ConversationDetails_Subtext"
+                                android:layout_weight="0.7"/>
+                            <TextView
+                                android:id="@+id/textView2"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:text="@{details.dateCreated}"
+                                android:textAlignment="textEnd"
+                                tools:text="23 May 2020"
+                                style="@style/ConversationDetails_Subtext"
+                                android:layout_weight="0.3"/>
+                    </LinearLayout>
+                    </LinearLayout>
+
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="0dp"
+                    android:elevation="0dp"
+                    android:layout_marginTop="20dp"
+                    app:layout_constraintTop_toBottomOf="@id/conversation_details_holder"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginTop="20dp"
+                        >
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="70dp"
+                            android:text="@string/details_actions"
+                            style="@style/TextViewChildTitle"
+                            android:padding="16dp"
+                            />
+
+                        <TextView
+                            android:id="@+id/add_chat_participant_button"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:background="?attr/selectableItemBackground"
+                            android:drawableStart="@drawable/ic_chat_participant_add"
+                            android:drawablePadding="16dp"
+                            android:gravity="center_vertical"
+                            android:text="@string/details_add_chat_participant"
+                            android:textColor="@color/text_title"
+                            android:textSize="14sp"
+                            android:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/add_non_chat_participant_button"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:background="?attr/selectableItemBackground"
+                            android:drawableStart="@drawable/ic_non_chat_participant_add"
+                            android:drawablePadding="16dp"
+                            android:gravity="center_vertical"
+                            android:text="@string/details_add_non_chat_participant"
+                            android:textColor="@color/text_title"
+                            android:textSize="14sp"
+                            android:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/participants_list_button"
+                            android:layout_width="match_parent"
+                            android:layout_height="70dp"
+                            android:background="?attr/selectableItemBackground"
+                            android:drawableStart="@drawable/icon_participant_list"
+                            android:drawablePadding="16dp"
+                            android:gravity="center_vertical"
+                            android:text="@string/details_participant_list"
+                            style="@style/TextViewConversationDetails"
+                            android:padding="16dp"
+                             />
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="0.7dp"
+                            android:background="@color/divider"/>
+                        <TextView
+                            android:id="@+id/conversation_rename_button"
+                            android:layout_width="match_parent"
+                            android:layout_height="70dp"
+                            android:background="?attr/selectableItemBackground"
+                            android:drawableStart="@drawable/icon_rename_conversation"
+                            android:drawablePadding="16dp"
+                            android:gravity="center_vertical"
+                            android:text="@string/details_rename_conversation"
+                            style="@style/TextViewConversationDetails"
+                            android:padding="16dp"
+                            android:visibility="gone" />
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="0.7dp"
+                            android:background="@color/divider"
+                            android:visibility="gone"/>
+                        <TextView
+                            android:id="@+id/conversation_mute_button"
+                            android:layout_width="match_parent"
+                            android:layout_height="70dp"
+                            android:background="?attr/selectableItemBackground"
+                            android:drawableStart="@{details.isMuted ? @drawable/icon_unmute_conversation : @drawable/icon_mute_conversation}"
+                            android:drawablePadding="16dp"
+                            android:gravity="center_vertical"
+                            android:text="@{details.isMuted ? @string/details_unmute_conversation : @string/details_mute_conversation }"
+                            style="@style/TextViewConversationDetails"
+                            android:padding="16dp"
+                            />
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="0.7dp"
+                            android:background="@color/divider"/>
+                        <TextView
+                            android:id="@+id/conversation_leave_button"
+                            android:layout_width="match_parent"
+                            android:layout_height="70dp"
+                            android:background="?attr/selectableItemBackground"
+                            android:drawableStart="@drawable/icon_leave_conversation"
+                            android:drawablePadding="16dp"
+                            android:gravity="center_vertical"
+                            android:text="@string/details_leave_conversation"
+                            style="@style/TextViewConversationDetails"
+                            android:padding="16dp"
+                             />
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="0.7dp"
+                            android:background="@color/divider"/>
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </ScrollView>
+
+        <View
+            android:id="@+id/sheet_background"
+            android:background="@color/sheet_background"
+            android:alpha="0"
+            android:visibility="gone"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <include
+            android:id="@+id/rename_conversation_sheet"
+            layout="@layout/view_conversation_rename_screen" />
+
+        <include
+            android:id="@+id/add_chat_participant_sheet"
+            layout="@layout/view_add_chat_participant_screen" />
+
+        <include
+            android:id="@+id/add_non_chat_participant_sheet"
+            layout="@layout/view_add_non_chat_participant_screen" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</layout>
