@@ -62,6 +62,7 @@ class ConversationListViewModel(
     }
 
     fun getUserConversations() = viewModelScope.launch {
+        EETLog.saveUserJourney("vitaltext:  ConversationListViewModel getUserConversations Called")
         conversationsRepository.getUserConversations().collect { (list, status) ->
 
             unfilteredUserConversationItems.value = list
@@ -95,44 +96,8 @@ class ConversationListViewModel(
             filter { it.name.contains(name, ignoreCase = true) }
         }
 
-//    fun createConversation(friendlyName: String) = viewModelScope.launch {
-//        try {
-//            setDataLoading(true)
-//            val conversationSid = conversationListManager.createConversation(friendlyName)
-//            conversationListManager.joinConversation(conversationSid)
-//            onConversationCreated.call()
-//
-//            LogTraceHelper.trace(
-//                applicationContext,
-//                LogTraceConstants.traceDetails(
-//                    Thread.currentThread().stackTrace,
-//                    "Activity Selected :",
-//                    LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
-//                    LogConstants.LOG_SEVERITY.NORMAL.toString()
-//                ),
-//                LogTraceConstants.chatappmodel,
-//                LogTraceConstants.getUtilityData(applicationContext)!!
-//            )
-//        } catch (e: TwilioException) {
-//            onConversationError.value = ConversationsError.CONVERSATION_CREATE_FAILED
-//            e.printStackTrace()
-//
-//            EETLog.error(
-//                SessionHelper.appContext, LogConstants.logDetails(
-//                    e,
-//                    LogConstants.LOG_LEVEL.ERROR.toString(),
-//                    LogConstants.LOG_SEVERITY.HIGH.toString()
-//                ),
-//                Constants.EX, LogTraceConstants.getUtilityData(
-//                    SessionHelper.appContext!!
-//                )!!
-//            )
-//        } finally {
-//            setDataLoading(false)
-//        }
-//    }
-
     fun muteConversation(conversationSid: String) = viewModelScope.launch {
+        EETLog.saveUserJourney("vitaltext:  ConversationListViewModel muteConversation Called")
         if (isConversationLoading(conversationSid)) {
             return@launch
         }
@@ -172,6 +137,7 @@ class ConversationListViewModel(
     }
 
     fun unmuteConversation(conversationSid: String) = viewModelScope.launch {
+        EETLog.saveUserJourney("vitaltext:  ConversationListViewModel unmuteConversation Called")
         if (isConversationLoading(conversationSid)) {
             return@launch
         }
@@ -211,6 +177,7 @@ class ConversationListViewModel(
     }
 
     fun leaveConversation(conversationSid: String) = viewModelScope.launch {
+        EETLog.saveUserJourney("vitaltext:  ConversationListViewModel leaveConversations Called")
         if (isConversationLoading(conversationSid)) {
             return@launch
         }
@@ -248,9 +215,4 @@ class ConversationListViewModel(
             setConversationLoading(conversationSid, false)
         }
     }
-
-//    fun getTotalUnreadMessageCount() = viewModelScope.launch {
-//        val count = conversationsRepository.getTotalUnreadMessageCount()
-//        Constants.COUNT = count
-//    }
 }

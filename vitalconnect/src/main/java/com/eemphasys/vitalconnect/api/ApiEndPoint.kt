@@ -49,4 +49,10 @@ interface TwilioApi {
 
     @POST("GetEncryptedValues")
     suspend fun getEncryptedValues(@Body requestData : EncryptionRequest) : Response<EncryptionRequest>
+
+    @GET("Conversation/GetUnreadMessageCountForWebUser")
+    suspend fun getUnreadMessageCountForWebUser(@Query("tenantCode") tenantCode : String,@Query("identity") identity : String) : Response<Map<String, String>>
+
+    @POST("Conversation/GetUnreadMessageCountForMobileNumbers")
+    suspend fun getUnreadMessageCountForMobileNumbers(@Query("tenantCode") tenantCode: String, @Query("identity") identity: String, @Body requestData: ArrayList<String>) : Response<Map<String, Int>>
 }

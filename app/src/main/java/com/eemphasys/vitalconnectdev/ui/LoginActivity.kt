@@ -465,6 +465,8 @@ class LoginActivity : AppCompatActivity() {
             intent.putExtra("designation","")
             intent.putExtra("customer", "")
             intent.putExtra("countryCode","")
+            intent.putExtra("email",LoginConstants.EMAIL)
+            intent.putExtra("mobileNumber",LoginConstants.MOBILENUMBER)
             context.startActivity(intent)
         }
     }

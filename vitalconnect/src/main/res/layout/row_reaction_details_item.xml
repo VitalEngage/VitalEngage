@@ -17,8 +17,9 @@
         android:drawablePadding="16dp"
         android:gravity="center_vertical"
         android:singleLine="true"
-        app:drawableStartCompat="@drawable/ic_avatar"
+        app:drawableStartCompat="@drawable/icon_single_user_conversation"
         tools:text="username00" />
+
 
     <androidx.emoji.widget.EmojiTextView
         android:id="@+id/reaction_emoji"

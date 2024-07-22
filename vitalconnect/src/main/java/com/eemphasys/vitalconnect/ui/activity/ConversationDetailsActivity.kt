@@ -38,7 +38,7 @@ class ConversationDetailsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        EETLog.saveUserJourney(this::class.java.simpleName + " onCreate Called")
+        EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onCreate Called")
         binding = DataBindingUtil
             .setContentView<ActivityConversationDetailsBinding>(this, R.layout.activity_conversation_details)
             .apply {
@@ -46,8 +46,6 @@ class ConversationDetailsActivity : AppCompatActivity() {
             }
 
         initViews()
-//        val friendlyName = conversationDetailsViewModel.getFriendlyName(binding.textView3.text.toString())
-//        binding.textView3.text = "Created by: " + friendlyName
     }
 
     override fun onBackPressed() {
@@ -67,6 +65,7 @@ class ConversationDetailsActivity : AppCompatActivity() {
     }
 
     private fun initViews() {
+        EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " initViews Called")
         setSupportActionBar(binding.conversationDetailsToolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding.conversationDetailsToolbar.setNavigationOnClickListener { onBackPressed() }

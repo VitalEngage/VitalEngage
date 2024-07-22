@@ -23,11 +23,29 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp">
+        <TextView
+            android:id="@+id/changed_date"
+            style="@style/TextViewSubtitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="@{message.formattedDate}"
+            android:visibility="@{message.dateChanged ? View.VISIBLE : View.GONE}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="Thu 24 Nov 2024"
+            tools:visibility="visible" />
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/message_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:focusableInTouchMode="false"
+        app:layout_constraintTop_toBottomOf="@id/changed_date"
         tools:ignore="MissingConstraints">
 
         <Space
@@ -188,7 +206,7 @@
 
         <TextView
             android:id="@+id/message_date"
-            style="@style/TextViewSubtitle"
+            style="@style/TextViewIncomingTimeStamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="8dp"

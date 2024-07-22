@@ -4,10 +4,13 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,6 +23,7 @@ import com.eemphasys.vitalconnect.api.RetryInterceptor
 import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.ParticipantExistingConversation
 import com.eemphasys.vitalconnect.common.Constants
+import com.eemphasys.vitalconnect.common.SessionHelper
 import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.common.extensions.lazyActivityViewModel
 import com.eemphasys.vitalconnect.common.extensions.showSnackbar
@@ -28,7 +32,9 @@ import com.eemphasys.vitalconnect.data.models.Contact
 import com.eemphasys.vitalconnect.data.models.ContactListViewItem
 import com.eemphasys.vitalconnect.data.models.WebUser
 import com.eemphasys.vitalconnect.databinding.FragmentContactListBinding
+import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys_enterprise.commonmobilelib.EETLog
+import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.twilio.conversations.Attributes
@@ -47,12 +53,31 @@ class ContactListFragment : Fragment() {
     }
     private var contactsList = arrayListOf<Contact>()
     private var webuserList = arrayListOf<WebUser>()
+    private lateinit var adapter: ContactListAdapter
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_contact_list, menu)
 
+        val searchItem = menu.findItem(R.id.filter_contacts)
+        val searchView = searchItem?.actionView as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                adapter.filter(newText.orEmpty())
+                return true
+            }
+        })
+
+        super.onCreateOptionsMenu(menu, inflater)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        EETLog.saveUserJourney(this::class.java.simpleName + " onCreate Called")
+        EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onCreate Called")
         setHasOptionsMenu(true)
 
         contactListViewModel.onParticipantAdded.observe(this) { identity ->
@@ -63,18 +88,6 @@ class ContactListFragment : Fragment() {
                 )
             )
         }
-//        activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
-//            override fun handleOnBackPressed() {
-//                if(shouldInterceptBackPress()){
-//                    Log.d("ContactListFragment","ConversationListFragement back button pressed")
-//                    // in here you can do logic when backPress is clicked
-//                }else{
-//                    isEnabled = false
-//                    activity?.onBackPressed()
-//                }
-//            }
-//        })
-
     }
     fun shouldInterceptBackPress() = true
     override fun onCreateView(
@@ -82,11 +95,13 @@ class ContactListFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onCreateView Called")
         binding = FragmentContactListBinding.inflate(inflater, container, false)
         return binding!!.root
     }
 
-    fun combineLists(contacts: List<Contact>, webUsers: List<WebUser>): List<ContactListViewItem> {
+    private fun combineLists(contacts: List<Contact>, webUsers: List<WebUser>): List<ContactListViewItem> {
+        EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " combineLists Called")
         val combinedList = mutableListOf<ContactListViewItem>()
 
         // Convert Contact objects to ContactListViewItem
@@ -109,6 +124,7 @@ class ContactListFragment : Fragment() {
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onViewCreated Called")
         super.onViewCreated(view, savedInstanceState)
         requireActivity().title = getString(R.string.contacts)
 
@@ -164,7 +180,7 @@ class ContactListFragment : Fragment() {
             RetrofitHelper.getInstance(httpClientWithToken).create(TwilioApi::class.java)
 
         //Creating the Adapter
-        val adapter = ContactListAdapter(combinedList,object : OnContactItemClickListener {
+         adapter = ContactListAdapter(combinedList,combinedList,object : OnContactItemClickListener {
             @SuppressLint("SuspiciousIndentation")
             override fun onContactItemClick(contact: ContactListViewItem) {
 
@@ -219,17 +235,18 @@ class ContactListFragment : Fragment() {
                                         }
                                         catch (e: Exception){
                                             println("Exception :  ${e.message}")
+                                            EETLog.error(
+                                                SessionHelper.appContext, LogConstants.logDetails(
+                                                    e,
+                                                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                                                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                                                ),
+                                                Constants.EX, LogTraceConstants.getUtilityData(
+                                                    SessionHelper.appContext!!
+                                                )!!
+                                            )
                                         }
 
-//                                            contactListViewModel.getAttributes(conversation.conversationSid) { attributes ->
-//
-//                                                Log.d("ExistingAttributes", attributes)
-//                                                var jsonObject = JSONObject(attributes)
-
-//                                                Log.d("jsonObjectDepartment",jsonObject.optString("Department",""))
-//                                                Log.d("jsonObjectDesignation",jsonObject.optString("Designation",""))
-//                                                Log.d("jsonObjectCustomer",jsonObject.optString("CustomerName",""))
-//                                            }
 
                                             //set attrtibute fetched from parent if blank in response
                                             if(conversation.attributes.Department.isNullOrEmpty() &&
@@ -331,6 +348,16 @@ class ContactListFragment : Fragment() {
                                     binding?.progressBarID?.visibility = GONE
                                     } catch(e:Exception){
                                         println("Exception :  ${e.message}")
+                                        EETLog.error(
+                                            SessionHelper.appContext, LogConstants.logDetails(
+                                                e,
+                                                LogConstants.LOG_LEVEL.ERROR.toString(),
+                                                LogConstants.LOG_SEVERITY.HIGH.toString()
+                                            ),
+                                            Constants.EX, LogTraceConstants.getUtilityData(
+                                                SessionHelper.appContext!!
+                                            )!!
+                                        )
                                     }
                                 }
                             } else {

@@ -45,6 +45,7 @@ class ConversationDetailsViewModel(
     }
 
     private suspend fun getConversationResult() {
+        EETLog.saveUserJourney("vitaltext:  ConversationDetailsViewModel getConversationResult Called")
         conversationsRepository.getConversation(conversationSid).collect { result ->
             if (result.requestStatus is RepositoryRequestStatus.Error) {
                 onDetailsError.value = ConversationsError.CONVERSATION_GET_FAILED
@@ -88,6 +89,7 @@ class ConversationDetailsViewModel(
     }
 
     fun muteConversation() = viewModelScope.launch {
+        EETLog.saveUserJourney("vitaltext:  ConversationDetailsViewModel muteconversation Called")
         if (isShowProgress.value == true) {
             return@launch
         }
@@ -115,6 +117,7 @@ class ConversationDetailsViewModel(
     }
 
     fun unmuteConversation() = viewModelScope.launch {
+        EETLog.saveUserJourney("vitaltext:  ConversationDetailsViewModel unmuteConversation Called")
         if (isShowProgress.value == true) {
             return@launch
         }
@@ -142,6 +145,7 @@ class ConversationDetailsViewModel(
     }
 
     fun leaveConversation() = viewModelScope.launch {
+        EETLog.saveUserJourney("vitaltext:  ConversationDetailsViewModel levaeConversation Called")
         if (isShowProgress.value == true) {
             return@launch
         }
@@ -169,6 +173,7 @@ class ConversationDetailsViewModel(
     }
 
     fun addChatParticipant(identity: String) = viewModelScope.launch {
+        EETLog.saveUserJourney("vitaltext:  ConversationDetailsViewModel addChatParticipant Called")
         if (isShowProgress.value == true) {
             return@launch
         }
@@ -196,6 +201,7 @@ class ConversationDetailsViewModel(
     }
 
     fun addNonChatParticipant(phone: String, proxyPhone: String) = viewModelScope.launch {
+        EETLog.saveUserJourney("vitaltext:  ConversationDetailsViewModel addNonChatParticipant Called")
         if (isShowProgress.value == true) {
             return@launch
         }

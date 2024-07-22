@@ -31,7 +31,7 @@ class ParticipantListActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        EETLog.saveUserJourney(this::class.java.simpleName + " onCreate Called")
+        EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onCreate Called")
         setContentView(binding.root)
 
         initViews()
@@ -78,6 +78,7 @@ class ParticipantListActivity : AppCompatActivity() {
     }
 
     private fun initViews() {
+        EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " initViews Called")
         setSupportActionBar(binding.conversationToolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding.conversationToolbar.setNavigationOnClickListener { onBackPressed() }

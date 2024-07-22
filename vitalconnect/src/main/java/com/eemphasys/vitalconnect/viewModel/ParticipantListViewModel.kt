@@ -62,6 +62,7 @@ class ParticipantListViewModel(
         }
 
     fun getConversationParticipants() = viewModelScope.launch {
+        EETLog.saveUserJourney("vitaltext:  ParticipantlistViewModel getConversationParticipants Called")
         conversationsRepository.getConversationParticipants(conversationSid).collect { (list, status) ->
             unfilteredParticipantsList = list.asParticipantListViewItems()
             if (status is RepositoryRequestStatus.Error) {
@@ -71,6 +72,7 @@ class ParticipantListViewModel(
     }
 
     fun removeSelectedParticipant() = viewModelScope.launch {
+        EETLog.saveUserJourney("vitaltext:  ParticipantlistViewModel removeSelectedParticipant Called")
         val participant = selectedParticipant ?: return@launch
 
         try {

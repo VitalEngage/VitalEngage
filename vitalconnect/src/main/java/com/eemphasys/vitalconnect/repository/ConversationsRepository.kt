@@ -362,16 +362,16 @@ Log.d("sid",conversationSid)
             emit(Error(e.toConversationsError()))
             e.printStackTrace()
 
-//            EETLog.error(
-//                SessionHelper.appContext, LogConstants.logDetails(
-//                    e,
-//                    LogConstants.LOG_LEVEL.ERROR.toString(),
-//                    LogConstants.LOG_SEVERITY.HIGH.toString()
-//                ),
-//                Constants.EX, LogTraceConstants.getUtilityData(
-//                    SessionHelper.appContext!!
-//                )!!
-//            );
+            EETLog.error(
+                SessionHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    SessionHelper.appContext!!
+                )!!
+            )
         }
     }
 
@@ -384,16 +384,16 @@ Log.d("sid",conversationSid)
             emit(Error(e.toConversationsError()))
             e.printStackTrace()
 
-//            EETLog.error(
-//                SessionHelper.appContext, LogConstants.logDetails(
-//                    e,
-//                    LogConstants.LOG_LEVEL.ERROR.toString(),
-//                    LogConstants.LOG_SEVERITY.HIGH.toString()
-//                ),
-//                Constants.EX, LogTraceConstants.getUtilityData(
-//                    SessionHelper.appContext!!
-//                )!!
-//            );
+            EETLog.error(
+                SessionHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    SessionHelper.appContext!!
+                )!!
+            )
         }
     }
 
@@ -452,6 +452,16 @@ Log.d("sid",conversationSid)
                             insertOrUpdateConversation(it.sid)
                         } catch (e: TwilioException) {
                             status = Error(e.toConversationsError())
+                            EETLog.error(
+                                SessionHelper.appContext, LogConstants.logDetails(
+                                    e,
+                                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                                ),
+                                Constants.EX, LogTraceConstants.getUtilityData(
+                                    SessionHelper.appContext!!
+                                )!!
+                            )
                         }
                     }
                 }

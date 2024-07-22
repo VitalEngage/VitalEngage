@@ -30,8 +30,6 @@ interface LoginManager {
     suspend fun getTwilioToken()
     suspend fun signInUsingStoredCredentials()
     suspend fun signOut()
-    //    suspend fun registerForFcm()
-//    suspend fun unregisterFromFcm()
     fun clearCredentials()
     fun isLoggedIn(): Boolean
 
@@ -59,6 +57,7 @@ class LoginManagerImpl(
 
         val tokenApi = RetrofitHelper.getInstance().create(TwilioApi::class.java)
         val result = tokenApi.validateUser(requestData)
+        Log.d("check1", requestData.toString())
         if(result.isSuccessful) {
             Log.d("Authtoken: ", result.body()!!.jwtToken)
             LoginConstants.AUTH_TOKEN = result.body()!!.jwtToken
@@ -66,6 +65,8 @@ class LoginManagerImpl(
             LoginConstants.USER_SMS_ALERT = result.body()!!.enableNotification.toString()
             LoginConstants.SHOW_DEPARTMENT = result.body()!!.showDepartment.toString()
             LoginConstants.SHOW_DESIGNATION = result.body()!!.showDesignation.toString()
+            LoginConstants.EMAIL = result.body()!!.email
+            LoginConstants.MOBILENUMBER = result.body()!!.mobileNumber
             credentialStorage.storeCredentials(identity,password)
         }
     }
@@ -94,21 +95,13 @@ class LoginManagerImpl(
             }
 //        }
         getTwilioclient()
+
     }
 
     override suspend fun signInUsingStoredCredentials() {
         if (credentialStorage.isEmpty()) throw createTwilioException(ConversationsError.NO_STORED_CREDENTIALS)
         val identity = credentialStorage.identity
         val password = credentialStorage.password
-
-//        try {
-//            conversationsClient.create(identity, password)
-//            conversationsRepository.subscribeToConversationsClientEvents()
-//            registerForFcm()
-//        } catch (e: TwilioException) {
-//            handleError(e.toConversationsError())
-//            throw e
-//        }
     }
 
     override suspend fun signOut() {

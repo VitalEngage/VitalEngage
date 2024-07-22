@@ -18,6 +18,7 @@ import com.eemphasys.vitalconnect.common.extensions.asLastMesageStatusIcon
 import com.eemphasys.vitalconnect.common.extensions.asLastMessageDateString
 import com.eemphasys.vitalconnect.common.extensions.asLastMessageTextColor
 import com.eemphasys.vitalconnect.common.extensions.asMessageCount
+import com.eemphasys.vitalconnect.common.extensions.asMessageDateChangedString
 import com.eemphasys.vitalconnect.common.extensions.asMessageDateString
 import com.eemphasys.vitalconnect.common.extensions.firstMedia
 import com.eemphasys.vitalconnect.data.models.ParticipantListViewItem
@@ -83,7 +84,7 @@ fun Message.toMessageDataItem(currentUserIdentity: String = participant.identity
     )
 }
 
-fun MessageDataItem.toMessageListViewItem(authorChanged: Boolean): MessageListViewItem {
+fun MessageDataItem.toMessageListViewItem(authorChanged: Boolean,datechanged: Boolean): MessageListViewItem {
     return MessageListViewItem(
         this.sid,
         this.uuid,
@@ -109,14 +110,16 @@ fun MessageDataItem.toMessageListViewItem(authorChanged: Boolean): MessageListVi
         this.mediaUploadedBytes,
         this.mediaUploadUri?.toUri(),
         this.errorCode,
-        this.friendlyName ?: ""
+        this.friendlyName ?: "",
+        datechanged,
+        this.dateCreated.asMessageDateChangedString()
     )
 }
 
 fun getReactions(attributes: String): Map<String, Set<String>> = try {
     Gson().fromJson(attributes, ReactionAttributes::class.java).reactions
 } catch (e: Exception) {
-    /*EETLog.error(
+   /* EETLog.error(
         SessionHelper.appContext, LogConstants.logDetails(
             e,
             LogConstants.LOG_LEVEL.ERROR.toString(),
@@ -125,7 +128,7 @@ fun getReactions(attributes: String): Map<String, Set<String>> = try {
         Constants.EX, LogTraceConstants.getUtilityData(
             SessionHelper.appContext!!
         )!!
-    );*/
+    )*/
     emptyMap()
 }
 
@@ -199,7 +202,8 @@ fun ConversationDataItem.asConversationListViewItem(
     } catch (e: Exception) {
         Log.d("Exception3@DataConverter",e.message.toString())
         ""
-    }
+    },
+    this.messagesCount
 )
 
 fun ConversationDataItem.asConversationDetailsViewItem() = ConversationDetailsViewItem(
@@ -225,11 +229,16 @@ fun List<ConversationDataItem>.asConversationListViewItems(context: Context) =
 fun List<Message>.asMessageDataItems(identity: String) = map { it.toMessageDataItem(identity) }
 
 fun List<MessageDataItem>.asMessageListViewItems() =
-    mapIndexed { index, item -> item.toMessageListViewItem(isAuthorChanged(index)) }
+    mapIndexed { index, item -> item.toMessageListViewItem(isAuthorChanged(index),isDateChanged(index)) }
 
 private fun List<MessageDataItem>.isAuthorChanged(index: Int): Boolean {
     if (index == 0) return true
     return this[index].author != this[index - 1].author
+}
+
+private fun List<MessageDataItem>.isDateChanged(index: Int): Boolean {
+    if (index == 0) return true
+    return this[index].dateCreated.asMessageDateChangedString() != this[index - 1].dateCreated.asMessageDateChangedString()
 }
 
 fun List<ParticipantDataItem>.asParticipantListViewItems() = map { it.toParticipantListViewItem() }

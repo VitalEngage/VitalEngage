@@ -54,6 +54,8 @@ android {
     }
 }
 
+version = "1.0.0001"
+
 dependencies {
 
     implementation(project(":commonmobilelib2.6"))

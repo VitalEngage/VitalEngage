@@ -21,7 +21,7 @@ class ConversationListActivity:AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        EETLog.saveUserJourney(this::class.java.simpleName + " onCreate Called")
+        EETLog.saveUserJourney("vitaltext: " +this::class.java.simpleName + " onCreate Called")
 
         mainViewModel.create()
         val binding = ActivityConversationListBinding.inflate(layoutInflater)
@@ -37,7 +37,7 @@ class ConversationListActivity:AppCompatActivity() {
         menuItem.isVisible = isDataAvailable
 
         if(Constants.SHOW_CONTACTS == "false"){
-            menuItem.isVisible == false
+            menuItem.setVisible(false)
         }
 
         if(!isDataAvailable) {
@@ -84,7 +84,7 @@ class ConversationListActivity:AppCompatActivity() {
         }
     }
     private fun replaceFragment(fragment: Fragment) {
-
+        EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " replaceFragment Called")
         supportFragmentManager.findFragmentById(R.id.fragment_container)?.let { currentFragment ->
             if (currentFragment::class == fragment::class) {
                 return

@@ -42,29 +42,19 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        EETLog.saveUserJourney(this::class.java.simpleName + " onCreate Called")
+        EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onCreate Called")
         setHasOptionsMenu(true)
-//        activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
-//            override fun handleOnBackPressed() {
-//                if(shouldInterceptBackPress()){
-//                    Log.d("ConversationListFragment","ConversationListFragement back button pressed")
-//                // in here you can do logic when backPress is clicked
-//                }else{
-//                    isEnabled = false
-//                    activity?.onBackPressed()
-//                }
-//            }
-//        })
-//        conversationListViewModel.getTotalUnreadMessageCount()
     }
 
     fun shouldInterceptBackPress() = true
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onCreateView Called")
         binding = FragmentConversationListBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onViewCreated Called")
         super.onViewCreated(view, savedInstanceState)
         requireActivity().title = getString(R.string.title_conversations_list)
 
@@ -163,6 +153,7 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
     }
 
     override fun onConversationClicked(conversationSid: String) {
+        EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onConversationClicked Called" + conversationSid)
         MessageListActivity.start(requireContext(), conversationSid)
     }
 

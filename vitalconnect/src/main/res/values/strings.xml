@@ -6,6 +6,7 @@
     <string name="title_conversations_list">Conversations</string>
     <string name="title_profile">Profile</string>
     <string name="title_debug">Debug</string>
+    <string name="title_settings">Settings</string>
 
     <string name="no_internet_connection">No internet connection</string>
 
@@ -93,8 +94,11 @@
     <string name="err_failed_to_copy_message">Failed to copy message</string>
 
     <string name="search_conversations">Search Conversations</string>
+    <string name="search_contacts">Search Contacts</string>
 
     <!-- Profile fragment -->
+    <string name="email">Email</string>
+    <string name="phonenumber">Phone Number</string>
     <string name="edit_profile">Edit profile</string>
     <string name="edit_friendly_name">Edit your friendly name</string>
     <string name="sign_out_account">Sign out your account</string>
