@@ -67,7 +67,7 @@ private class ReactionDetailsAdapter(message: MessageListViewItem) :
     init {
         reactions = message.reactions
             .flatMap { (reaction, identityList) ->
-                identityList.map { ReactionViewItem(it, reaction) }
+                identityList.map { ReactionViewItem(message.friendlyName, reaction) }
             }
             .sortedWith(Comparator { item1, item2 ->
                 item1.reaction.sortOrder.compareTo(item2.reaction.sortOrder)

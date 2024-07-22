@@ -29,7 +29,23 @@
         android:focusableInTouchMode="false"
         tools:background="@color/conversation_details_background"
         tools:ignore="MissingConstraints">
-
+        <TextView
+            android:id="@+id/changed_date"
+            style="@style/TextViewSubtitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="@{message.formattedDate}"
+            android:visibility="@{message.dateChanged ? View.VISIBLE : View.GONE}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Thu 24 Nov 2024"
+            tools:visibility="visible" />
         <TextView
             android:id="@+id/message_author"
             style="@style/TextViewSubtitle"
@@ -43,7 +59,7 @@
             android:visibility="@{message.authorChanged ? View.VISIBLE : View.GONE}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/message_background"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/changed_date"
             tools:text="@tools:sample/full_names"
             tools:visibility="visible" />
 
@@ -74,7 +90,7 @@
             app:layout_constraintEnd_toStartOf="@+id/message_background"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/message_author"
-            android:visibility="@{message.authorChanged ? View.VISIBLE : View.INVISIBLE}"
+            android:visibility="@{message.authorChanged || message.dateChanged ? View.VISIBLE : View.INVISIBLE}"
             tools:ignore="MissingConstraints" />
 
         <androidx.constraintlayout.widget.Barrier

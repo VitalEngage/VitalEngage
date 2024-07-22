@@ -32,5 +32,7 @@ data class MessageListViewItem(
     val mediaUploadedBytes: Long?,
     val mediaUploadUri: Uri?,
     val errorCode: Int,
-    var friendlyName : String
+    var friendlyName : String,
+    var dateChanged: Boolean,
+    var formattedDate: String
 )

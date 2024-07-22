@@ -68,16 +68,6 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
 
     suspend fun shutdown() {
         getConversationsClient().shutdown()
-//        try{
-//            var client = getConversationsClient().myIdentity
-//            Log.d("after shutting client in try",client)
-//        }
-//        catch (e:Exception){
-//            Log.d("after shutting client in catch",e.message.toString())
-//        }
-//        var client = getConversationsClient().myIdentity
-//        Log.d("after shutting client",client)
-
         deferredClient = CompletableDeferred()
     }
 
@@ -86,7 +76,6 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
      */
 
     private fun updateToken(identity: String,notifyOnFailure: Boolean) = coroutineScope.launch {
-        //Timber.d("updateToken notifyOnFailure: $notifyOnFailure")
 
         val result = runCatching {
             val twilioToken = getToken(identity)
@@ -94,7 +83,6 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
         }
 
         if (result.isFailure && notifyOnFailure) {
-            //Timber.e(result.exceptionOrNull())
             notifyUpdateTokenFailure()
         }
     }
@@ -144,9 +132,6 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
         } catch (e: FileNotFoundException) {
             throw createTwilioException(ConversationsError.TOKEN_ACCESS_DENIED)
         } catch (e: Exception) {
-
-            /*e.printStackTrace()*/
-
             EETLog.error(
                 SessionHelper.appContext, LogConstants.logDetails(
                     e,

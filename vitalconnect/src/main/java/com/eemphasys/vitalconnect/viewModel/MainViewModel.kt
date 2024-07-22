@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 class MainViewModel(private val mainManager: MainManager) : ViewModel() {
 
         fun create(){
-
+            EETLog.saveUserJourney("vitaltext:  MainViewModel create Called")
             viewModelScope.launch {
                 try {
                     mainManager.getTwilioclient()

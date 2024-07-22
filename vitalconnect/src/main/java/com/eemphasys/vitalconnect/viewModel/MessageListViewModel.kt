@@ -121,6 +121,7 @@ class MessageListViewModel(
     }
 
     private suspend fun getConversationResult() {
+        EETLog.saveUserJourney("vitaltext:  MessagelistViewModel getConversationResult Called")
         conversationsRepository.getConversation(conversationSid).collect { result ->
             if (result.requestStatus is RepositoryRequestStatus.Error) {
                 onMessageError.value = ConversationsError.CONVERSATION_GET_FAILED
@@ -131,6 +132,7 @@ class MessageListViewModel(
     }
 
     fun sendTextMessage(message: String) = viewModelScope.launch {
+        EETLog.saveUserJourney("vitaltext:  MessagelistViewModel sendTextMessage Called")
         val messageUuid = UUID.randomUUID().toString()
         try {
             messageListManager.sendTextMessage(message, messageUuid)
@@ -515,14 +517,10 @@ class MessageListViewModel(
     }
 
     fun initParticipant(channelSid : String) = viewModelScope.launch {
+        EETLog.saveUserJourney("vitaltext:  MessagelistViewModel initParticipant Called")
         conversationsRepository.getConversationParticipants(channelSid).collect{(list)->
-//            var listOfParticipant = list.asParticipantListViewItems()
             Constants.PARTICIPANTS = list.asParticipantListViewItems()
             conversationsRepository.updateFriendlyName()
-//            for(p in Constants.PARTICIPANTS){
-//                val friendlyName = conversationsRepository.getFriendlyName(p.identity)
-//                Log.d("friendlyName",friendlyName)
-//            }
                 }
 
         }

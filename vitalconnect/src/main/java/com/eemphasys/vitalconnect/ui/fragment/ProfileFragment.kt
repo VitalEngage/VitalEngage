@@ -13,10 +13,12 @@ import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.common.extensions.getErrorMessage
 import com.eemphasys.vitalconnect.common.extensions.lazyActivityViewModel
 import com.eemphasys.vitalconnect.common.injector
+import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
 import com.eemphasys.vitalconnect.databinding.FragmentProfileBinding
 import com.eemphasys.vitalconnect.ui.dialogs.EditProfileDialog
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.google.android.material.snackbar.Snackbar
+import com.twilio.conversations.extensions.createConversationsClient
 
 class ProfileFragment:Fragment() {
     lateinit var binding: FragmentProfileBinding
@@ -26,25 +28,29 @@ class ProfileFragment:Fragment() {
     private val profileViewModel by lazyActivityViewModel { injector.createProfileViewModel(applicationContext) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        EETLog.saveUserJourney(this::class.java.simpleName + " onCreate Called")
+        EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onCreate Called")
         setHasOptionsMenu(true)
 
     }
 
     fun shouldInterceptBackPress() = true
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onCreateView Called")
         binding = FragmentProfileBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onViewCreated Called")
         super.onViewCreated(view, savedInstanceState)
-        requireActivity().title = getString(R.string.title_profile)
+        requireActivity().title = getString(R.string.title_settings)
 
         profileViewModel.selfUser.observe(viewLifecycleOwner) { user ->
             binding.profileName.text = user.friendlyName
             binding.profileIdentity.text = user.identity
             binding.profileImage.text = Constants.getInitials(user.friendlyName.trim { it <= ' '} )
+            binding.emailId.text = Constants.EMAIL
+            binding.phoneNumber.text = Constants.MOBILENUMBER
         }
 
         profileViewModel.onUserUpdated.observe(viewLifecycleOwner) {
@@ -66,12 +72,12 @@ class ProfileFragment:Fragment() {
                 .show()
         }
 
-        binding.editProfile.setOnClickListener { showEditProfileDialog() }
+//        binding.editProfile.setOnClickListener { showEditProfileDialog() }
         binding.signOut.setOnClickListener { showSignOutDialog() }
-        if(Constants.USER_SMS_ALERT =="true"){
+        if(Constants.USER_SMS_ALERT.equals("true", ignoreCase = true)){
             binding.switchbtn.isChecked = true
         }
-        else if(Constants.USER_SMS_ALERT =="false") {
+        else if(Constants.USER_SMS_ALERT.equals("false", ignoreCase = true)) {
             binding.switchbtn.isChecked = false
         }
         binding.switchbtn.setOnCheckedChangeListener{ buttonView,isChecked ->

@@ -72,6 +72,7 @@ class ContactListViewModel(
 
 
     fun createConversation(friendlyName: String, identity : String, phoneNumber : String,attributes: Attributes) = viewModelScope.launch {
+        EETLog.saveUserJourney("vitaltext:  ContactListViewModel createConversation Called")
         try {
             setDataLoading(true)
 
@@ -123,6 +124,7 @@ class ContactListViewModel(
     }
 
     private fun addChatParticipant(identity: String, sid:String) = viewModelScope.launch {
+        EETLog.saveUserJourney("vitaltext:  ContactListViewModel addChatParticipant Called")
         if (isShowProgress.value == true) {
             return@launch
         }
@@ -162,6 +164,7 @@ class ContactListViewModel(
     }
 
     private fun addNonChatParticipant(phone: String, proxyPhone: String, friendlyName: String, sid:String) = viewModelScope.launch {
+        EETLog.saveUserJourney("vitaltext:  ContactListViewModel addNonChatParticipant Called")
         if (isShowProgress.value == true) {
             return@launch
         }
@@ -201,18 +204,21 @@ class ContactListViewModel(
     }
 
     fun getSyncStatus(sid: String) {
+        EETLog.saveUserJourney("vitaltext:  ContactListViewModel getSyncStatus Called")
         viewModelScope.launch {
             delay(3000)
             MessageListActivity.startfromFragment(applicationContext,sid) }
     }
 
     fun setAttributes(conversationSid : String, attributes: Attributes){
+        EETLog.saveUserJourney("vitaltext:  ContactListViewModel setAttributes Called")
         viewModelScope.launch {
             conversationListManager.setAttributes(conversationSid,attributes)
         }
     }
 
     fun getAttributes(conversationSid: String, callback: AttributesCallback) {
+        EETLog.saveUserJourney("vitaltext:  ContactListViewModel getAttributes Called")
         viewModelScope.launch {
             try {
                 val attributes = conversationListManager.getAttributes(conversationSid)
@@ -221,6 +227,16 @@ class ContactListViewModel(
             } catch (e: Exception) {
                 // Handle exception
                 println("Error: ${e.message}")
+                EETLog.error(
+                    SessionHelper.appContext, LogConstants.logDetails(
+                        e,
+                        LogConstants.LOG_LEVEL.ERROR.toString(),
+                        LogConstants.LOG_SEVERITY.HIGH.toString()
+                    ),
+                    Constants.EX, LogTraceConstants.getUtilityData(
+                        SessionHelper.appContext!!
+                    )!!
+                )
                 // Optionally, inform the caller of the error
                 callback("") // Passing an empty string or null depending on your error handling strategy
             }

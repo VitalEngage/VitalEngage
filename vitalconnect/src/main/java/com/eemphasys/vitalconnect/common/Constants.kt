@@ -37,6 +37,8 @@ class Constants   {
         var DESIGNATION: String = ""
         var CUSTOMER : String= ""
         var COUNTRYCODE :String=""
+        var EMAIL : String = ""
+        var MOBILENUMBER :String = ""
 
 
         @JvmStatic

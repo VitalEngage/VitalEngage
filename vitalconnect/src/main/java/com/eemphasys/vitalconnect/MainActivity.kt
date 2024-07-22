@@ -11,11 +11,14 @@ import com.eemphasys.vitalconnect.api.RetryInterceptor
 import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.ParticipantExistingConversation
 import com.eemphasys.vitalconnect.common.Constants
+import com.eemphasys.vitalconnect.common.SessionHelper
 import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.common.extensions.lazyViewModel
 import com.eemphasys.vitalconnect.databinding.ActivityMainBinding
+import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys.vitalconnect.ui.activity.ConversationListActivity
 import com.eemphasys_enterprise.commonmobilelib.EETLog
+import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.google.gson.Gson
 import com.twilio.conversations.Attributes
 import okhttp3.OkHttpClient
@@ -30,7 +33,7 @@ class MainActivity : AppCompatActivity() {
     private val mainViewModel by lazyViewModel { injector.createMainViewModel(application) }
     val contactListViewModel by lazyViewModel { injector.createContactListViewModel(applicationContext) }
     override fun onCreate(savedInstanceState: Bundle?) {
-        EETLog.saveUserJourney(this::class.java.simpleName + " onCreate Called")
+        EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onCreate Called")
         val username = intent.getStringExtra("username")
         val friendlyName = intent.getStringExtra("friendlyName")
         val clientID = intent.getStringExtra("clientID")
@@ -56,6 +59,9 @@ class MainActivity : AppCompatActivity() {
         val designation = intent.getStringExtra("designation")
         val customer = intent.getStringExtra("customer")
         val countryCode = intent.getStringExtra("countryCode")
+        val email = intent.getStringExtra("email")
+        val mobileNumber = intent.getStringExtra("mobileNumber")
+
 
         Constants.AUTH_TOKEN = authToken!!
         Constants.CONTACTS = contacts!!
@@ -82,6 +88,8 @@ class MainActivity : AppCompatActivity() {
         Constants.DESIGNATION=designation!!
         Constants.CUSTOMER=customer!!
         Constants.COUNTRYCODE=countryCode
+        Constants.EMAIL = email!!
+        Constants.MOBILENUMBER = mobileNumber!!
 
         mainViewModel.create()
         super.onCreate(savedInstanceState)
@@ -153,6 +161,16 @@ class MainActivity : AppCompatActivity() {
                                         })
                                     } catch (e: Exception) {
                                         println("Exception :  ${e.message}")
+                                        EETLog.error(
+                                            SessionHelper.appContext, LogConstants.logDetails(
+                                                e,
+                                                LogConstants.LOG_LEVEL.ERROR.toString(),
+                                                LogConstants.LOG_SEVERITY.HIGH.toString()
+                                            ),
+                                            Constants.EX, LogTraceConstants.getUtilityData(
+                                                SessionHelper.appContext!!
+                                            )!!
+                                        )
                                     }
                                     //set attrtibute fetched from parent if blank in response
                                     if(conversation.attributes.Department.isNullOrEmpty() &&
@@ -168,8 +186,7 @@ class MainActivity : AppCompatActivity() {
                                             "Department" to department,
                                             "CustomerName" to customer
                                         )
-//                                        val gson = Gson()
-//                                        val jsonAttributes = gson.toJson(attributes)
+
                                         val jsonObject = JSONObject(attributes)
                                         Log.d("setting attributes", jsonObject.toString())
                                         contactListViewModel.setAttributes(conversation.conversationSid,Attributes(jsonObject))
@@ -201,7 +218,6 @@ class MainActivity : AppCompatActivity() {
                                         "Department" to department,
                                         "CustomerName" to customer
                                     )
-//
                                     val jsonObject = JSONObject(attributes)
                                     Log.d("setting attributes", jsonObject.toString())
                                     contactListViewModel.createConversation(
@@ -239,8 +255,7 @@ class MainActivity : AppCompatActivity() {
                                     "Department" to department,
                                     "CustomerName" to customer
                                 )
-//                                val gson = Gson()
-//                                val jsonAttributes = gson.toJson(attributes)
+
                                 val jsonObject = JSONObject(attributes)
                                 Log.d("setting attributes", jsonObject.toString())
                                 contactListViewModel.createConversation(
@@ -249,15 +264,23 @@ class MainActivity : AppCompatActivity() {
                                     "${Constants.cleanedNumber(Constants.formatPhoneNumber(customerNumber!!,countryCode))}",
                                     Attributes(jsonObject)
                                 )
-                                //contactListViewModel.createConversation(contact.name + " " + contact.number ,contact.email,contact.number)
-                                //binding?.progressBarID?.visibility = View.GONE
+
                             } catch(e:Exception){
                                 println("Exception :  ${e.message}")
+                                EETLog.error(
+                                    SessionHelper.appContext, LogConstants.logDetails(
+                                        e,
+                                        LogConstants.LOG_LEVEL.ERROR.toString(),
+                                        LogConstants.LOG_SEVERITY.HIGH.toString()
+                                    ),
+                                    Constants.EX, LogTraceConstants.getUtilityData(
+                                        SessionHelper.appContext!!
+                                    )!!
+                                )
                             }
                         }
                     } else {
                         println("Response was not successful: ${response.code()}")
-//                    setContentView(binding.root)
                     }
                 }
 
@@ -271,10 +294,8 @@ class MainActivity : AppCompatActivity() {
 
         }
         else{
-
                     val intent = Intent(this, ConversationListActivity::class.java)
-//            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-            startActivity(intent)
+                    startActivity(intent)
         }
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

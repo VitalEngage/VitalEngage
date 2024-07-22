@@ -15,5 +15,6 @@ data class ConversationListViewItem (
     val isLoading: Boolean = false,
     val department : String,
     val designation: String,
-    val customer: String
+    val customer: String,
+    val messageCount: Long
 )

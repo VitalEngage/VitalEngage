@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.adapters.MessageListAdapter
+import com.eemphasys.vitalconnect.common.Constants
+import com.eemphasys.vitalconnect.common.SessionHelper
 import com.eemphasys.vitalconnect.common.enums.ConversationsError
 import com.eemphasys.vitalconnect.common.enums.MessageType
 import com.eemphasys.vitalconnect.common.extensions.getErrorMessage
@@ -25,10 +27,12 @@ import com.eemphasys.vitalconnect.common.extensions.showToast
 import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.data.models.MessageListViewItem
 import com.eemphasys.vitalconnect.databinding.ActivityMessageListBinding
+import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys.vitalconnect.ui.dialogs.AttachFileDialog
 import com.eemphasys.vitalconnect.ui.dialogs.MessageActionsDialog
 import com.eemphasys.vitalconnect.ui.dialogs.ReactionDetailsDialog
 import com.eemphasys_enterprise.commonmobilelib.EETLog
+import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.google.android.material.snackbar.Snackbar
 
 class MessageListActivity: AppCompatActivity() {
@@ -44,7 +48,7 @@ class MessageListActivity: AppCompatActivity() {
         override fun onCreate(savedInstanceState: Bundle?) {
             try{
                 super.onCreate(savedInstanceState)
-                EETLog.saveUserJourney(this::class.java.simpleName + " onCreate Called")
+                EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onCreate Called")
                 setContentView(binding.root)
 
                 initViews()
@@ -53,7 +57,16 @@ class MessageListActivity: AppCompatActivity() {
             }
             catch(e : Exception){
                 println("${e.message}")
-
+                EETLog.error(
+                    SessionHelper.appContext, LogConstants.logDetails(
+                        e,
+                        LogConstants.LOG_LEVEL.ERROR.toString(),
+                        LogConstants.LOG_SEVERITY.HIGH.toString()
+                    ),
+                    Constants.EX, LogTraceConstants.getUtilityData(
+                        SessionHelper.appContext!!
+                    )!!
+                )
             }
 
         }
@@ -65,6 +78,7 @@ class MessageListActivity: AppCompatActivity() {
         }
 
         override fun onOptionsItemSelected(item: MenuItem): Boolean {
+            EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onOptionsItemSelected Called")
             when (item.itemId) {
                 R.id.show_conversation_details -> ConversationDetailsActivity.start(
                     this,
@@ -75,6 +89,7 @@ class MessageListActivity: AppCompatActivity() {
         }
 
         private fun initViews() {
+            EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " initViews Called")
             setSupportActionBar(binding.conversationToolbar)
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
             binding.conversationToolbar.setNavigationOnClickListener { onBackPressed() }
