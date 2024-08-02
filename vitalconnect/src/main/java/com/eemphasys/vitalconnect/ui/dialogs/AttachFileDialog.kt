@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.OpenableColumns
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,15 +13,18 @@ import androidx.activity.result.contract.ActivityResultContracts.OpenDocument
 import androidx.activity.result.contract.ActivityResultContracts.TakePicture
 import androidx.core.content.FileProvider
 import com.eemphasys.vitalconnect.common.ChatAppModel
+import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.enums.ConversationsError
 import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.common.extensions.getString
 import com.eemphasys.vitalconnect.common.extensions.lazyActivityViewModel
 import com.eemphasys.vitalconnect.common.extensions.parcelable
 import com.eemphasys.vitalconnect.common.injector
+import com.eemphasys.vitalconnect.data.models.MediaMessagePreviewItem
 import com.eemphasys.vitalconnect.databinding.DialogAttachFileBinding
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import java.io.File
+import java.io.InputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -92,10 +96,65 @@ class AttachFileDialog : BaseBottomSheetDialogFragment() {
         val inputStream = contentResolver.openInputStream(uri)
         val type = contentResolver.getType(uri)
         val name = contentResolver.getString(uri, OpenableColumns.DISPLAY_NAME)
+        // Determine size of the attachment
+        val sizeInBytes: Long = getAttachmentSize(inputStream)
+        val sizeInKB: Double = sizeInBytes / 1024.0  // Convert bytes to KB
+        val sizeInMB: Double = sizeInBytes / (1024.0 * 1024.0) // Convert bytes to MB
+
+
         if (inputStream != null) {
-            messageListViewModel.sendMediaMessage(uri.toString(), inputStream, name, type)
+            println("Attachment Name: $name")
+            println("Attachment Type: $type")
+            println("Attachment Size: %.2f KB".format(sizeInKB))
+
+            when (type) {
+                "application/pdf" -> {
+                    if (sizeInKB > 600) {
+                        messageListViewModel.onMessageError.value = ConversationsError.FILE_TOO_LARGE
+                        return
+                    }
+                }
+                "image/jpeg", "image/png", "image/jpg" -> {
+                    if (sizeInMB > 5) {
+                        messageListViewModel.onMessageError.value = ConversationsError.FILE_TOO_LARGE
+                        return
+                    }
+                }
+                else -> {
+                    messageListViewModel.onMessageError.value = ConversationsError.INVALID_CONTENT_TYPE
+                    return
+                }
+            }
+
+            Constants.URI = uri.toString()
+            Constants.INPUTSTREAM = inputStream
+            Constants.MEDIA_NAME = name
+            Constants.MEDIA_TYPE = type
+            messageListViewModel.mediaMessagePreview.value = MediaMessagePreviewItem(uri.toString(),inputStream,name,type)
+//            messageListViewModel.sendMediaMessage(uri.toString(), inputStream, name, type)
         } else {
             messageListViewModel.onMessageError.value = ConversationsError.MESSAGE_SEND_FAILED
+        }
+    }
+
+    private fun getAttachmentSize(inputStream: InputStream?): Long {
+        if (inputStream == null) return 0
+
+        return try {
+            // Calculate the size of the attachment
+            inputStream.use { stream ->
+                var totalBytes: Long = 0
+                val buffer = ByteArray(1024)
+                var bytesRead: Int
+                while (stream.read(buffer).also { bytesRead = it } != -1) {
+                    totalBytes += bytesRead.toLong()
+                }
+                totalBytes
+            }
+        } catch (e: Exception) {
+            // Handle exceptions (e.g., IOException)
+            e.printStackTrace()
+            0
         }
     }
 

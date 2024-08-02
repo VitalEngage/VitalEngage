@@ -5,6 +5,10 @@ import android.os.Build
 import android.util.Log
 import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.data.models.ParticipantListViewItem
+import com.google.i18n.phonenumbers.NumberParseException
+import com.google.i18n.phonenumbers.PhoneNumberUtil
+import java.io.ByteArrayInputStream
+import java.io.InputStream
 import java.util.Random
 
 class Constants   {
@@ -39,6 +43,12 @@ class Constants   {
         var COUNTRYCODE :String=""
         var EMAIL : String = ""
         var MOBILENUMBER :String = ""
+        var DEFAULT_COUNTRYCODE :String = ""
+
+        var URI : String = ""
+        var INPUTSTREAM : InputStream = ByteArrayInputStream(ByteArray(0))
+        var MEDIA_NAME : String? = ""
+        var MEDIA_TYPE : String? = ""
 
 
         @JvmStatic
@@ -92,7 +102,7 @@ class Constants   {
                 return countryCode + phoneNumber
             }
             else {
-               return "+1$phoneNumber" // Prepend '+1' if the string doesn't start with '+'
+                 return DEFAULT_COUNTRYCODE + phoneNumber // Prepend Default countrycode if the string doesn't start with '+'
             }
         }
 
@@ -101,6 +111,46 @@ class Constants   {
             // Remove spaces, brackets, and hyphens
             return  phoneNumber.replace("[\\s()\\-]".toRegex(), "")
 
+        }
+
+        @JvmStatic
+        fun isValidPhoneNumber(phoneNumberStr: String, defaultRegion: String): Boolean {
+            // Check for empty or null phone number string
+            if (phoneNumberStr.isBlank()) {
+                println("Phone number is blank.")
+                return false
+            }
+
+            // Initialize PhoneNumberUtil instance
+            val phoneNumberUtil = PhoneNumberUtil.getInstance()
+
+            return try {
+                // Parse the phone number
+                val phoneNumber = phoneNumberUtil.parse(phoneNumberStr, defaultRegion)
+
+                // Check if the phone number is valid
+                phoneNumberUtil.isValidNumber(phoneNumber)
+            } catch (e: NumberParseException) {
+                // Handle different types of exceptions
+                when (e.errorType) {
+                    NumberParseException.ErrorType.NOT_A_NUMBER -> {
+                        println("Phone number contains invalid characters or format.")
+                    }
+                    NumberParseException.ErrorType.INVALID_COUNTRY_CODE -> {
+                        println("Phone number has an invalid country code.")
+                    }
+                    NumberParseException.ErrorType.TOO_SHORT_AFTER_IDD -> {
+                        println("Phone number is too short after IDD (International Direct Dial).")
+                    }
+                    NumberParseException.ErrorType.TOO_LONG -> {
+                        println("Phone number is too long.")
+                    }
+                    else -> {
+                        println("Error parsing phone number: ${e.message}")
+                    }
+                }
+                false
+            }
         }
     }
 }

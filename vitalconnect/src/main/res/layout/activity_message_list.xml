@@ -71,17 +71,6 @@
                 style="@style/TextViewMessageTyping"
                 android:background="@drawable/bg_typing_indicator"/>
 
-<!--            <ImageButton-->
-<!--                android:id="@+id/messageAttachmentButton"-->
-<!--                android:layout_width="40dp"-->
-<!--                android:layout_height="40dp"-->
-<!--                android:layout_marginStart="9dp"-->
-<!--                android:background="?attr/selectableItemBackgroundBorderless"-->
-<!--                android:src="@drawable/ic_attach"-->
-<!--                app:layout_constraintBottom_toBottomOf="@+id/messageInputHolder"-->
-<!--                app:layout_constraintStart_toStartOf="parent"-->
-<!--                app:layout_constraintTop_toTopOf="@+id/messageInputHolder"-->
-<!--                app:tint="@color/colorPrimary" />-->
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/messageInputHolder"
@@ -94,7 +83,7 @@
                 app:boxBackgroundColor="@color/white"
                 app:endIconDrawable="@drawable/icon_attachment"
                 app:endIconMode="custom"
-                app:endIconTint="@color/colorPrimary"
+                app:endIconTint="@color/colorAttachment"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/messageSendButton"
                 app:layout_constraintStart_toStartOf="parent"
@@ -115,9 +104,13 @@
                     android:id="@+id/messageInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textCapSentences"
+                    android:inputType="textMultiLine"
                     android:hint="@string/new_message"
-                    app:hintEnabled="false"/>
+                    app:hintEnabled="false"
+                    android:maxLength="300"
+                    android:maxLines="4"
+                    android:scrollbars="vertical"
+                    android:gravity="top"/>
 
             </com.google.android.material.textfield.TextInputLayout>
             <ImageButton
@@ -132,6 +125,89 @@
                 app:layout_constraintTop_toTopOf="@+id/messageInputHolder"
                 app:layout_constraintEnd_toEndOf="parent"
                 tools:ignore="MissingConstraints" />
+            <TextView
+                android:id="@+id/note"
+                style="@style/Size_note"
+                android:layout_width="250dp"
+                android:layout_marginStart="10dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="@+id/messageInputHolder"
+                app:layout_constraintTop_toBottomOf="@+id/messageInputHolder"
+                android:text="@string/size_note"
+                />
+            <TextView
+                android:id="@+id/messageCharCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="@+id/messageInputHolder"
+                app:layout_constraintTop_toBottomOf="@+id/messageInputHolder"
+                android:text="0 / 300"
+                />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/attachmentPreview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_message_attachment"
+                android:padding="16dp"
+                app:layout_constraintTop_toBottomOf="@id/messageInputHolder"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintVertical_bias="0.5"
+                android:visibility="gone">
+
+
+                <!-- Text Inside the Box -->
+                <TextView
+                    android:id="@+id/fileName"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:text="Your Text Here"
+                    style="@style/TextViewSearch"
+                    android:textSize="16sp"
+                    android:ellipsize="middle"
+                    android:maxLines="2"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <!-- Close Icon -->
+            <ImageView
+                android:id="@+id/deleteAttachment"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_close"
+                android:padding="2dp"
+                app:layout_constraintTop_toTopOf="@id/attachmentPreview"
+                app:layout_constraintStart_toEndOf="@id/attachmentPreview"
+                android:visibility="gone"/>
+
+            <!--            <View-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="match_parent"-->
+<!--                app:layout_constraintTop_toTopOf="@id/typingIndicator"-->
+<!--                android:background="@color/divider"-->
+<!--                app:layout_constraintStart_toStartOf="@id/messageInputHolder"-->
+<!--                />-->
+<!--            <TextView-->
+<!--                android:id="@+id/attachmentPreview"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/typingIndicator"-->
+<!--                app:layout_constraintEnd_toEndOf="@id/note"-->
+<!--                app:layout_constraintStart_toStartOf="@id/note"-->
+<!--                android:visibility="gone"-->
+<!--                />-->
+<!--            <TextView-->
+<!--                android:id="@+id/deleteAttachment"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:layout_constraintStart_toEndOf="@id/attachmentPreview"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/typingIndicator"-->
+<!--                android:text="x"-->
+<!--                android:visibility="gone"-->
+<!--                />-->
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

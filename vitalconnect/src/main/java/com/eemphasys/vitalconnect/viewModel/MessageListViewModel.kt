@@ -38,6 +38,7 @@ import com.eemphasys.vitalconnect.common.extensions.getLong
 import com.eemphasys.vitalconnect.common.extensions.getString
 import com.eemphasys.vitalconnect.common.extensions.queryById
 import com.eemphasys.vitalconnect.data.localCache.entity.ParticipantDataItem
+import com.eemphasys.vitalconnect.data.models.MediaMessagePreviewItem
 import com.eemphasys.vitalconnect.data.models.MessageListViewItem
 import com.eemphasys.vitalconnect.data.models.RepositoryRequestStatus
 import com.eemphasys.vitalconnect.manager.ConnectivityMonitor
@@ -78,7 +79,7 @@ class MessageListViewModel(
         .map { it.data }
 
     val onMessageError = SingleLiveEvent<ConversationsError>()
-
+    val mediaMessagePreview = SingleLiveEvent<MediaMessagePreviewItem>()
     private val onMessageSent = SingleLiveEvent<Unit>()
 
     val onShowRemoveMessageDialog = SingleLiveEvent<Unit>()

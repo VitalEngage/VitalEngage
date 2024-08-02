@@ -61,6 +61,7 @@ class MainActivity : AppCompatActivity() {
         val countryCode = intent.getStringExtra("countryCode")
         val email = intent.getStringExtra("email")
         val mobileNumber = intent.getStringExtra("mobileNumber")
+        val defaultcountryCode = intent.getStringExtra("defaultcountryCode")
 
 
         Constants.AUTH_TOKEN = authToken!!
@@ -90,11 +91,11 @@ class MainActivity : AppCompatActivity() {
         Constants.COUNTRYCODE=countryCode
         Constants.EMAIL = email!!
         Constants.MOBILENUMBER = mobileNumber!!
+        Constants.DEFAULT_COUNTRYCODE = defaultcountryCode!!
 
-        mainViewModel.create()
+//        mainViewModel.create()
         super.onCreate(savedInstanceState)
-//        mainViewModel.registerForFcm()
-        if(Constants.SHOW_CONTACTS == "false" && Constants.IS_STANDALONE == "false" && Constants.SHOW_CONVERSATIONS == "false") {
+        if(Constants.SHOW_CONTACTS.lowercase() == "true" && Constants.IS_STANDALONE.lowercase() == "false" && Constants.SHOW_CONVERSATIONS.lowercase() == "false") {
             val httpClientWithToken = OkHttpClient.Builder()
                 .connectTimeout(300, TimeUnit.SECONDS)
                 .readTimeout(300, TimeUnit.SECONDS)
@@ -188,7 +189,6 @@ class MainActivity : AppCompatActivity() {
                                         )
 
                                         val jsonObject = JSONObject(attributes)
-                                        Log.d("setting attributes", jsonObject.toString())
                                         contactListViewModel.setAttributes(conversation.conversationSid,Attributes(jsonObject))
                                     }
                                     //Starting and redirecting to Existing conversation
@@ -219,7 +219,6 @@ class MainActivity : AppCompatActivity() {
                                         "CustomerName" to customer
                                     )
                                     val jsonObject = JSONObject(attributes)
-                                    Log.d("setting attributes", jsonObject.toString())
                                     contactListViewModel.createConversation(
                                         "$customerName ${
                                             Constants.formatPhoneNumber(
@@ -257,7 +256,6 @@ class MainActivity : AppCompatActivity() {
                                 )
 
                                 val jsonObject = JSONObject(attributes)
-                                Log.d("setting attributes", jsonObject.toString())
                                 contactListViewModel.createConversation(
                                     "$customerName ${Constants.formatPhoneNumber(customerNumber!!,countryCode)}",
                                     " ",

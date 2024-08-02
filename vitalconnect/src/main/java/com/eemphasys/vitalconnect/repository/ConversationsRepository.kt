@@ -276,7 +276,6 @@ class ConversationsRepositoryImpl(
     override fun getConversationParticipants(conversationSid: String): Flow<RepositoryResult<List<ParticipantDataItem>>> {
         val localDataFlow = localCache.participantsDao().getAllParticipants(conversationSid)
         val fetchStatusFlow = fetchParticipants(conversationSid).flowOn(dispatchers.io())
-Log.d("sid",conversationSid)
         return combine(localDataFlow, fetchStatusFlow) { data, status -> RepositoryResult(data, status) }
     }
 
@@ -332,6 +331,7 @@ Log.d("sid",conversationSid)
 
     override fun getSelfUser(): Flow<User> = callbackFlow {
         val client = conversationsClientWrapper.getConversationsClient()
+        Log.d("selfuser",client.myIdentity)
         val listener = ConversationsClientListener(
             onUserUpdated = { user, _ ->
                 user.takeIf { it.identity == client.myIdentity }
@@ -400,16 +400,11 @@ Log.d("sid",conversationSid)
     private fun fetchParticipants(conversationSid: String) = flow {
         emit(FETCHING)
         try {
-            Log.d("userabove", "416")
             val conversation = conversationsClientWrapper.getConversationsClient().getConversation(conversationSid)
-            Log.d("userabove", "418")
             conversation.waitForSynchronization()
-            Log.d("userabove", "420")
             conversation.participantsList.forEach { participant ->
                 // Getting user is currently supported for chat participants only
-                Log.d("userabove", "insideit")
                 val user = if (participant.channel == "chat") participant.getAndSubscribeUser() else null
-                Log.d("user", user.toString())
                 localCache.participantsDao().insertOrReplace(participant.asParticipantDataItem(user = user))
             }
             emit(COMPLETE)
