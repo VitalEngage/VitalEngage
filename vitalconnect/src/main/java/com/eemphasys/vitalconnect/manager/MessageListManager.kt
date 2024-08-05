@@ -244,8 +244,6 @@ class MessageListManagerImpl(
     }
 
     override suspend fun notifyMessageRead(index: Long) {
-        Log.d("clientinmessagelistmanager",conversationsClient.getConversationsClient().myIdentity)
-        Log.d("sidinmessagelistmanager",conversationSid)
         val messages = conversationsClient.getConversationsClient().getConversation(conversationSid)
         if (index > messages.lastReadMessageIndex ?: -1) {
             messages.advanceLastReadMessageIndex(index)

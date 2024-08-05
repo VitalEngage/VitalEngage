@@ -141,7 +141,6 @@ class LoginViewModel(
             val retrofithelper = RetrofitHelper.getInstance().create(TwilioApi::class.java)
             val requestBody = SendOtpReq(userName, tenantCode)
             val response = retrofithelper.sendOTP(requestBody)
-            Log.d("responseforsendotp", response.isSuccessful.toString())
             callback(response.isSuccessful)
         }
     }
@@ -151,9 +150,7 @@ class LoginViewModel(
             val retrofithelper = RetrofitHelper.getInstance().create(TwilioApi::class.java)
             val requestBody = UpdatePasswordReq(tenantCode, userName, password, otp)
             val response = retrofithelper.updatePassword(requestBody)
-            Log.d("responsepass",response.code().toString())
             if(response.isSuccessful) {
-                Log.d("responseforpasswordreset", response.body()!!.status.toString())
                 isPasswordUpdated.value = response.isSuccessful
             }
             else{

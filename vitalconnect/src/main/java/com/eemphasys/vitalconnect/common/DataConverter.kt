@@ -188,19 +188,16 @@ fun ConversationDataItem.asConversationListViewItem(
     try {
         JSONObject(this.attributes).optString("Department", "")
     } catch (e: Exception) {
-        Log.d("Exception1@DataConverter",e.message.toString())
         ""
     },
     try {
         JSONObject(this.attributes).optString("Designation", "")
     } catch (e: Exception) {
-        Log.d("Exception2@DataConverter",e.message.toString())
         ""
     },
     try {
         JSONObject(this.attributes).optString("CustomerName", "")
     } catch (e: Exception) {
-        Log.d("Exception3@DataConverter",e.message.toString())
         ""
     },
     this.messagesCount

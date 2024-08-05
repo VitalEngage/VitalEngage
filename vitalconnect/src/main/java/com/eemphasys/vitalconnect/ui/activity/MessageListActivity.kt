@@ -4,9 +4,13 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
+import android.text.InputFilter
+import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -34,6 +38,8 @@ import com.eemphasys.vitalconnect.ui.dialogs.ReactionDetailsDialog
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputEditText
+import java.io.ByteArrayInputStream
 
 class MessageListActivity: AppCompatActivity() {
 
@@ -173,6 +179,22 @@ class MessageListActivity: AppCompatActivity() {
                 binding.typingIndicator.text =
                     resources.getQuantityString(R.plurals.typing_indicator, participants.size, text)
             }
+            messageListViewModel.mediaMessagePreview.observe(this){preview ->
+                binding.fileName.text = preview.name
+                binding.attachmentPreview.visibility = View.VISIBLE
+                binding.deleteAttachment.visibility = View.VISIBLE
+                binding.note.visibility = View.GONE
+
+            }
+            binding.deleteAttachment.setOnClickListener{
+                binding.attachmentPreview.visibility = View.GONE
+                binding.deleteAttachment.visibility = View.GONE
+                binding.note.visibility = View.VISIBLE
+                Constants.URI = ""
+                Constants.INPUTSTREAM = ByteArrayInputStream(ByteArray(0))
+                Constants.MEDIA_NAME = ""
+                Constants.MEDIA_TYPE = ""
+            }
             binding.messageInputHolder.setEndIconOnClickListener {
                 AttachFileDialog.getInstance(messageListViewModel.conversationSid)
                     .showNow(supportFragmentManager, null)
@@ -182,6 +204,20 @@ class MessageListActivity: AppCompatActivity() {
                 if(!isNetworkAvailable)
                     this.finish()
             }
+            val editText = findViewById<TextInputEditText>(R.id.messageInput)
+            val maxLength = 300 //  max length of text input
+            editText.filters = arrayOf(InputFilter.LengthFilter(maxLength))
+
+            val textView = findViewById<TextView>(R.id.messageCharCount)
+            editText.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    textView.text = "${s?.length} / $maxLength"
+                }
+
+                override fun afterTextChanged(s: Editable?) {}
+            })
         }
 
         private fun showRemoveMessageDialog() {
@@ -230,6 +266,21 @@ class MessageListActivity: AppCompatActivity() {
             binding.messageInput.text.toString().takeIf { it.isNotBlank() }?.let { message ->
                 messageListViewModel.sendTextMessage(message)
                 binding.messageInput.text?.clear()
+            }
+            if(binding.deleteAttachment.visibility == 0x00000000) {
+                messageListViewModel.sendMediaMessage(
+                    Constants.URI,
+                    Constants.INPUTSTREAM,
+                    Constants.MEDIA_NAME,
+                    Constants.MEDIA_TYPE
+                )
+                binding.attachmentPreview.visibility = View.GONE
+                binding.deleteAttachment.visibility = View.GONE
+                binding.note.visibility = View.VISIBLE
+                Constants.URI = ""
+                Constants.INPUTSTREAM = ByteArrayInputStream(ByteArray(0))
+                Constants.MEDIA_NAME = ""
+                Constants.MEDIA_TYPE = ""
             }
         }
 

@@ -31,7 +31,6 @@ class ConversationListManagerImpl(private val conversationsClient: Conversations
 
     override suspend fun createConversation(friendlyName: String, attributes: Attributes): String {
         val sid = conversationsClient.getConversationsClient().createConversation(friendlyName).sid
-        Log.d("attributes",attributes.toString())
         try {
             conversationsClient.getConversationsClient().getConversation(sid)
                 .setAttributes(attributes)

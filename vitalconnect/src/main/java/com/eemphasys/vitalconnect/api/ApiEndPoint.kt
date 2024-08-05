@@ -4,6 +4,8 @@ import com.eemphasys.vitalconnect.api.data.AuthToken
 import com.eemphasys.vitalconnect.api.data.EncryptionRequest
 import com.eemphasys.vitalconnect.api.data.ParticipantExistingConversation
 import com.eemphasys.vitalconnect.api.data.RequestToken
+import com.eemphasys.vitalconnect.api.data.SearchContactRequest
+import com.eemphasys.vitalconnect.api.data.SearchContactResponse
 import com.eemphasys.vitalconnect.api.data.SendOtpReq
 import com.eemphasys.vitalconnect.api.data.TenantDetails
 import com.eemphasys.vitalconnect.api.data.Token
@@ -55,4 +57,7 @@ interface TwilioApi {
 
     @POST("Conversation/GetUnreadMessageCountForMobileNumbers")
     suspend fun getUnreadMessageCountForMobileNumbers(@Query("tenantCode") tenantCode: String, @Query("identity") identity: String, @Body requestData: ArrayList<String>) : Response<Map<String, Int>>
+
+    @POST("Contact/GetSearchedContact")
+    fun getSearchedContact(@Body requestData : SearchContactRequest) : Call<List<SearchContactResponse>>
 }

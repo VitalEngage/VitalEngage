@@ -54,7 +54,7 @@ android {
     }
 }
 
-version = "1.0.0001"
+version = "1.0.0003"
 
 dependencies {
 
@@ -121,4 +121,8 @@ dependencies {
     implementation ("androidx.recyclerview:recyclerview:1.2.0-alpha04")
     implementation ("com.intuit.sdp:sdp-android:1.0.6")
     implementation ("com.intuit.ssp:ssp-android:1.0.6")
+
+    //datechecker
+    implementation ("com.googlecode.libphonenumber:libphonenumber:8.13.42")
+    implementation ("com.google.android.gms:play-services-auth:21.2.0")
 }

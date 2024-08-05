@@ -217,4 +217,9 @@
         <item name="android:fontFamily">Helvetica</item>
         <item name="fontWeight">400</item>
     </style>
+    <style name="Size_note">
+        <item name="android:textColor">@color/alternate_message_text</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">Helvetica</item>
+    </style>
 </resources>

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.extensions.applicationContext
@@ -19,6 +20,7 @@ import com.eemphasys.vitalconnect.ui.dialogs.EditProfileDialog
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.google.android.material.snackbar.Snackbar
 import com.twilio.conversations.extensions.createConversationsClient
+import kotlinx.coroutines.launch
 
 class ProfileFragment:Fragment() {
     lateinit var binding: FragmentProfileBinding
@@ -31,6 +33,14 @@ class ProfileFragment:Fragment() {
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onCreate Called")
         setHasOptionsMenu(true)
 
+//        lifecycleScope.launch {
+//            val user = ConversationsClientWrapper.INSTANCE.getConversationsClient().myUser
+//            binding.profileName.text = user.friendlyName
+//            binding.profileIdentity.text = user.identity
+//            binding.profileImage.text = Constants.getInitials(user.friendlyName.trim { it <= ' '} )
+//            binding.emailId.text = Constants.EMAIL
+//            binding.phoneNumber.text = Constants.MOBILENUMBER
+//        }
     }
 
     fun shouldInterceptBackPress() = true
