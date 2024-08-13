@@ -27,7 +27,7 @@ import com.eemphasys.vitalconnect.api.data.SearchContactRequest
 import com.eemphasys.vitalconnect.api.data.SearchContactResponse
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.Constants.Companion.isValidPhoneNumber
-import com.eemphasys.vitalconnect.common.SessionHelper
+import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.common.extensions.lazyActivityViewModel
 import com.eemphasys.vitalconnect.common.extensions.showSnackbar
@@ -40,9 +40,6 @@ import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.google.android.material.snackbar.Snackbar
-import com.google.gson.Gson
-import com.google.i18n.phonenumbers.NumberParseException
-import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.twilio.conversations.Attributes
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
@@ -343,7 +340,7 @@ class ContactListFragment : Fragment() {
                                                 } catch (e: Exception) {
                                                     println("Exception :  ${e.message}")
                                                     EETLog.error(
-                                                        SessionHelper.appContext,
+                                                        AppContextHelper.appContext,
                                                         LogConstants.logDetails(
                                                             e,
                                                             LogConstants.LOG_LEVEL.ERROR.toString(),
@@ -351,7 +348,7 @@ class ContactListFragment : Fragment() {
                                                         ),
                                                         Constants.EX,
                                                         LogTraceConstants.getUtilityData(
-                                                            SessionHelper.appContext!!
+                                                            AppContextHelper.appContext!!
                                                         )!!
                                                     )
                                                 }
@@ -462,13 +459,13 @@ class ContactListFragment : Fragment() {
                                         } catch (e: Exception) {
                                             println("Exception :  ${e.message}")
                                             EETLog.error(
-                                                SessionHelper.appContext, LogConstants.logDetails(
+                                                AppContextHelper.appContext, LogConstants.logDetails(
                                                     e,
                                                     LogConstants.LOG_LEVEL.ERROR.toString(),
                                                     LogConstants.LOG_SEVERITY.HIGH.toString()
                                                 ),
                                                 Constants.EX, LogTraceConstants.getUtilityData(
-                                                    SessionHelper.appContext!!
+                                                    AppContextHelper.appContext!!
                                                 )!!
                                             )
                                         }

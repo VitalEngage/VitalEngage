@@ -26,7 +26,7 @@ import androidx.paging.PagedList
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.DefaultDispatcherProvider
 import com.eemphasys.vitalconnect.common.DispatcherProvider
-import com.eemphasys.vitalconnect.common.SessionHelper
+import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.asMessageDataItems
 import com.eemphasys.vitalconnect.common.asMessageListViewItems
 import com.eemphasys.vitalconnect.common.asParticipantDataItem
@@ -363,15 +363,28 @@ class ConversationsRepositoryImpl(
             e.printStackTrace()
 
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             )
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+            EETLog.error(
+                AppContextHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    AppContextHelper.appContext!!
+                )!!
+            );
         }
     }
 
@@ -385,15 +398,28 @@ class ConversationsRepositoryImpl(
             e.printStackTrace()
 
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             )
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+            EETLog.error(
+                AppContextHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    AppContextHelper.appContext!!
+                )!!
+            );
         }
     }
 
@@ -413,15 +439,28 @@ class ConversationsRepositoryImpl(
             e.printStackTrace()
 
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             )
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+            EETLog.error(
+                AppContextHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    AppContextHelper.appContext!!
+                )!!
+            );
         }
     }
 
@@ -448,15 +487,28 @@ class ConversationsRepositoryImpl(
                         } catch (e: TwilioException) {
                             status = Error(e.toConversationsError())
                             EETLog.error(
-                                SessionHelper.appContext, LogConstants.logDetails(
+                                AppContextHelper.appContext, LogConstants.logDetails(
                                     e,
                                     LogConstants.LOG_LEVEL.ERROR.toString(),
                                     LogConstants.LOG_SEVERITY.HIGH.toString()
                                 ),
                                 Constants.EX, LogTraceConstants.getUtilityData(
-                                    SessionHelper.appContext!!
+                                    AppContextHelper.appContext!!
                                 )!!
                             )
+                        }
+                        catch (e: Exception) {
+                            e.printStackTrace()
+                            EETLog.error(
+                                AppContextHelper.appContext, LogConstants.logDetails(
+                                    e,
+                                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                                ),
+                                Constants.EX, LogTraceConstants.getUtilityData(
+                                    AppContextHelper.appContext!!
+                                )!!
+                            );
                         }
                     }
                 }
@@ -467,15 +519,28 @@ class ConversationsRepositoryImpl(
             e.printStackTrace()
 
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             )
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+            EETLog.error(
+                AppContextHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    AppContextHelper.appContext!!
+                )!!
+            );
         }
     }
 

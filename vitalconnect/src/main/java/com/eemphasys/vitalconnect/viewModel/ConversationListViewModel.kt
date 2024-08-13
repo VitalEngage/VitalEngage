@@ -1,12 +1,13 @@
 package com.eemphasys.vitalconnect.viewModel
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.Constants
-import com.eemphasys.vitalconnect.common.SessionHelper
 import com.eemphasys.vitalconnect.common.SingleLiveEvent
 import com.eemphasys.vitalconnect.common.asConversationListViewItems
 import com.eemphasys.vitalconnect.common.call
@@ -62,6 +63,8 @@ class ConversationListViewModel(
     }
 
     fun getUserConversations() = viewModelScope.launch {
+        try
+        {
         EETLog.saveUserJourney("vitaltext:  ConversationListViewModel getUserConversations Called")
         conversationsRepository.getUserConversations().collect { (list, status) ->
 
@@ -72,6 +75,20 @@ class ConversationListViewModel(
             if (status is RepositoryRequestStatus.Error) {
                 onConversationError.value = ConversationsError.CONVERSATION_FETCH_USER_FAILED
             }
+        }
+        }
+        catch(e:Exception)
+        {
+            EETLog.error(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    AppContextHelper.appContext!!
+                )!!
+            )
         }
     }
 
@@ -110,7 +127,7 @@ class ConversationListViewModel(
                 applicationContext,
                 LogTraceConstants.traceDetails(
                     Thread.currentThread().stackTrace,
-                    "Activity Selected :",
+                    "Mute Conversation",
                     LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
                     LogConstants.LOG_SEVERITY.NORMAL.toString()
                 ),
@@ -122,16 +139,30 @@ class ConversationListViewModel(
             e.printStackTrace()
 
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             )
-        } finally {
+        }
+        catch(e:Exception)
+        {
+            EETLog.error(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    AppContextHelper.appContext!!
+                )!!
+            )
+        }
+        finally {
             setConversationLoading(conversationSid, false)
         }
     }
@@ -150,7 +181,7 @@ class ConversationListViewModel(
                 applicationContext,
                 LogTraceConstants.traceDetails(
                     Thread.currentThread().stackTrace,
-                    "Activity Selected :",
+                    "Unmute Conversation",
                     LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
                     LogConstants.LOG_SEVERITY.NORMAL.toString()
                 ),
@@ -162,16 +193,29 @@ class ConversationListViewModel(
             e.printStackTrace()
 
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             )
-        } finally {
+        }
+        catch(e:Exception)
+        {
+            EETLog.error(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    AppContextHelper.appContext!!
+                )!!
+            )
+        }finally {
             setConversationLoading(conversationSid, false)
         }
     }
@@ -190,7 +234,7 @@ class ConversationListViewModel(
                 applicationContext,
                 LogTraceConstants.traceDetails(
                     Thread.currentThread().stackTrace,
-                    "Activity Selected :",
+                    "Leave Conversation",
                     LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
                     LogConstants.LOG_SEVERITY.NORMAL.toString()
                 ),
@@ -202,16 +246,30 @@ class ConversationListViewModel(
             e.printStackTrace()
 
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             )
-        } finally {
+        }
+        catch(e:Exception)
+        {
+            EETLog.error(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    AppContextHelper.appContext!!
+                )!!
+            )
+        }
+        finally {
             setConversationLoading(conversationSid, false)
         }
     }

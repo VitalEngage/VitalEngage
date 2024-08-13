@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.emoji.bundled.BundledEmojiCompatConfig
 import androidx.emoji.text.EmojiCompat
 import androidx.room.Room
+import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.FirebaseTokenManager
 import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
 import com.eemphasys.vitalconnect.data.localCache.LocalCacheProvider
@@ -32,6 +33,7 @@ class ChatApplication : Application() {
     EETLog.saveUserJourney("!!VitalConnect App Init launched!!")
     try {
         appContext = applicationContext
+        AppContextHelper.init(this)
         FirebaseApp.initializeApp(this)
         ConversationsClientWrapper.createInstance(this)
         FirebaseTokenManager.createInstance()
@@ -41,8 +43,6 @@ class ChatApplication : Application() {
     } catch (e: Exception) {
         e.printStackTrace()
     }
-
-
 }
 
 }

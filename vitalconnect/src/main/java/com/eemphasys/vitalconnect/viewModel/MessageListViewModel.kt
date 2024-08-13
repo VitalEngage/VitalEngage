@@ -9,7 +9,6 @@ import android.net.Uri
 import android.os.Environment
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -22,8 +21,8 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
+import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.Constants
-import com.eemphasys.vitalconnect.common.SessionHelper
 import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.repository.ConversationsRepository
 import com.eemphasys.vitalconnect.common.SingleLiveEvent
@@ -142,7 +141,7 @@ class MessageListViewModel(
                 appContext,
                 LogTraceConstants.traceDetails(
                     Thread.currentThread().stackTrace,
-                    "Activity Selected :",
+                    "Send Text Message",
                     LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
                     LogConstants.LOG_SEVERITY.NORMAL.toString()
                 ),
@@ -155,15 +154,28 @@ class MessageListViewModel(
             e.printStackTrace()
 
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             )
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+            EETLog.error(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    AppContextHelper.appContext!!
+                )!!
+            );
         }
     }
 
@@ -175,7 +187,7 @@ class MessageListViewModel(
                 appContext,
                 LogTraceConstants.traceDetails(
                     Thread.currentThread().stackTrace,
-                    "Activity Selected :",
+                    "Resend Text Message",
                     LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
                     LogConstants.LOG_SEVERITY.NORMAL.toString()
                 ),
@@ -188,15 +200,28 @@ class MessageListViewModel(
             e.printStackTrace()
 
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             )
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+            EETLog.error(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    AppContextHelper.appContext!!
+                )!!
+            );
         }
     }
 
@@ -210,7 +235,7 @@ class MessageListViewModel(
                     appContext,
                     LogTraceConstants.traceDetails(
                         Thread.currentThread().stackTrace,
-                        "Activity Selected :",
+                        "Send Media message",
                         LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
                         LogConstants.LOG_SEVERITY.NORMAL.toString()
                     ),
@@ -223,15 +248,28 @@ class MessageListViewModel(
                 e.printStackTrace()
 
                 EETLog.error(
-                    SessionHelper.appContext, LogConstants.logDetails(
+                    AppContextHelper.appContext!!, LogConstants.logDetails(
                         e,
                         LogConstants.LOG_LEVEL.ERROR.toString(),
                         LogConstants.LOG_SEVERITY.HIGH.toString()
                     ),
                     Constants.EX, LogTraceConstants.getUtilityData(
-                        SessionHelper.appContext!!
+                        AppContextHelper.appContext!!
                     )!!
                 )
+            }
+            catch (e: Exception) {
+                e.printStackTrace()
+                EETLog.error(
+                    AppContextHelper.appContext!!, LogConstants.logDetails(
+                        e,
+                        LogConstants.LOG_LEVEL.ERROR.toString(),
+                        LogConstants.LOG_SEVERITY.HIGH.toString()
+                    ),
+                    Constants.EX, LogTraceConstants.getUtilityData(
+                        AppContextHelper.appContext!!
+                    )!!
+                );
             }
         }
 
@@ -243,7 +281,7 @@ class MessageListViewModel(
                 appContext,
                 LogTraceConstants.traceDetails(
                     Thread.currentThread().stackTrace,
-                    "Activity Selected :",
+                    "Resend Media Message",
                     LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
                     LogConstants.LOG_SEVERITY.NORMAL.toString()
                 ),
@@ -256,15 +294,28 @@ class MessageListViewModel(
             e.printStackTrace()
 
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             )
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+            EETLog.error(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    AppContextHelper.appContext!!
+                )!!
+            );
         }
     }
 
@@ -275,26 +326,40 @@ class MessageListViewModel(
                 appContext,
                 LogTraceConstants.traceDetails(
                     Thread.currentThread().stackTrace,
-                    "Activity Selected :",
+                    "Handle Message display",
                     LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
                     LogConstants.LOG_SEVERITY.NORMAL.toString()
                 ),
                 LogTraceConstants.chatappmodel,
                 LogTraceConstants.getUtilityData(appContext)!!
             )
+            //val data = 15 / 0 //throw exception
         } catch (e: TwilioException) {
             e.printStackTrace()
 
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             )
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+            EETLog.error(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    AppContextHelper.appContext!!
+                )!!
+            );
         }
     }
 
@@ -309,7 +374,7 @@ class MessageListViewModel(
                 appContext,
                 LogTraceConstants.traceDetails(
                     Thread.currentThread().stackTrace,
-                    "Activity Selected :",
+                    "Set Reactions",
                     LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
                     LogConstants.LOG_SEVERITY.NORMAL.toString()
                 ),
@@ -321,13 +386,13 @@ class MessageListViewModel(
             e.printStackTrace()
 
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             )
         }
@@ -344,7 +409,7 @@ class MessageListViewModel(
                 appContext,
                 LogTraceConstants.traceDetails(
                     Thread.currentThread().stackTrace,
-                    "Activity Selected :",
+                    "Copy Message to clipboard",
                     LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
                     LogConstants.LOG_SEVERITY.NORMAL.toString()
                 ),
@@ -356,13 +421,13 @@ class MessageListViewModel(
             e.printStackTrace()
 
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             )
         }
@@ -376,7 +441,7 @@ class MessageListViewModel(
                 appContext,
                 LogTraceConstants.traceDetails(
                     Thread.currentThread().stackTrace,
-                    "Activity Selected :",
+                    "Remove message",
                     LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
                     LogConstants.LOG_SEVERITY.NORMAL.toString()
                 ),
@@ -388,15 +453,28 @@ class MessageListViewModel(
             e.printStackTrace()
 
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             )
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+            EETLog.error(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    AppContextHelper.appContext!!
+                )!!
+            );
         }
     }
 
@@ -441,7 +519,7 @@ class MessageListViewModel(
             appContext,
             LogTraceConstants.traceDetails(
                 Thread.currentThread().stackTrace,
-                "Activity Selected :",
+                "State Media message donwloading",
                 LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
                 LogConstants.LOG_SEVERITY.NORMAL.toString()
             ),
@@ -466,7 +544,7 @@ class MessageListViewModel(
             appContext,
             LogTraceConstants.traceDetails(
                 Thread.currentThread().stackTrace,
-                "Activity Selected :",
+                "Observe Media Message download",
                 LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
                 LogConstants.LOG_SEVERITY.NORMAL.toString()
             ),
@@ -523,11 +601,7 @@ class MessageListViewModel(
             Constants.PARTICIPANTS = list.asParticipantListViewItems()
             conversationsRepository.updateFriendlyName()
                 }
-
         }
-
-
-
 
     private val ParticipantDataItem.typingIndicatorName get() = if (friendlyName.isNotEmpty()) friendlyName else identity
 }

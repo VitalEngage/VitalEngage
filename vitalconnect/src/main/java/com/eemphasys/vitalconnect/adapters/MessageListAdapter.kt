@@ -20,19 +20,17 @@ import com.eemphasys.vitalconnect.common.enums.SendStatus
 import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.ParticipantColorManager
-import com.eemphasys.vitalconnect.common.SessionHelper
+import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.enums.Direction
 import com.eemphasys.vitalconnect.common.enums.DownloadState.COMPLETED
 import com.eemphasys.vitalconnect.common.enums.DownloadState.DOWNLOADING
 import com.eemphasys.vitalconnect.common.enums.DownloadState.ERROR
 import com.eemphasys.vitalconnect.common.enums.DownloadState.NOT_STARTED
-import com.eemphasys.vitalconnect.common.enums.Reaction
 import com.eemphasys.vitalconnect.data.models.MessageListViewItem
 import com.eemphasys.vitalconnect.databinding.RowMessageItemIncomingBinding
 import com.eemphasys.vitalconnect.databinding.RowMessageItemOutgoingBinding
 import com.eemphasys.vitalconnect.databinding.ViewReactionItemBinding
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
-import com.eemphasys.vitalconnect.repository.ConversationsRepositoryImpl
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
 
@@ -196,13 +194,13 @@ class MessageListAdapter(
         } catch (e: Exception) {
             Log.e("Catchmessage", Log.getStackTraceString(e))
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             )
         }

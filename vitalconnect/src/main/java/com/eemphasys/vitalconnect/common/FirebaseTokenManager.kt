@@ -1,9 +1,7 @@
 package com.eemphasys.vitalconnect.common
 
-import android.content.Context
 import com.eemphasys.vitalconnect.common.enums.ConversationsError
 import com.eemphasys.vitalconnect.common.extensions.createTwilioException
-import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
@@ -27,13 +25,13 @@ class FirebaseTokenManager {
                     e.printStackTrace()
 
                     EETLog.error(
-                        SessionHelper.appContext, LogConstants.logDetails(
+                        AppContextHelper.appContext, LogConstants.logDetails(
                             e,
                             LogConstants.LOG_LEVEL.ERROR.toString(),
                             LogConstants.LOG_SEVERITY.HIGH.toString()
                         ),
                         Constants.EX, LogTraceConstants.getUtilityData(
-                            SessionHelper.appContext!!
+                            AppContextHelper.appContext!!
                         )!!
                     );
                 }
