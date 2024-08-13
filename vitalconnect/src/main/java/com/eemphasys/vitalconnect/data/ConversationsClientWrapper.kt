@@ -10,33 +10,23 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 
-import androidx.annotation.RestrictTo
-import androidx.lifecycle.ViewModelProvider
 import com.eemphasys.vitalconnect.api.AuthInterceptor
 import com.eemphasys.vitalconnect.api.RetrofitHelper
 import com.eemphasys.vitalconnect.api.RetryInterceptor
 import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.RequestToken
 import com.eemphasys.vitalconnect.common.ChatAppModel
-import com.eemphasys.vitalconnect.common.SessionHelper
+import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.enums.ConversationsError
-import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.common.extensions.createTwilioException
-import com.eemphasys.vitalconnect.common.extensions.lazyActivityViewModel
 import com.twilio.conversations.extensions.addListener
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.FileNotFoundException
 import com.eemphasys.vitalconnect.common.extensions.updateToken
-import com.eemphasys.vitalconnect.common.injector
-import com.eemphasys.vitalconnect.data.localCache.LocalCacheProvider
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
-import com.twilio.util.TwilioException
-import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 
@@ -120,27 +110,25 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
             val retrofitWithToken =
                 RetrofitHelper.getInstance(httpClientWithToken).create(TwilioApi::class.java)
 
-            Log.d("username", Constants.USERNAME)
+
             val TwilioToken = retrofitWithToken.getTwilioToken(
                 Constants.TENANT_CODE,
                 username,
                 Constants.FRIENDLY_NAME
             )
-
-            Log.d("twiliotoken", TwilioToken.body()!!.token)
             Constants.TWILIO_TOKEN = TwilioToken.body()!!.token
             return@withContext TwilioToken.body()!!.token
         } catch (e: FileNotFoundException) {
             throw createTwilioException(ConversationsError.TOKEN_ACCESS_DENIED)
         } catch (e: Exception) {
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             )
             throw createTwilioException(ConversationsError.TOKEN_ERROR);

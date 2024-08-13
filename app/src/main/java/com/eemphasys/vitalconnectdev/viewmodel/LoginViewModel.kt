@@ -1,7 +1,6 @@
 package com.eemphasys.vitalconnectdev.viewmodel
 
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
@@ -9,20 +8,15 @@ import androidx.lifecycle.viewModelScope
 import com.eemphasys.vitalconnect.api.RetrofitHelper
 import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.SendOtpReq
-import com.eemphasys.vitalconnect.api.data.TenantDetails
 import com.eemphasys.vitalconnect.api.data.UpdatePasswordReq
-import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.Constants
-import com.eemphasys.vitalconnect.common.SessionHelper
-import com.eemphasys.vitalconnect.common.extensions.toConversationsError
+import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys.vitalconnectdev.common.SingleLiveEvent
 import com.eemphasys.vitalconnectdev.common.call
 import com.eemphasys.vitalconnectdev.common.enums.ConversationsError
-import com.eemphasys.vitalconnectdev.common.extensions.toConversationsError
 import com.eemphasys.vitalconnectdev.data.LoginConstants
 import kotlinx.coroutines.launch
-
 import com.eemphasys.vitalconnectdev.manager.ConnectivityMonitor
 import com.eemphasys.vitalconnectdev.manager.LoginManager
 import com.eemphasys_enterprise.commonmobilelib.EETLog
@@ -83,13 +77,26 @@ class LoginViewModel(
                 //e.printStackTrace()
                 Log.d("Error",e.toString())
                 EETLog.error(
-                    SessionHelper.appContext, LogConstants.logDetails(
+                    AppContextHelper.appContext, LogTraceConstants.logDetails(
                         e,
                         LogConstants.LOG_LEVEL.ERROR.toString(),
                         LogConstants.LOG_SEVERITY.HIGH.toString()
                     ),
                     Constants.EX, LogTraceConstants.getUtilityData(
-                        SessionHelper.appContext!!
+                        AppContextHelper.appContext!!
+                    )!!
+                );
+            }
+            catch (e: Exception) {
+                e.printStackTrace()
+                EETLog.error(
+                    AppContextHelper.appContext, LogConstants.logDetails(
+                        e,
+                        LogConstants.LOG_LEVEL.ERROR.toString(),
+                        LogConstants.LOG_SEVERITY.HIGH.toString()
+                    ),
+                    Constants.EX, LogTraceConstants.getUtilityData(
+                        AppContextHelper.appContext!!
                     )!!
                 );
             }

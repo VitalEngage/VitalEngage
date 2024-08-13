@@ -3,7 +3,6 @@ package com.eemphasys.vitalconnect
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.eemphasys.vitalconnect.api.AuthInterceptor
 import com.eemphasys.vitalconnect.api.RetrofitHelper
@@ -11,7 +10,7 @@ import com.eemphasys.vitalconnect.api.RetryInterceptor
 import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.ParticipantExistingConversation
 import com.eemphasys.vitalconnect.common.Constants
-import com.eemphasys.vitalconnect.common.SessionHelper
+import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.common.extensions.lazyViewModel
 import com.eemphasys.vitalconnect.databinding.ActivityMainBinding
@@ -19,7 +18,6 @@ import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys.vitalconnect.ui.activity.ConversationListActivity
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
-import com.google.gson.Gson
 import com.twilio.conversations.Attributes
 import okhttp3.OkHttpClient
 import org.json.JSONObject
@@ -163,13 +161,13 @@ class MainActivity : AppCompatActivity() {
                                     } catch (e: Exception) {
                                         println("Exception :  ${e.message}")
                                         EETLog.error(
-                                            SessionHelper.appContext, LogConstants.logDetails(
+                                            AppContextHelper.appContext, LogConstants.logDetails(
                                                 e,
                                                 LogConstants.LOG_LEVEL.ERROR.toString(),
                                                 LogConstants.LOG_SEVERITY.HIGH.toString()
                                             ),
                                             Constants.EX, LogTraceConstants.getUtilityData(
-                                                SessionHelper.appContext!!
+                                                AppContextHelper.appContext!!
                                             )!!
                                         )
                                     }
@@ -266,13 +264,13 @@ class MainActivity : AppCompatActivity() {
                             } catch(e:Exception){
                                 println("Exception :  ${e.message}")
                                 EETLog.error(
-                                    SessionHelper.appContext, LogConstants.logDetails(
+                                    AppContextHelper.appContext, LogConstants.logDetails(
                                         e,
                                         LogConstants.LOG_LEVEL.ERROR.toString(),
                                         LogConstants.LOG_SEVERITY.HIGH.toString()
                                     ),
                                     Constants.EX, LogTraceConstants.getUtilityData(
-                                        SessionHelper.appContext!!
+                                        AppContextHelper.appContext!!
                                     )!!
                                 )
                             }
@@ -291,9 +289,26 @@ class MainActivity : AppCompatActivity() {
             })
 
         }
-        else{
-                    val intent = Intent(this, ConversationListActivity::class.java)
-                    startActivity(intent)
+        else
+        {
+            try {
+                val intent = Intent(this, ConversationListActivity::class.java)
+                startActivity(intent)
+            }
+            catch(e:Exception)
+            {
+                EETLog.error(
+                    AppContextHelper.appContext, LogConstants.logDetails(
+                        e,
+                        LogConstants.LOG_LEVEL.ERROR.toString(),
+                        LogConstants.LOG_SEVERITY.HIGH.toString()
+                    ),
+                    Constants.EX, LogTraceConstants.getUtilityData(
+                        AppContextHelper.appContext!!
+                    )!!
+                )
+            }
+
         }
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

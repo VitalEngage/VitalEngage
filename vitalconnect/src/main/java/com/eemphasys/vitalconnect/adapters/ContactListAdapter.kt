@@ -11,7 +11,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.ParticipantColorManager
-import com.eemphasys.vitalconnect.common.SessionHelper
+import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.data.models.ContactListViewItem
 import com.eemphasys.vitalconnect.databinding.RowContactItemBinding
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
@@ -121,13 +121,13 @@ class ContactListAdapter(
         } catch (e: Exception) {
             e.printStackTrace()
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             )
         }

@@ -6,21 +6,17 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.Constants
-import com.eemphasys.vitalconnect.common.SessionHelper
 import com.eemphasys.vitalconnect.common.SingleLiveEvent
-import com.eemphasys.vitalconnect.common.asConversationListViewItems
 import com.eemphasys.vitalconnect.common.call
 import com.eemphasys.vitalconnect.common.enums.ConversationsError
-import com.eemphasys.vitalconnect.common.merge
 import com.eemphasys.vitalconnect.data.models.ConversationListViewItem
 import com.eemphasys.vitalconnect.manager.ConnectivityMonitor
 import com.eemphasys.vitalconnect.manager.ConversationListManager
 import com.eemphasys.vitalconnect.repository.ConversationsRepository
 import com.twilio.util.TwilioException
 import kotlinx.coroutines.launch
-import kotlin.properties.Delegates
-import com.eemphasys.vitalconnect.data.models.RepositoryRequestStatus
 import com.eemphasys.vitalconnect.manager.AutoParticipantListManager
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceHelper
@@ -96,7 +92,7 @@ class ContactListViewModel(
                 applicationContext,
                 LogTraceConstants.traceDetails(
                     Thread.currentThread().stackTrace,
-                    "Activity Selected :",
+                    "create Conversation",
                     LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
                     LogConstants.LOG_SEVERITY.NORMAL.toString()
                 ),
@@ -109,13 +105,13 @@ class ContactListViewModel(
             e.printStackTrace()
 
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             )
         } finally {
@@ -137,7 +133,7 @@ class ContactListViewModel(
                 applicationContext,
                 LogTraceConstants.traceDetails(
                     Thread.currentThread().stackTrace,
-                    "Activity Selected :",
+                    "Add chat Participant",
                     LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
                     LogConstants.LOG_SEVERITY.NORMAL.toString()
                 ),
@@ -149,13 +145,13 @@ class ContactListViewModel(
             e.printStackTrace()
 
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             )
         } finally {
@@ -177,7 +173,7 @@ class ContactListViewModel(
                 applicationContext,
                 LogTraceConstants.traceDetails(
                     Thread.currentThread().stackTrace,
-                    "Activity Selected :",
+                    "Add Non chat Participant",
                     LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
                     LogConstants.LOG_SEVERITY.NORMAL.toString()
                 ),
@@ -189,13 +185,13 @@ class ContactListViewModel(
             e.printStackTrace()
 
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             )
         } finally {
@@ -228,13 +224,13 @@ class ContactListViewModel(
                 // Handle exception
                 println("Error: ${e.message}")
                 EETLog.error(
-                    SessionHelper.appContext, LogConstants.logDetails(
+                    AppContextHelper.appContext!!, LogConstants.logDetails(
                         e,
                         LogConstants.LOG_LEVEL.ERROR.toString(),
                         LogConstants.LOG_SEVERITY.HIGH.toString()
                     ),
                     Constants.EX, LogTraceConstants.getUtilityData(
-                        SessionHelper.appContext!!
+                        AppContextHelper.appContext!!
                     )!!
                 )
                 // Optionally, inform the caller of the error

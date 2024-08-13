@@ -2,7 +2,7 @@ package com.eemphasys.vitalconnect.manager
 
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.FirebaseTokenManager
-import com.eemphasys.vitalconnect.common.SessionHelper
+import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
 import com.eemphasys.vitalconnect.data.CredentialStorage
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
@@ -45,13 +45,13 @@ class MainManagerImpl(
             e.printStackTrace()
 
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             );
         }

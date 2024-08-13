@@ -10,9 +10,8 @@ import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
 import com.eemphasys.vitalconnect.common.FirebaseTokenManager
-import com.eemphasys.vitalconnect.common.SessionHelper
+import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
-import com.eemphasys.vitalconnect.repository.ConversationsRepository
 import com.eemphasys.vitalconnect.repository.ConversationsRepositoryImpl
 import com.eemphasys.vitalconnectdev.data.LoginConstants
 import com.eemphasys.vitalconnectdev.common.enums.ConversationsError
@@ -143,13 +142,13 @@ class LoginManagerImpl(
             e.printStackTrace()
 
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext, LogTraceConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             );
         }

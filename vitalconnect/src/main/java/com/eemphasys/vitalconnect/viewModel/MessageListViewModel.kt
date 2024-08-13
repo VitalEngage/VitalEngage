@@ -9,7 +9,6 @@ import android.net.Uri
 import android.os.Environment
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -22,8 +21,8 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
+import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.Constants
-import com.eemphasys.vitalconnect.common.SessionHelper
 import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.repository.ConversationsRepository
 import com.eemphasys.vitalconnect.common.SingleLiveEvent
@@ -142,7 +141,7 @@ class MessageListViewModel(
                 appContext,
                 LogTraceConstants.traceDetails(
                     Thread.currentThread().stackTrace,
-                    "Activity Selected :",
+                    "Send Text Message",
                     LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
                     LogConstants.LOG_SEVERITY.NORMAL.toString()
                 ),
@@ -155,15 +154,28 @@ class MessageListViewModel(
             e.printStackTrace()
 
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             )
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+            EETLog.error(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    AppContextHelper.appContext!!
+                )!!
+            );
         }
     }
 
@@ -175,7 +187,7 @@ class MessageListViewModel(
                 appContext,
                 LogTraceConstants.traceDetails(
                     Thread.currentThread().stackTrace,
-                    "Activity Selected :",
+                    "Resend Text Message",
                     LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
                     LogConstants.LOG_SEVERITY.NORMAL.toString()
                 ),
@@ -188,15 +200,28 @@ class MessageListViewModel(
             e.printStackTrace()
 
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             )
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+            EETLog.error(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    AppContextHelper.appContext!!
+                )!!
+            );
         }
     }
 
@@ -206,32 +231,45 @@ class MessageListViewModel(
             try {
                 messageListManager.sendMediaMessage(uri, inputStream, fileName, mimeType, messageUuid)
                 onMessageSent.call()
-//                LogTraceHelper.trace(
-//                    appContext,
-//                    LogTraceConstants.traceDetails(
-//                        Thread.currentThread().stackTrace,
-//                        "Activity Selected :",
-//                        LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
-//                        LogConstants.LOG_SEVERITY.NORMAL.toString()
-//                    ),
-//                    LogTraceConstants.chatappmodel,
-//                    LogTraceConstants.getUtilityData(appContext)!!
-//                )
+                LogTraceHelper.trace(
+                    appContext,
+                    LogTraceConstants.traceDetails(
+                        Thread.currentThread().stackTrace,
+                        "Send Media message",
+                        LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
+                        LogConstants.LOG_SEVERITY.NORMAL.toString()
+                    ),
+                    LogTraceConstants.chatappmodel,
+                    LogTraceConstants.getUtilityData(appContext)!!
+                )
             } catch (e: TwilioException) {
                 messageListManager.updateMessageStatus(messageUuid, SendStatus.ERROR, e.errorInfo.code)
                 onMessageError.value = ConversationsError.MESSAGE_SEND_FAILED
                 e.printStackTrace()
 
-//                EETLog.error(
-//                    SessionHelper.appContext, LogConstants.logDetails(
-//                        e,
-//                        LogConstants.LOG_LEVEL.ERROR.toString(),
-//                        LogConstants.LOG_SEVERITY.HIGH.toString()
-//                    ),
-//                    Constants.EX, LogTraceConstants.getUtilityData(
-//                        SessionHelper.appContext!!
-//                    )!!
-//                )
+                EETLog.error(
+                    AppContextHelper.appContext!!, LogConstants.logDetails(
+                        e,
+                        LogConstants.LOG_LEVEL.ERROR.toString(),
+                        LogConstants.LOG_SEVERITY.HIGH.toString()
+                    ),
+                    Constants.EX, LogTraceConstants.getUtilityData(
+                        AppContextHelper.appContext!!
+                    )!!
+                )
+            }
+            catch (e: Exception) {
+                e.printStackTrace()
+                EETLog.error(
+                    AppContextHelper.appContext!!, LogConstants.logDetails(
+                        e,
+                        LogConstants.LOG_LEVEL.ERROR.toString(),
+                        LogConstants.LOG_SEVERITY.HIGH.toString()
+                    ),
+                    Constants.EX, LogTraceConstants.getUtilityData(
+                        AppContextHelper.appContext!!
+                    )!!
+                );
             }
         }
 

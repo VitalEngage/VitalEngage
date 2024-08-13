@@ -2,8 +2,8 @@ package com.eemphasys.vitalconnect.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.Constants
-import com.eemphasys.vitalconnect.common.SessionHelper
 import com.eemphasys.vitalconnect.manager.MainManager
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys_enterprise.commonmobilelib.EETLog
@@ -22,15 +22,29 @@ class MainViewModel(private val mainManager: MainManager) : ViewModel() {
                     e.printStackTrace()
 
                     EETLog.error(
-                        SessionHelper.appContext, LogConstants.logDetails(
+                        AppContextHelper.appContext!!, LogConstants.logDetails(
                             e,
                             LogConstants.LOG_LEVEL.ERROR.toString(),
                             LogConstants.LOG_SEVERITY.HIGH.toString()
                         ),
                         Constants.EX, LogTraceConstants.getUtilityData(
-                            SessionHelper.appContext!!
+                            AppContextHelper.appContext!!
                         )!!
                     )
+                }
+                catch (e:Exception)
+                {
+                    e.printStackTrace()
+                    EETLog.error(
+                        AppContextHelper.appContext!!, LogConstants.logDetails(
+                            e,
+                            LogConstants.LOG_LEVEL.ERROR.toString(),
+                            LogConstants.LOG_SEVERITY.HIGH.toString()
+                        ),
+                        Constants.EX, LogTraceConstants.getUtilityData(
+                            AppContextHelper.appContext!!
+                        )!!
+                    );
                 }
             }
         }
@@ -43,15 +57,28 @@ class MainViewModel(private val mainManager: MainManager) : ViewModel() {
                 e.printStackTrace()
 
                 EETLog.error(
-                    SessionHelper.appContext, LogConstants.logDetails(
+                    AppContextHelper.appContext!!, LogConstants.logDetails(
                         e,
                         LogConstants.LOG_LEVEL.ERROR.toString(),
                         LogConstants.LOG_SEVERITY.HIGH.toString()
                     ),
                     Constants.EX, LogTraceConstants.getUtilityData(
-                        SessionHelper.appContext!!
+                        AppContextHelper.appContext!!
                     )!!
-                )
+                );
+            }
+            catch (e: Exception) {
+                e.printStackTrace()
+                EETLog.error(
+                    AppContextHelper.appContext!!, LogConstants.logDetails(
+                        e,
+                        LogConstants.LOG_LEVEL.ERROR.toString(),
+                        LogConstants.LOG_SEVERITY.HIGH.toString()
+                    ),
+                    Constants.EX, LogTraceConstants.getUtilityData(
+                        AppContextHelper.appContext!!
+                    )!!
+                );
             }
         }
     }
