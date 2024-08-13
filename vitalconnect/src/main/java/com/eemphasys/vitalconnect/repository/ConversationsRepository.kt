@@ -1,6 +1,8 @@
 package com.eemphasys.vitalconnect.repository
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.eemphasys.vitalconnect.data.localCache.entity.ConversationDataItem
 import com.eemphasys.vitalconnect.data.models.RepositoryResult
 import com.twilio.conversations.Conversation
@@ -97,6 +99,7 @@ interface ConversationsRepository {
     fun getFriendlyName(identity : String) :String
 
     fun updateFriendlyName()
+    fun getUnreadMessageCount(): LiveData<Long>
 }
 
 class ConversationsRepositoryImpl(
@@ -106,6 +109,8 @@ class ConversationsRepositoryImpl(
 ) : ConversationsRepository {
 
     private val repositoryScope = CoroutineScope(dispatchers.io() + SupervisorJob())
+    val unreadMessageCount: MutableLiveData<Long> = MutableLiveData(0)
+    override fun getUnreadMessageCount(): LiveData<Long> = unreadMessageCount
 
     private val clientListener = ConversationsClientListener(
         onConversationDeleted = { conversation ->
@@ -513,6 +518,13 @@ class ConversationsRepositoryImpl(
         }
         launch {
             localCache.conversationsDao().updateUnreadMessagesCount(conversationSid, conversation.getUnreadMessageCount() ?: return@launch)
+            val listOfConversations = conversationsClientWrapper.getConversationsClient().myConversations
+            var unreadCount:Long = 0
+            for (i in listOfConversations){
+                var count = i.getUnreadMessageCount() ?: 0
+                unreadCount+= count
+            }
+            unreadMessageCount.postValue(unreadCount)
         }
         launch {
             updateConversationLastMessage(conversationSid)

@@ -3,6 +3,7 @@ package com.eemphasys.vitalconnect.adapters
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.ShapeDrawable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -60,7 +61,11 @@ class ContactListAdapter(
                 itemBinding.customerName.visibility = View.GONE
             }
             if(!item.isGlobal && isFirst){
+                Log.d("default", "${item.name} $isFirst")
                 itemBinding.defaultContact.visibility = View.VISIBLE
+            }
+            else{
+                itemBinding.defaultContact.visibility = View.GONE
             }
 
             changeButtonBackgroundColor(

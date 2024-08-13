@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         val email = intent.getStringExtra("email")
         val mobileNumber = intent.getStringExtra("mobileNumber")
         val defaultcountryCode = intent.getStringExtra("defaultcountryCode")
-
+        intent.getStringExtra("userSMSAlert")?.let { Log.d("useralert", it) }
 
         Constants.AUTH_TOKEN = authToken!!
         Constants.CONTACTS = contacts!!

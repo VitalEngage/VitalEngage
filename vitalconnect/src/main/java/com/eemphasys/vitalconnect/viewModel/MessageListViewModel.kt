@@ -206,32 +206,32 @@ class MessageListViewModel(
             try {
                 messageListManager.sendMediaMessage(uri, inputStream, fileName, mimeType, messageUuid)
                 onMessageSent.call()
-                LogTraceHelper.trace(
-                    appContext,
-                    LogTraceConstants.traceDetails(
-                        Thread.currentThread().stackTrace,
-                        "Activity Selected :",
-                        LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
-                        LogConstants.LOG_SEVERITY.NORMAL.toString()
-                    ),
-                    LogTraceConstants.chatappmodel,
-                    LogTraceConstants.getUtilityData(appContext)!!
-                )
+//                LogTraceHelper.trace(
+//                    appContext,
+//                    LogTraceConstants.traceDetails(
+//                        Thread.currentThread().stackTrace,
+//                        "Activity Selected :",
+//                        LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
+//                        LogConstants.LOG_SEVERITY.NORMAL.toString()
+//                    ),
+//                    LogTraceConstants.chatappmodel,
+//                    LogTraceConstants.getUtilityData(appContext)!!
+//                )
             } catch (e: TwilioException) {
                 messageListManager.updateMessageStatus(messageUuid, SendStatus.ERROR, e.errorInfo.code)
                 onMessageError.value = ConversationsError.MESSAGE_SEND_FAILED
                 e.printStackTrace()
 
-                EETLog.error(
-                    SessionHelper.appContext, LogConstants.logDetails(
-                        e,
-                        LogConstants.LOG_LEVEL.ERROR.toString(),
-                        LogConstants.LOG_SEVERITY.HIGH.toString()
-                    ),
-                    Constants.EX, LogTraceConstants.getUtilityData(
-                        SessionHelper.appContext!!
-                    )!!
-                )
+//                EETLog.error(
+//                    SessionHelper.appContext, LogConstants.logDetails(
+//                        e,
+//                        LogConstants.LOG_LEVEL.ERROR.toString(),
+//                        LogConstants.LOG_SEVERITY.HIGH.toString()
+//                    ),
+//                    Constants.EX, LogTraceConstants.getUtilityData(
+//                        SessionHelper.appContext!!
+//                    )!!
+//                )
             }
         }
 

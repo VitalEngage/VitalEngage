@@ -29,7 +29,7 @@ class ConversationListActivity:AppCompatActivity() {
         super.onCreate(savedInstanceState)
         EETLog.saveUserJourney("vitaltext: " +this::class.java.simpleName + " onCreate Called")
 
-//        mainViewModel.create()
+        mainViewModel.create()
         val binding = ActivityConversationListBinding.inflate(layoutInflater)
 
         setContentView(binding.root)
@@ -39,20 +39,6 @@ class ConversationListActivity:AppCompatActivity() {
         val menu = menubottom.menu
         val menuItem = menu.findItem(R.id.page_contact_list)
         menubottom.itemIconTintList = null
-//        val isDataAvailable = !Constants.CONTACTS.isNullOrEmpty() || !Constants.WEBUSERS.isNullOrEmpty()
-//        menuItem.isVisible = isDataAvailable
-//
-//        if(Constants.SHOW_CONTACTS == "false"){
-//            menuItem.setVisible(false)
-//        }
-//
-//        if(!isDataAvailable) {
-//            menu.findItem(R.id.page_conversation_list).setChecked(true)
-//        }
-//        if(Constants.IS_STANDALONE == "false") {
-//            val profileMenuItem = menu.findItem(R.id.page_profile)
-//            profileMenuItem.isVisible = false
-//        }
 
         binding.bottomNavigation.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId) {

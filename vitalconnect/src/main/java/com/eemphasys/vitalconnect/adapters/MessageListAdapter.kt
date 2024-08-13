@@ -70,9 +70,6 @@ class MessageListAdapter(
             return
         }
 
-//        for(p in Constants.PARTICIPANTS) {
-//            message.friendlyName = ConversationsRepositoryImpl.INSTANCE.getFriendlyName(message.author)
-//        }
         val binding = holder.binding
         val context = binding.root.context
 
