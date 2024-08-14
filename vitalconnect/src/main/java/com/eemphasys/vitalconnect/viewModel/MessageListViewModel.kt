@@ -281,7 +281,7 @@ class MessageListViewModel(
                 appContext,
                 LogTraceConstants.traceDetails(
                     Thread.currentThread().stackTrace,
-                    "Activity Selected :",
+                    "Resend Media Message",
                     LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
                     LogConstants.LOG_SEVERITY.NORMAL.toString()
                 ),
@@ -304,6 +304,19 @@ class MessageListViewModel(
                 )!!
             )
         }
+        catch (e: Exception) {
+            e.printStackTrace()
+            EETLog.error(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    AppContextHelper.appContext!!
+                )!!
+            );
+        }
     }
 
     fun handleMessageDisplayed(messageIndex: Long) = viewModelScope.launch {
@@ -313,7 +326,7 @@ class MessageListViewModel(
                 appContext,
                 LogTraceConstants.traceDetails(
                     Thread.currentThread().stackTrace,
-                    "Activity Selected :",
+                    "Handle Message display",
                     LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
                     LogConstants.LOG_SEVERITY.NORMAL.toString()
                 ),
@@ -334,6 +347,19 @@ class MessageListViewModel(
                 )!!
             )
         }
+        catch (e: Exception) {
+            e.printStackTrace()
+            EETLog.error(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    AppContextHelper.appContext!!
+                )!!
+            );
+        }
     }
 
     fun typing() = viewModelScope.launch {
@@ -347,7 +373,7 @@ class MessageListViewModel(
                 appContext,
                 LogTraceConstants.traceDetails(
                     Thread.currentThread().stackTrace,
-                    "Activity Selected :",
+                    "Set Reactions",
                     LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
                     LogConstants.LOG_SEVERITY.NORMAL.toString()
                 ),
@@ -382,7 +408,7 @@ class MessageListViewModel(
                 appContext,
                 LogTraceConstants.traceDetails(
                     Thread.currentThread().stackTrace,
-                    "Activity Selected :",
+                    "Copy Message to clipboard",
                     LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
                     LogConstants.LOG_SEVERITY.NORMAL.toString()
                 ),
@@ -414,7 +440,7 @@ class MessageListViewModel(
                 appContext,
                 LogTraceConstants.traceDetails(
                     Thread.currentThread().stackTrace,
-                    "Activity Selected :",
+                    "Remove message",
                     LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
                     LogConstants.LOG_SEVERITY.NORMAL.toString()
                 ),
@@ -435,6 +461,19 @@ class MessageListViewModel(
                     AppContextHelper.appContext!!
                 )!!
             )
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+            EETLog.error(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    AppContextHelper.appContext!!
+                )!!
+            );
         }
     }
 
@@ -479,7 +518,7 @@ class MessageListViewModel(
             appContext,
             LogTraceConstants.traceDetails(
                 Thread.currentThread().stackTrace,
-                "Activity Selected :",
+                "State Media message donwloading",
                 LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
                 LogConstants.LOG_SEVERITY.NORMAL.toString()
             ),
@@ -504,7 +543,7 @@ class MessageListViewModel(
             appContext,
             LogTraceConstants.traceDetails(
                 Thread.currentThread().stackTrace,
-                "Activity Selected :",
+                "Observe Media Message download",
                 LogConstants.TRACE_LEVEL.UI_TRACE.toString(),
                 LogConstants.LOG_SEVERITY.NORMAL.toString()
             ),
@@ -561,11 +600,6 @@ class MessageListViewModel(
             Constants.PARTICIPANTS = list.asParticipantListViewItems()
             conversationsRepository.updateFriendlyName()
                 }
-
         }
-
-
-
-
     private val ParticipantDataItem.typingIndicatorName get() = if (friendlyName.isNotEmpty()) friendlyName else identity
 }
