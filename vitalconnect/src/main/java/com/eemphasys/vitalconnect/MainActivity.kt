@@ -11,7 +11,7 @@ import com.eemphasys.vitalconnect.api.RetryInterceptor
 import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.ParticipantExistingConversation
 import com.eemphasys.vitalconnect.common.Constants
-import com.eemphasys.vitalconnect.common.SessionHelper
+import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.common.extensions.lazyViewModel
 import com.eemphasys.vitalconnect.databinding.ActivityMainBinding
@@ -19,7 +19,6 @@ import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys.vitalconnect.ui.activity.ConversationListActivity
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
-import com.google.gson.Gson
 import com.twilio.conversations.Attributes
 import okhttp3.OkHttpClient
 import org.json.JSONObject
@@ -61,7 +60,8 @@ class MainActivity : AppCompatActivity() {
         val countryCode = intent.getStringExtra("countryCode")
         val email = intent.getStringExtra("email")
         val mobileNumber = intent.getStringExtra("mobileNumber")
-
+        val defaultcountryCode = intent.getStringExtra("defaultcountryCode")
+        intent.getStringExtra("userSMSAlert")?.let { Log.d("useralert", it) }
 
         Constants.AUTH_TOKEN = authToken!!
         Constants.CONTACTS = contacts!!
@@ -90,11 +90,11 @@ class MainActivity : AppCompatActivity() {
         Constants.COUNTRYCODE=countryCode
         Constants.EMAIL = email!!
         Constants.MOBILENUMBER = mobileNumber!!
+        Constants.DEFAULT_COUNTRYCODE = defaultcountryCode!!
 
-        mainViewModel.create()
+//        mainViewModel.create()
         super.onCreate(savedInstanceState)
-//        mainViewModel.registerForFcm()
-        if(Constants.SHOW_CONTACTS == "false" && Constants.IS_STANDALONE == "false" && Constants.SHOW_CONVERSATIONS == "false") {
+        if(Constants.SHOW_CONTACTS.lowercase() == "true" && Constants.IS_STANDALONE.lowercase() == "false" && Constants.SHOW_CONVERSATIONS.lowercase() == "false") {
             val httpClientWithToken = OkHttpClient.Builder()
                 .connectTimeout(300, TimeUnit.SECONDS)
                 .readTimeout(300, TimeUnit.SECONDS)
@@ -162,13 +162,13 @@ class MainActivity : AppCompatActivity() {
                                     } catch (e: Exception) {
                                         println("Exception :  ${e.message}")
                                         EETLog.error(
-                                            SessionHelper.appContext, LogConstants.logDetails(
+                                            AppContextHelper.appContext, LogConstants.logDetails(
                                                 e,
                                                 LogConstants.LOG_LEVEL.ERROR.toString(),
                                                 LogConstants.LOG_SEVERITY.HIGH.toString()
                                             ),
                                             Constants.EX, LogTraceConstants.getUtilityData(
-                                                SessionHelper.appContext!!
+                                                AppContextHelper.appContext!!
                                             )!!
                                         )
                                     }
@@ -188,7 +188,6 @@ class MainActivity : AppCompatActivity() {
                                         )
 
                                         val jsonObject = JSONObject(attributes)
-                                        Log.d("setting attributes", jsonObject.toString())
                                         contactListViewModel.setAttributes(conversation.conversationSid,Attributes(jsonObject))
                                     }
                                     //Starting and redirecting to Existing conversation
@@ -219,7 +218,6 @@ class MainActivity : AppCompatActivity() {
                                         "CustomerName" to customer
                                     )
                                     val jsonObject = JSONObject(attributes)
-                                    Log.d("setting attributes", jsonObject.toString())
                                     contactListViewModel.createConversation(
                                         "$customerName ${
                                             Constants.formatPhoneNumber(
@@ -257,7 +255,6 @@ class MainActivity : AppCompatActivity() {
                                 )
 
                                 val jsonObject = JSONObject(attributes)
-                                Log.d("setting attributes", jsonObject.toString())
                                 contactListViewModel.createConversation(
                                     "$customerName ${Constants.formatPhoneNumber(customerNumber!!,countryCode)}",
                                     " ",
@@ -268,13 +265,13 @@ class MainActivity : AppCompatActivity() {
                             } catch(e:Exception){
                                 println("Exception :  ${e.message}")
                                 EETLog.error(
-                                    SessionHelper.appContext, LogConstants.logDetails(
+                                    AppContextHelper.appContext, LogConstants.logDetails(
                                         e,
                                         LogConstants.LOG_LEVEL.ERROR.toString(),
                                         LogConstants.LOG_SEVERITY.HIGH.toString()
                                     ),
                                     Constants.EX, LogTraceConstants.getUtilityData(
-                                        SessionHelper.appContext!!
+                                        AppContextHelper.appContext!!
                                     )!!
                                 )
                             }
@@ -293,9 +290,26 @@ class MainActivity : AppCompatActivity() {
             })
 
         }
-        else{
-                    val intent = Intent(this, ConversationListActivity::class.java)
-                    startActivity(intent)
+        else
+        {
+            try {
+                val intent = Intent(this, ConversationListActivity::class.java)
+                startActivity(intent)
+            }
+            catch(e:Exception)
+            {
+                EETLog.error(
+                    AppContextHelper.appContext, LogConstants.logDetails(
+                        e,
+                        LogConstants.LOG_LEVEL.ERROR.toString(),
+                        LogConstants.LOG_SEVERITY.HIGH.toString()
+                    ),
+                    Constants.EX, LogTraceConstants.getUtilityData(
+                        AppContextHelper.appContext!!
+                    )!!
+                )
+            }
+
         }
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

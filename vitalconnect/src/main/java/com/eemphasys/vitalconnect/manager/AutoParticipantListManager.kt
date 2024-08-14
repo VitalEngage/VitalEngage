@@ -2,7 +2,7 @@ package com.eemphasys.vitalconnect.manager
 
 import android.util.Log
 import com.eemphasys.vitalconnect.common.Constants
-import com.eemphasys.vitalconnect.common.SessionHelper
+import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys_enterprise.commonmobilelib.EETLog
@@ -50,13 +50,13 @@ class AutoParticipantListManagerImpl(
                 e.printStackTrace()
 
                 EETLog.error(
-                    SessionHelper.appContext, LogConstants.logDetails(
+                    AppContextHelper.appContext, LogConstants.logDetails(
                         e,
                         LogConstants.LOG_LEVEL.ERROR.toString(),
                         LogConstants.LOG_SEVERITY.HIGH.toString()
                     ),
                     Constants.EX, LogTraceConstants.getUtilityData(
-                        SessionHelper.appContext!!
+                        AppContextHelper.appContext!!
                     )!!
                 )
             }

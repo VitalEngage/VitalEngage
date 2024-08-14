@@ -8,8 +8,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitHelper {
 
-    //val baseUrl = "https://xappsweb.e-emphasys.com/VitalConnect/WebApi/"
-
         fun getInstance(httpClient: OkHttpClient? = null): Retrofit {
 
             val builder = Retrofit.Builder().baseUrl(ChatAppModel.base_url)

@@ -1,11 +1,9 @@
 package com.eemphasys.vitalconnect.misc.log_trace
 
 import android.content.Context
-import android.util.Log
 import com.eemphasys.vitalconnect.R
-import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.Constants
-import com.eemphasys.vitalconnect.common.SessionHelper
+import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.eemphasys_enterprise.commonmobilelib.UtilityDataModel
@@ -29,13 +27,13 @@ object LogTraceConstants {
         } catch (e: Exception) {
             e.printStackTrace()
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             );
 
@@ -61,13 +59,13 @@ object LogTraceConstants {
         } catch (e: Exception) {
             e.printStackTrace()
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             );
 
@@ -98,14 +96,14 @@ object LogTraceConstants {
         } catch (e: Exception) {
             e.printStackTrace()
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX,
                 LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             );
 
@@ -119,7 +117,7 @@ object LogTraceConstants {
         context: Context
     ): UtilityDataModel? {
         var utilityDataModel: UtilityDataModel? = UtilityDataModel(
-            "EForms",
+            "VitalText",
             "",
             "",
             "",
@@ -204,7 +202,7 @@ object LogTraceConstants {
         } catch (e: Exception) {
             e.printStackTrace()
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()

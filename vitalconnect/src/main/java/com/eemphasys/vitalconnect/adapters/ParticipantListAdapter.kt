@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.ParticipantColorManager
-import com.eemphasys.vitalconnect.common.SessionHelper
+import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.data.models.ParticipantListViewItem
 import com.eemphasys.vitalconnect.databinding.RowParticipantItemBinding
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
@@ -76,15 +76,14 @@ class ParticipantListAdapter(private val onParticipantClicked: (participant: Par
                 background.color = colorid
             }
         } catch (e: Exception) {
-            Log.e("Catchmessage", Log.getStackTraceString(e))
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             )
         }

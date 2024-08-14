@@ -12,6 +12,7 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.eemphasys.vitalconnect.R
@@ -22,8 +23,11 @@ import com.eemphasys.vitalconnect.api.RetrofitHelper
 import com.eemphasys.vitalconnect.api.RetryInterceptor
 import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.ParticipantExistingConversation
+import com.eemphasys.vitalconnect.api.data.SearchContactRequest
+import com.eemphasys.vitalconnect.api.data.SearchContactResponse
 import com.eemphasys.vitalconnect.common.Constants
-import com.eemphasys.vitalconnect.common.SessionHelper
+import com.eemphasys.vitalconnect.common.Constants.Companion.isValidPhoneNumber
+import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.common.extensions.lazyActivityViewModel
 import com.eemphasys.vitalconnect.common.extensions.showSnackbar
@@ -36,13 +40,14 @@ import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.google.android.material.snackbar.Snackbar
-import com.google.gson.Gson
 import com.twilio.conversations.Attributes
+import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 class ContactListFragment : Fragment() {
@@ -67,8 +72,78 @@ class ContactListFragment : Fragment() {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
+                if (newText != null && newText.length >= 3) {
+                if (Constants.SHOW_CONTACTS == "false") {
+                    lifecycleScope.launch {
+                        val listOfSearchedContacts = mutableListOf<ContactListViewItem>()
+                        val httpClientWithToken = OkHttpClient.Builder()
+                            .connectTimeout(300, TimeUnit.SECONDS)
+                            .readTimeout(300, TimeUnit.SECONDS)
+                            .writeTimeout(300, TimeUnit.SECONDS)
+                            .addInterceptor(AuthInterceptor(Constants.AUTH_TOKEN))
+                            .addInterceptor(RetryInterceptor())
+                            .build()
+                        val retrofitWithToken =
+                            RetrofitHelper.getInstance(httpClientWithToken)
+                                .create(TwilioApi::class.java)
+                        var request =
+                            SearchContactRequest(
+                                Constants.USERNAME,
+                                Constants.TENANT_CODE,
+                                newText!!
+                            )
+                        var response = retrofitWithToken.getSearchedContact(request)
+
+                        response.enqueue(object : Callback<List<SearchContactResponse>> {
+                            override fun onResponse(
+                                call: Call<List<SearchContactResponse>>,
+                                response: Response<List<SearchContactResponse>>
+                            ) {
+                                if (response.isSuccessful) {
+                                    var contactsResponse: List<SearchContactResponse>? =
+                                        response.body()
+                                    Log.d("listresponse", response.body().toString())
+                                    if (!contactsResponse.isNullOrEmpty()) {
+
+                                        for (response in contactsResponse) {
+                                            Log.d("listfor", response.mobileNumber)
+                                            var contactItem =
+                                                ContactListViewItem(
+                                                    response.fullName,
+                                                    "",
+                                                    response.mobileNumber,
+                                                    "SMS",
+                                                    Constants.getInitials(response.fullName.trim { it <= ' ' }),
+                                                    response.designation,
+                                                    response.department,
+                                                    response.customerName,
+                                                    "",
+                                                    true
+                                                )
+
+                                            listOfSearchedContacts.add(contactItem)
+                                            Log.d("list1", listOfSearchedContacts.toString())
+                                        }
+                                        setAdapter(listOfSearchedContacts)
+                                    }
+                                }
+                            }
+
+                            override fun onFailure(
+                                call: Call<List<SearchContactResponse>>,
+                                t: Throwable
+                            ) {
+
+                            }
+
+                        })
+
+                    }
+                }
                 adapter.filter(newText.orEmpty())
                 return true
+            }
+                else{return false}
             }
         })
 
@@ -106,12 +181,12 @@ class ContactListFragment : Fragment() {
 
         // Convert Contact objects to ContactListViewItem
         val contactItems = contacts.map {
-            ContactListViewItem(it.name, "", it.number, "SMS",it.initials,it.designation,it.department,it.customer,it.countryCode)
+            ContactListViewItem(it.name, "", it.number, "SMS",it.initials,it.designation,it.department,it.customer,it.countryCode,false)
         }
 
         // Convert WebUser objects to ContactListViewItem
         val webUserItems = webUsers.map {
-            ContactListViewItem(it.name, it.userName, "", "Chat",it.initials,it.designation,it.department,it.customer,it.countryCode)
+            ContactListViewItem(it.name, it.userName, "", "Chat",it.initials,it.designation,it.department,it.customer,it.countryCode,false)
         }
 
         // Add all ContactListViewItem objects to the combined list
@@ -169,6 +244,10 @@ class ContactListFragment : Fragment() {
 
         val combinedList = combineLists(contactsList, webuserList)
 
+        setAdapter(combinedList)
+    }
+
+    private fun setAdapter(list : List<ContactListViewItem>){
         val httpClientWithToken = OkHttpClient.Builder()
             .connectTimeout(300, TimeUnit.SECONDS)
             .readTimeout(300, TimeUnit.SECONDS)
@@ -178,131 +257,155 @@ class ContactListFragment : Fragment() {
             .build()
         val retrofitWithToken =
             RetrofitHelper.getInstance(httpClientWithToken).create(TwilioApi::class.java)
-
         //Creating the Adapter
-         adapter = ContactListAdapter(combinedList,combinedList,object : OnContactItemClickListener {
+        adapter = ContactListAdapter(list,list,object : OnContactItemClickListener {
             @SuppressLint("SuspiciousIndentation")
             override fun onContactItemClick(contact: ContactListViewItem) {
+                var phone  = Constants.cleanedNumber(Constants.formatPhoneNumber(contact.number,contact.countryCode!!))
+                    if (contact.type == "SMS") {
+                        if( isValidPhoneNumber(phone,Locale.getDefault().country)) {
+                        binding?.progressBarID?.visibility = VISIBLE
 
-                // Handle item click here
-                //Log.d("ContactClicked", "Name: ${contact.name}, Number: ${contact.number}, Type: ${contact.type}")
+                        val existingConversation = retrofitWithToken.fetchExistingConversation(
+                            Constants.TENANT_CODE,
+                            Constants.cleanedNumber(
+                                Constants.formatPhoneNumber(
+                                    contact.number,
+                                    contact.countryCode!!
+                                )
+                            ),
+                            false,
+                            1,
+                            Constants.PROXY_NUMBER
+                        )
+                        Log.d(
+                            "contactNumberClicked",
+                            Constants.cleanedNumber(
+                                Constants.formatPhoneNumber(
+                                    contact.number,
+                                    contact.countryCode!!
+                                )
+                            )
+                        )
+                        existingConversation.enqueue(object :
+                            Callback<List<ParticipantExistingConversation>> {
+                            @SuppressLint("SuspiciousIndentation")
+                            override fun onResponse(
+                                call: Call<List<ParticipantExistingConversation>>,
+                                response: Response<List<ParticipantExistingConversation>>
+                            ) {
+                                if (response.isSuccessful) {
+                                    val conversationList: List<ParticipantExistingConversation>? =
+                                        response.body()
 
-                if (contact.type == "SMS") {
-                    binding?.progressBarID?.visibility = VISIBLE
+                                    // Check if the list is not null and not empty
+                                    if (!conversationList.isNullOrEmpty()) {
+                                        // Iterate through the list and access each Conversation object
+                                        for (conversation in conversationList) {
+                                            // Access properties of each Conversation object
+                                            println("Conversation SID: ${conversation.conversationSid}")
+                                            //when conversation exists
+                                            if (!conversation.conversationSid.isNullOrEmpty()) {
+                                                try {
+                                                    val participantSid =
+                                                        retrofitWithToken.addParticipantToConversation(
+                                                            Constants.TENANT_CODE,
+                                                            conversation.conversationSid,
+                                                            Constants.USERNAME
+                                                        )
 
-                    val existingConversation  = retrofitWithToken.fetchExistingConversation(
-                        Constants.TENANT_CODE,
-                        Constants.cleanedNumber(Constants.formatPhoneNumber(contact.number,contact.countryCode)),
-                        false,
-                        1,
-                        Constants.PROXY_NUMBER
-                    )
-                    existingConversation.enqueue(object : Callback<List<ParticipantExistingConversation>> {
-                        @SuppressLint("SuspiciousIndentation")
-                        override fun onResponse(
-                            call: Call<List<ParticipantExistingConversation>>,
-                            response: Response<List<ParticipantExistingConversation>>
-                        ) {
-                            if (response.isSuccessful) {
-                                val conversationList: List<ParticipantExistingConversation>? = response.body()
+                                                    participantSid.enqueue(object :
+                                                        Callback<String> {
+                                                        override fun onResponse(
+                                                            call: Call<String>,
+                                                            response: Response<String>
+                                                        ) {
+                                                            if (response.isSuccessful) {
+                                                                val responseBody: String? =
+                                                                    response.body()
+                                                                // Handle the string value as needed
+                                                                println("Response body: $responseBody")
+                                                            } else {
+                                                                println("Response was not successful: ${response.code()}")
+                                                            }
+                                                        }
 
-                                // Check if the list is not null and not empty
-                                if (!conversationList.isNullOrEmpty()) {
-                                    // Iterate through the list and access each Conversation object
-                                    for (conversation in conversationList) {
-                                        // Access properties of each Conversation object
-                                        println("Conversation SID: ${conversation.conversationSid}")
-                                        //when conversation exists
-                                        if(!conversation.conversationSid.isNullOrEmpty()) {
-                                        try{
-                                        val participantSid = retrofitWithToken.addParticipantToConversation(Constants.TENANT_CODE,conversation.conversationSid,Constants.USERNAME)
-
-                                            participantSid.enqueue(object : Callback<String> {
-                                                override fun onResponse(call: Call<String>, response: Response<String>) {
-                                                    if (response.isSuccessful) {
-                                                        val responseBody: String? = response.body()
-                                                        // Handle the string value as needed
-                                                        println("Response body: $responseBody")
-                                                    } else {
-                                                        println("Response was not successful: ${response.code()}")
-                                                    }
+                                                        override fun onFailure(
+                                                            call: Call<String>,
+                                                            t: Throwable
+                                                        ) {
+                                                            println("Failed to execute request: ${t.message}")
+                                                        }
+                                                    })
+                                                } catch (e: Exception) {
+                                                    println("Exception :  ${e.message}")
+                                                    EETLog.error(
+                                                        AppContextHelper.appContext,
+                                                        LogConstants.logDetails(
+                                                            e,
+                                                            LogConstants.LOG_LEVEL.ERROR.toString(),
+                                                            LogConstants.LOG_SEVERITY.HIGH.toString()
+                                                        ),
+                                                        Constants.EX,
+                                                        LogTraceConstants.getUtilityData(
+                                                            AppContextHelper.appContext!!
+                                                        )!!
+                                                    )
                                                 }
 
-                                                override fun onFailure(call: Call<String>, t: Throwable) {
-                                                    println("Failed to execute request: ${t.message}")
+
+                                                //set attrtibute fetched from parent if blank in response
+                                                if (conversation.attributes.Department.isNullOrEmpty() &&
+                                                    conversation.attributes.Designation.isNullOrEmpty() &&
+                                                    conversation.attributes.CustomerName.isNullOrEmpty()
+                                                ) {
+
+                                                    var customer = contact.customerName
+                                                    var department = contact.department
+                                                    var designation = contact.designation
+
+                                                    val attributes = mapOf(
+                                                        "Designation" to designation,
+                                                        "Department" to department,
+                                                        "CustomerName" to customer
+                                                    )
+                                                    val jsonObject = JSONObject(attributes)
+
+                                                    contactListViewModel.setAttributes(
+                                                        conversation.conversationSid,
+                                                        Attributes(jsonObject)
+                                                    )
                                                 }
-                                            })
-                                        }
-                                        catch (e: Exception){
-                                            println("Exception :  ${e.message}")
-                                            EETLog.error(
-                                                SessionHelper.appContext, LogConstants.logDetails(
-                                                    e,
-                                                    LogConstants.LOG_LEVEL.ERROR.toString(),
-                                                    LogConstants.LOG_SEVERITY.HIGH.toString()
-                                                ),
-                                                Constants.EX, LogTraceConstants.getUtilityData(
-                                                    SessionHelper.appContext!!
-                                                )!!
-                                            )
-                                        }
+                                                //Starting and redirecting to Existing conversation
+                                                contactListViewModel.getSyncStatus(conversation.conversationSid)
+                                                binding?.progressBarID?.visibility = GONE
+                                            }
+                                            //conversation doesnt exist, create new
+                                            else {
+                                                var customer = ""
+                                                var department = ""
+                                                var designation = ""
 
+                                                if (conversation.attributes.Department.isNullOrEmpty() &&
+                                                    conversation.attributes.Designation.isNullOrEmpty() &&
+                                                    conversation.attributes.CustomerName.isNullOrEmpty()
+                                                ) {
 
-                                            //set attrtibute fetched from parent if blank in response
-                                            if(conversation.attributes.Department.isNullOrEmpty() &&
-                                                conversation.attributes.Designation.isNullOrEmpty() &&
-                                                conversation.attributes.CustomerName.isNullOrEmpty()){
-
-                                                var customer = contact.customerName
-                                                var department = contact.department
-                                                var designation = contact.designation
-
+                                                    customer = contact.customerName!!
+                                                    department = contact.department!!
+                                                    designation = contact.designation!!
+                                                } else {
+                                                    customer = conversation.attributes.CustomerName
+                                                    department = conversation.attributes.Department
+                                                    designation =
+                                                        conversation.attributes.Designation
+                                                }
                                                 val attributes = mapOf(
                                                     "Designation" to designation,
                                                     "Department" to department,
                                                     "CustomerName" to customer
                                                 )
-//
                                                 val jsonObject = JSONObject(attributes)
-                                                Log.d("setting attributes", jsonObject.toString())
-
-                                                contactListViewModel.setAttributes(conversation.conversationSid,Attributes(jsonObject))
-                                            }
-//
-
-                                            //Starting and redirecting to Existing conversation
-                                            contactListViewModel.getSyncStatus(conversation.conversationSid)
-                                            binding?.progressBarID?.visibility = GONE
-                                      }
-                                        //conversation doesnt exist, create new
-                                        else {
-                                            var customer = ""
-                                            var department =""
-                                            var designation = ""
-
-                                            if (conversation.attributes.Department.isNullOrEmpty() &&
-                                                conversation.attributes.Designation.isNullOrEmpty() &&
-                                                conversation.attributes.CustomerName.isNullOrEmpty()
-                                            ) {
-
-                                                customer = contact.customerName
-                                                department = contact.department
-                                                designation = contact.designation
-                                            }
-                                            else{
-                                                customer = conversation.attributes.CustomerName
-                                                department = conversation.attributes.Department
-                                                designation = conversation.attributes.Designation
-                                            }
-                                                val attributes = mapOf(
-                                                    "Designation" to designation,
-                                                    "Department" to department,
-                                                    "CustomerName" to customer
-                                                )
-//
-                                                val jsonObject = JSONObject(attributes)
-
-                                                Log.d("setting attributes", jsonObject.toString())
                                                 contactListViewModel.createConversation(
                                                     "$contact.name ${
                                                         Constants.formatPhoneNumber(
@@ -321,62 +424,74 @@ class ContactListFragment : Fragment() {
                                                     }",
                                                     Attributes(jsonObject)
                                                 )
-                                        }
+                                            }
 
+                                        }
+                                    } else {
+                                        try {
+                                            //If there is no existing conversation with SMS user, create new
+                                            //set attributes fetched from parent
+                                            var customer = contact.customerName
+                                            var department = contact.department
+                                            var designation = contact.designation
+
+                                            val attributes = mapOf(
+                                                "Designation" to designation,
+                                                "Department" to department,
+                                                "CustomerName" to customer
+                                            )
+                                            val jsonObject = JSONObject(attributes)
+                                            contactListViewModel.createConversation(
+                                                contact.name + " " + Constants.formatPhoneNumber(
+                                                    contact.number!!,
+                                                    contact.countryCode
+                                                ),
+                                                contact.email,
+                                                Constants.cleanedNumber(
+                                                    Constants.formatPhoneNumber(
+                                                        contact.number!!,
+                                                        contact.countryCode
+                                                    )
+                                                ),
+                                                Attributes(jsonObject)
+                                            )
+                                            binding?.progressBarID?.visibility = GONE
+                                        } catch (e: Exception) {
+                                            println("Exception :  ${e.message}")
+                                            EETLog.error(
+                                                AppContextHelper.appContext, LogConstants.logDetails(
+                                                    e,
+                                                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                                                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                                                ),
+                                                Constants.EX, LogTraceConstants.getUtilityData(
+                                                    AppContextHelper.appContext!!
+                                                )!!
+                                            )
+                                        }
                                     }
                                 } else {
-                                    try{
-                                    //If there is no existing conversation with SMS user, create new
-                                    //set attributes fetched from parent
-                                        var customer = contact.customerName
-                                        var department = contact.department
-                                        var designation = contact.designation
-
-                                        val attributes = mapOf(
-                                            "Designation" to designation,
-                                            "Department" to department,
-                                            "CustomerName" to customer
-                                        )
-
-                                        val jsonObject = JSONObject(attributes)
-                                        Log.d("setting attributes", jsonObject.toString())
-                                            contactListViewModel.createConversation(
-                                                contact.name + " " + Constants.formatPhoneNumber(contact.number!!,contact.countryCode),
-                                                contact.email,
-                                                Constants.cleanedNumber(Constants.formatPhoneNumber(contact.number!!,contact.countryCode)),
-                                                Attributes(jsonObject))
-                                    binding?.progressBarID?.visibility = GONE
-                                    } catch(e:Exception){
-                                        println("Exception :  ${e.message}")
-                                        EETLog.error(
-                                            SessionHelper.appContext, LogConstants.logDetails(
-                                                e,
-                                                LogConstants.LOG_LEVEL.ERROR.toString(),
-                                                LogConstants.LOG_SEVERITY.HIGH.toString()
-                                            ),
-                                            Constants.EX, LogTraceConstants.getUtilityData(
-                                                SessionHelper.appContext!!
-                                            )!!
-                                        )
-                                    }
+                                    println("Response was not successful: ${response.code()}")
                                 }
-                            } else {
-                                println("Response was not successful: ${response.code()}")
                             }
-                        }
 
-                        override fun onFailure(call: Call<List<ParticipantExistingConversation>>, t: Throwable) {
-                            println("Failed to fetch existing conversations: ${t.message}")
-                        }
-                    })
+                            override fun onFailure(
+                                call: Call<List<ParticipantExistingConversation>>,
+                                t: Throwable
+                            ) {
+                                println("Failed to fetch existing conversations: ${t.message}")
+                            }
+                        })
+                    }
+                    else{
+                        binding!!.contactsListLayout.showSnackbar("Invalid Phone number.")
+                    }
 
+                    } else {
+                        binding?.progressBarID?.visibility = VISIBLE
+                        //Below code can be uncommented if we want universal channel for webchatusers too.
 
-                }
-                else{
-                    binding?.progressBarID?.visibility = VISIBLE
-                    //Below code can be uncommented if we want universal channel for webchatusers too.
-
-                    //If contact is webchat user
+                        //If contact is webchat user
 //                    val existingConversation  = retrofitWithToken.fetchExistingConversation(
 //                        Constants.TENANT_CODE,
 //                        contact.email,
@@ -403,11 +518,12 @@ class ContactListFragment : Fragment() {
 //                                        MessageListActivity.startfromFragment(applicationContext,conversation.conversationSid)
 //                                    }
 //                                } else { //If there is no existing conversation with web user, create new
-                                    contactListViewModel.createConversation(contact.name,contact.email,contact.number,
-                                        Attributes("")
-                                    )
-                                    binding?.progressBarID?.visibility = GONE
-                //                                }
+                        contactListViewModel.createConversation(
+                            contact.name, contact.email, contact.number,
+                            Attributes("")
+                        )
+                        binding?.progressBarID?.visibility = GONE
+                        //                                }
 //                            } else {
 //                                println("Response was not successful: ${response.code()}")
 //                            }
@@ -423,9 +539,13 @@ class ContactListFragment : Fragment() {
 
         //Providing Linearlayoutmanager to recyclerview
         binding?.contactList?.layoutManager = LinearLayoutManager(context,LinearLayoutManager.VERTICAL,false)
-       //Assigning the created adapter to recyclerview
+        //Assigning the created adapter to recyclerview
         binding?.contactList?.adapter = adapter
         binding?.contactList?.addItemDecoration(DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL))
+        if (binding!!.contactList.adapter!!.itemCount < 1){
+            binding!!.noResultFound.root.visibility =  VISIBLE}
+        else
+            binding!!.noResultFound.root.visibility =  GONE
 
     }
 

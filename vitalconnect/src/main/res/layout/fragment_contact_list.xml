@@ -28,6 +28,9 @@
             android:layout_height="wrap_content"
 
             />
+    <include
+        android:id="@+id/no_result_found"
+        layout="@layout/view_search_contacts" />
 <!--        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"-->
         <!--        tools:listitem="@layout/row_conversation_item"-->
 

@@ -6,8 +6,9 @@ data class ContactListViewItem(
     val number : String,
     val type : String,
     val initials : String,
-    val designation : String,
-    val department : String,
-    val customerName : String,
-    val countryCode: String
+    val designation : String?,
+    val department : String?,
+    val customerName : String?,
+    val countryCode: String?,
+    val isGlobal : Boolean
 )

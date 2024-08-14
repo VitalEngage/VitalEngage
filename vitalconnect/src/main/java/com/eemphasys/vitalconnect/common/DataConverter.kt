@@ -2,11 +2,9 @@ package com.eemphasys.vitalconnect.common
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import com.google.gson.Gson
 import com.twilio.conversations.Conversation.NotificationLevel
 import androidx.core.net.toUri
-import com.eemphasys.vitalconnect.api.data.Attributes
 import com.eemphasys.vitalconnect.common.enums.DownloadState
 import com.eemphasys.vitalconnect.common.enums.Reaction
 import com.eemphasys.vitalconnect.common.enums.SendStatus
@@ -35,7 +33,6 @@ import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys.vitalconnect.repository.ConversationsRepositoryImpl
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
-import com.google.gson.JsonParser
 import com.twilio.conversations.Conversation
 import com.twilio.conversations.Message
 import com.twilio.conversations.Participant
@@ -119,14 +116,14 @@ fun MessageDataItem.toMessageListViewItem(authorChanged: Boolean,datechanged: Bo
 fun getReactions(attributes: String): Map<String, Set<String>> = try {
     Gson().fromJson(attributes, ReactionAttributes::class.java).reactions
 } catch (e: Exception) {
-   /* EETLog.error(
-        SessionHelper.appContext, LogConstants.logDetails(
+    /*EETLog.error(
+        AppContextHelper.appContext!!, LogConstants.logDetails(
             e,
             LogConstants.LOG_LEVEL.ERROR.toString(),
             LogConstants.LOG_SEVERITY.HIGH.toString()
         ),
         Constants.EX, LogTraceConstants.getUtilityData(
-            SessionHelper.appContext!!
+            AppContextHelper.appContext!!
         )!!
     )*/
     emptyMap()
@@ -140,13 +137,13 @@ fun Map<String, Set<String>>.asReactionList(): Reactions {
             reactions[Reaction.fromString(it.key)] = it.value
         } catch (e: Exception) {
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             );
         }
@@ -188,19 +185,16 @@ fun ConversationDataItem.asConversationListViewItem(
     try {
         JSONObject(this.attributes).optString("Department", "")
     } catch (e: Exception) {
-        Log.d("Exception1@DataConverter",e.message.toString())
         ""
     },
     try {
         JSONObject(this.attributes).optString("Designation", "")
     } catch (e: Exception) {
-        Log.d("Exception2@DataConverter",e.message.toString())
         ""
     },
     try {
         JSONObject(this.attributes).optString("CustomerName", "")
     } catch (e: Exception) {
-        Log.d("Exception3@DataConverter",e.message.toString())
         ""
     },
     this.messagesCount

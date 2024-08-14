@@ -3,6 +3,7 @@ package com.eemphasys.vitalconnect.adapters
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.ShapeDrawable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +11,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.ParticipantColorManager
-import com.eemphasys.vitalconnect.common.SessionHelper
+import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.data.models.ContactListViewItem
 import com.eemphasys.vitalconnect.databinding.RowContactItemBinding
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
@@ -38,7 +39,7 @@ class ContactListAdapter(
             }
         }
 
-        fun bind(item: ContactListViewItem) {
+        fun bind(item: ContactListViewItem, isFirst: Boolean) {
             itemBinding.contactName.text = item.name
             itemBinding.contactNumber.text = item.number
             itemBinding.contactType.text = item.type
@@ -47,10 +48,10 @@ class ContactListAdapter(
             itemBinding.department.text = "(" + item.department + ")"
             itemBinding.customerName.text = item.customerName
 
-            if (itemBinding.department.text.isNullOrBlank() || Constants.SHOW_DEPARTMENT == "false") {
+            if (item.department.isNullOrBlank() || Constants.SHOW_DEPARTMENT == "false") {
                 itemBinding.department.visibility = View.GONE
             }
-            if (itemBinding.designation.text.isNullOrBlank() || Constants.SHOW_DESIGNATION == "false") {
+            if (item.department.isNullOrBlank() || Constants.SHOW_DESIGNATION == "false") {
                 itemBinding.designation.visibility = View.GONE
             }
             if (itemBinding.contactNumber.text.isNullOrBlank()) {
@@ -59,9 +60,12 @@ class ContactListAdapter(
             if (itemBinding.customerName.text.isNullOrBlank()) {
                 itemBinding.customerName.visibility = View.GONE
             }
-
-            if (itemBinding.contactName.text == Constants.CUSTOMER_NAME) {
+            if(!item.isGlobal && isFirst){
+                Log.d("default", "${item.name} $isFirst")
                 itemBinding.defaultContact.visibility = View.VISIBLE
+            }
+            else{
+                itemBinding.defaultContact.visibility = View.GONE
             }
 
             changeButtonBackgroundColor(
@@ -82,7 +86,7 @@ class ContactListAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = itemList[position]
-        holder.bind(item)
+        holder.bind(item,position == 0)
     }
 
     override fun getItemCount(): Int {
@@ -117,13 +121,13 @@ class ContactListAdapter(
         } catch (e: Exception) {
             e.printStackTrace()
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             )
         }

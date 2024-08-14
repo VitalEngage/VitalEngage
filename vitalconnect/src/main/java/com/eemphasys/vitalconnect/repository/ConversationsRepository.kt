@@ -1,6 +1,8 @@
 package com.eemphasys.vitalconnect.repository
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.eemphasys.vitalconnect.data.localCache.entity.ConversationDataItem
 import com.eemphasys.vitalconnect.data.models.RepositoryResult
 import com.twilio.conversations.Conversation
@@ -26,7 +28,7 @@ import androidx.paging.PagedList
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.DefaultDispatcherProvider
 import com.eemphasys.vitalconnect.common.DispatcherProvider
-import com.eemphasys.vitalconnect.common.SessionHelper
+import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.asMessageDataItems
 import com.eemphasys.vitalconnect.common.asMessageListViewItems
 import com.eemphasys.vitalconnect.common.asParticipantDataItem
@@ -97,6 +99,7 @@ interface ConversationsRepository {
     fun getFriendlyName(identity : String) :String
 
     fun updateFriendlyName()
+    fun getUnreadMessageCount(): LiveData<Long>
 }
 
 class ConversationsRepositoryImpl(
@@ -106,6 +109,8 @@ class ConversationsRepositoryImpl(
 ) : ConversationsRepository {
 
     private val repositoryScope = CoroutineScope(dispatchers.io() + SupervisorJob())
+    val unreadMessageCount: MutableLiveData<Long> = MutableLiveData(0)
+    override fun getUnreadMessageCount(): LiveData<Long> = unreadMessageCount
 
     private val clientListener = ConversationsClientListener(
         onConversationDeleted = { conversation ->
@@ -276,7 +281,6 @@ class ConversationsRepositoryImpl(
     override fun getConversationParticipants(conversationSid: String): Flow<RepositoryResult<List<ParticipantDataItem>>> {
         val localDataFlow = localCache.participantsDao().getAllParticipants(conversationSid)
         val fetchStatusFlow = fetchParticipants(conversationSid).flowOn(dispatchers.io())
-Log.d("sid",conversationSid)
         return combine(localDataFlow, fetchStatusFlow) { data, status -> RepositoryResult(data, status) }
     }
 
@@ -332,6 +336,7 @@ Log.d("sid",conversationSid)
 
     override fun getSelfUser(): Flow<User> = callbackFlow {
         val client = conversationsClientWrapper.getConversationsClient()
+        Log.d("selfuser",client.myIdentity)
         val listener = ConversationsClientListener(
             onUserUpdated = { user, _ ->
                 user.takeIf { it.identity == client.myIdentity }
@@ -363,15 +368,28 @@ Log.d("sid",conversationSid)
             e.printStackTrace()
 
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             )
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+            EETLog.error(
+                AppContextHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    AppContextHelper.appContext!!
+                )!!
+            );
         }
     }
 
@@ -385,31 +403,39 @@ Log.d("sid",conversationSid)
             e.printStackTrace()
 
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             )
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+            EETLog.error(
+                AppContextHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    AppContextHelper.appContext!!
+                )!!
+            );
         }
     }
 
     private fun fetchParticipants(conversationSid: String) = flow {
         emit(FETCHING)
         try {
-            Log.d("userabove", "416")
             val conversation = conversationsClientWrapper.getConversationsClient().getConversation(conversationSid)
-            Log.d("userabove", "418")
             conversation.waitForSynchronization()
-            Log.d("userabove", "420")
             conversation.participantsList.forEach { participant ->
                 // Getting user is currently supported for chat participants only
-                Log.d("userabove", "insideit")
                 val user = if (participant.channel == "chat") participant.getAndSubscribeUser() else null
-                Log.d("user", user.toString())
                 localCache.participantsDao().insertOrReplace(participant.asParticipantDataItem(user = user))
             }
             emit(COMPLETE)
@@ -418,15 +444,28 @@ Log.d("sid",conversationSid)
             e.printStackTrace()
 
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             )
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+            EETLog.error(
+                AppContextHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    AppContextHelper.appContext!!
+                )!!
+            );
         }
     }
 
@@ -453,15 +492,28 @@ Log.d("sid",conversationSid)
                         } catch (e: TwilioException) {
                             status = Error(e.toConversationsError())
                             EETLog.error(
-                                SessionHelper.appContext, LogConstants.logDetails(
+                                AppContextHelper.appContext, LogConstants.logDetails(
                                     e,
                                     LogConstants.LOG_LEVEL.ERROR.toString(),
                                     LogConstants.LOG_SEVERITY.HIGH.toString()
                                 ),
                                 Constants.EX, LogTraceConstants.getUtilityData(
-                                    SessionHelper.appContext!!
+                                    AppContextHelper.appContext!!
                                 )!!
                             )
+                        }
+                        catch (e: Exception) {
+                            e.printStackTrace()
+                            EETLog.error(
+                                AppContextHelper.appContext, LogConstants.logDetails(
+                                    e,
+                                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                                ),
+                                Constants.EX, LogTraceConstants.getUtilityData(
+                                    AppContextHelper.appContext!!
+                                )!!
+                            );
                         }
                     }
                 }
@@ -472,15 +524,28 @@ Log.d("sid",conversationSid)
             e.printStackTrace()
 
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext, LogConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             )
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+            EETLog.error(
+                AppContextHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    AppContextHelper.appContext!!
+                )!!
+            );
         }
     }
 
@@ -518,6 +583,13 @@ Log.d("sid",conversationSid)
         }
         launch {
             localCache.conversationsDao().updateUnreadMessagesCount(conversationSid, conversation.getUnreadMessageCount() ?: return@launch)
+            val listOfConversations = conversationsClientWrapper.getConversationsClient().myConversations
+            var unreadCount:Long = 0
+            for (i in listOfConversations){
+                var count = i.getUnreadMessageCount() ?: 0
+                unreadCount+= count
+            }
+            unreadMessageCount.postValue(unreadCount)
         }
         launch {
             updateConversationLastMessage(conversationSid)

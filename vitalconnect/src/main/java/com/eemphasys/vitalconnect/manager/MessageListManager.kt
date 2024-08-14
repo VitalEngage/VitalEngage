@@ -140,15 +140,15 @@ class MessageListManagerImpl(
         )
         conversationsRepository.insertMessage(message)
 
-        val sentMessage = conversation.sendMessage {
-            this.attributes = attributes
-            addMedia(
-                inputStream,
-                mimeType ?: "",
-                fileName,
-                createMediaUploadListener(uri, messageUuid)
-            )
-        }.toMessageDataItem(identity, messageUuid)
+            val sentMessage = conversation.sendMessage {
+                this.attributes = attributes
+                addMedia(
+                    inputStream,
+                    mimeType ?: "",
+                    fileName,
+                    createMediaUploadListener(uri, messageUuid)
+                )
+            }.toMessageDataItem(identity, messageUuid)
 
         conversationsRepository.updateMessageByUuid(sentMessage)
     }
@@ -167,15 +167,15 @@ class MessageListManagerImpl(
         val conversation = conversationsClient.getConversationsClient().getConversation(conversationSid)
 
 
-        val sentMessage = conversation.sendMessage {
-            this.attributes = Attributes(messageUuid)
-            addMedia(
-                inputStream,
-                message.mediaType ?: "",
-                message.mediaFileName,
-                createMediaUploadListener(message.mediaUploadUri, messageUuid)
-            )
-        }.toMessageDataItem(identity, message.uuid)
+            val sentMessage = conversation.sendMessage {
+                this.attributes = Attributes(messageUuid)
+                addMedia(
+                    inputStream,
+                    message.mediaType ?: "",
+                    message.mediaFileName,
+                    createMediaUploadListener(message.mediaUploadUri, messageUuid)
+                )
+            }.toMessageDataItem(identity, message.uuid)
 
         conversationsRepository.updateMessageByUuid(sentMessage)
     }
@@ -244,8 +244,6 @@ class MessageListManagerImpl(
     }
 
     override suspend fun notifyMessageRead(index: Long) {
-        Log.d("clientinmessagelistmanager",conversationsClient.getConversationsClient().myIdentity)
-        Log.d("sidinmessagelistmanager",conversationSid)
         val messages = conversationsClient.getConversationsClient().getConversation(conversationSid)
         if (index > messages.lastReadMessageIndex ?: -1) {
             messages.advanceLastReadMessageIndex(index)

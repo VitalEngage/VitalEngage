@@ -32,7 +32,9 @@ enum class ConversationsError(val code: Int, val message: String) {
     SIGN_OUT_SUCCEEDED(81, "Successfully signed out"),
     MESSAGE_REMOVE_FAILED(82, "Failed to remove message"),
     MESSAGE_COPY_FAILED(82, "Failed to copy message"),
-    NO_INTERNET_CONNECTION(83, "No internet connection");
+    NO_INTERNET_CONNECTION(83, "No internet connection"),
+    INVALID_CONTENT_TYPE(101, "Invalid media content type."),
+    FILE_TOO_LARGE(102, "Select a single file: either a JPEG or PNG up to 5MB, or a PDF up to 600KB");
 
     override fun toString() = "Error $code : $message"
 

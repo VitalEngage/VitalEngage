@@ -10,8 +10,9 @@ import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
 import com.eemphasys.vitalconnect.common.FirebaseTokenManager
-import com.eemphasys.vitalconnect.common.SessionHelper
+import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
+import com.eemphasys.vitalconnect.repository.ConversationsRepositoryImpl
 import com.eemphasys.vitalconnectdev.data.LoginConstants
 import com.eemphasys.vitalconnectdev.common.enums.ConversationsError
 import com.eemphasys.vitalconnectdev.common.extensions.createTwilioException
@@ -57,7 +58,6 @@ class LoginManagerImpl(
 
         val tokenApi = RetrofitHelper.getInstance().create(TwilioApi::class.java)
         val result = tokenApi.validateUser(requestData)
-        Log.d("check1", requestData.toString())
         if(result.isSuccessful) {
             Log.d("Authtoken: ", result.body()!!.jwtToken)
             LoginConstants.AUTH_TOKEN = result.body()!!.jwtToken
@@ -122,7 +122,9 @@ class LoginManagerImpl(
 
     override suspend fun getTwilioclient() {
         conversationsClient.getclient()
+        ConversationsRepositoryImpl.INSTANCE.subscribeToConversationsClientEvents()
         registerForFcm()
+        conversationsClient.shutdown()
     }
 
 
@@ -140,13 +142,13 @@ class LoginManagerImpl(
             e.printStackTrace()
 
             EETLog.error(
-                SessionHelper.appContext, LogConstants.logDetails(
+                AppContextHelper.appContext, LogTraceConstants.logDetails(
                     e,
                     LogConstants.LOG_LEVEL.ERROR.toString(),
                     LogConstants.LOG_SEVERITY.HIGH.toString()
                 ),
                 Constants.EX, LogTraceConstants.getUtilityData(
-                    SessionHelper.appContext!!
+                    AppContextHelper.appContext!!
                 )!!
             );
         }
