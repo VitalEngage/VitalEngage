@@ -49,6 +49,7 @@ class Constants   {
         var INPUTSTREAM : InputStream = ByteArrayInputStream(ByteArray(0))
         var MEDIA_NAME : String? = ""
         var MEDIA_TYPE : String? = ""
+        var TIME_OFFSET : Int? = 0
 
 
         @JvmStatic

@@ -54,7 +54,7 @@
         android:textColor="@{conversation.isMuted ? @color/text_title_weak : @color/text_title}"
         app:layout_constraintStart_toEndOf="@+id/conversationStateIcon"
         app:layout_constraintTop_toTopOf="@id/participant_icon"
-        app:layout_constraintEnd_toStartOf="@id/messageDate"
+        app:layout_constraintEnd_toStartOf="@id/unreadCount"
         app:layout_constraintWidth_max="wrap"
         tools:text="Conversation friendly name bla bla bla bla" />
 <!--    app:layout_constraintEnd_toStartOf="@+id/participantsCount"-->
@@ -98,6 +98,7 @@
         android:textColor="@{conversation.lastMessageColor}"
         app:layout_constraintStart_toStartOf="@+id/conversationName"
         app:layout_constraintTop_toBottomOf="@+id/customer"
+        app:layout_constraintEnd_toStartOf="@id/messageDate"
         tools:text="This is a waiting message bla bla bla bla bla" />
 
     <TextView
@@ -110,10 +111,8 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:text="@{conversation.lastMessageDate}"
-        app:layout_constraintEnd_toStartOf="@+id/unreadCount"
         app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toEndOf="@+id/conversationName"
-        app:layout_constraintTop_toTopOf="@+id/conversationName"
+        app:layout_constraintTop_toTopOf="@+id/messageText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_goneMarginEnd="0dp"
         app:layout_constraintWidth_default="wrap"
@@ -130,7 +129,7 @@
         android:text="@{conversation.unreadMessageCount}"
         android:visibility="@{conversation.showUnreadMessageCount ? View.VISIBLE : View.GONE}"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/conversationName"
+        app:layout_constraintTop_toTopOf="@+id/conversationName"
         tools:text="99+"
         />
     <TextView
@@ -152,12 +151,13 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:ellipsize="end"
+        android:ellipsize="marquee"
         android:layout_marginLeft="5dp"
         android:text='@{`(` + conversation.department + `)`}'
         android:textColor="@{conversation.lastMessageColor}"
         app:layout_constraintStart_toEndOf="@+id/designation"
         app:layout_constraintTop_toBottomOf="@+id/conversationName"
+        app:layout_constraintEnd_toEndOf="parent"
         tools:text="Department"
         android:visibility="@{conversation.department.isEmpty() ? View.GONE : View.VISIBLE}"/>
     <TextView
