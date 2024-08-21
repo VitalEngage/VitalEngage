@@ -468,6 +468,7 @@ class LoginActivity : AppCompatActivity() {
             intent.putExtra("email",LoginConstants.EMAIL)
             intent.putExtra("mobileNumber",LoginConstants.MOBILENUMBER)
             intent.putExtra("defaultcountryCode","")
+            intent.putExtra("timeoffset","0")
             context.startActivity(intent)
         }
     }
