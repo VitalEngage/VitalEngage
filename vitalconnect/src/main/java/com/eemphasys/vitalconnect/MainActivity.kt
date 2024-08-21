@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
         val email = intent.getStringExtra("email")
         val mobileNumber = intent.getStringExtra("mobileNumber")
         val defaultcountryCode = intent.getStringExtra("defaultcountryCode")
-        intent.getStringExtra("userSMSAlert")?.let { Log.d("useralert", it) }
+        val timeoffset = intent.getStringExtra("timeoffset")
 
         Constants.AUTH_TOKEN = authToken!!
         Constants.CONTACTS = contacts!!
@@ -91,6 +91,9 @@ class MainActivity : AppCompatActivity() {
         Constants.EMAIL = email!!
         Constants.MOBILENUMBER = mobileNumber!!
         Constants.DEFAULT_COUNTRYCODE = defaultcountryCode!!
+        Constants.TIME_OFFSET = Integer.valueOf( timeoffset)
+
+        Log.d("timezoneoffset", timeoffset!!)
 
 //        mainViewModel.create()
         super.onCreate(savedInstanceState)
