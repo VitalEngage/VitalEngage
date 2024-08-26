@@ -30,7 +30,7 @@ class LoginConstants   {
         var EMAIL = ""
         var MOBILENUMBER = ""
 
-        val CONTACTS1 =
+        val CONTACTS =
             """{
             "contacts" : 
             [
@@ -81,7 +81,7 @@ class LoginConstants   {
         }
         """.trimIndent()
 
-        val CONTACTS = ""
+        val CONTACTS1 = ""
         val WEBUSERS = ""
 
     }

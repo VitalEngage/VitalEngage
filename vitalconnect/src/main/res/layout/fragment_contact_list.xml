@@ -21,12 +21,25 @@
 <!--        android:id="@+id/contactsRefresh"-->
 <!--        android:layout_width="match_parent"-->
 <!--        android:layout_height="match_parent">-->
+    <!-- TabLayout for tab headers -->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"/>
+
+    <!-- ViewPager2 for tab content -->
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/contactList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
+android:visibility="gone"
             />
     <include
         android:id="@+id/no_result_found"
