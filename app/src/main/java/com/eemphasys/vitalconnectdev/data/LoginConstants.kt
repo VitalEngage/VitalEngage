@@ -57,7 +57,7 @@ class LoginConstants   {
             ]
        } """.trimIndent()
 
-        val WEBUSERS1 = """{
+        val WEBUSERS = """{
             "webUser":[
             {
                 "name":"Ankush Belorkar",
@@ -65,16 +65,16 @@ class LoginConstants   {
                 "initials":"",
                 "designation":"Technician",
                 "department":"",
-                "customer":"",
+                "customer":"VitalEdge",
                 "countryCode":""
             },
             {
                 "name":"Hardik Kothari",
-                "userName":"hkothari",
+                "userName":"hkothari@e-emphasys.com",
                 "initials":"",
                 "designation":"Supervisor",
-                "department":"",
-                "customer":"",
+                "department":"Xapps",
+                "customer":"VitalEdge",
                 "countryCode":""
             }
             ]
@@ -82,7 +82,7 @@ class LoginConstants   {
         """.trimIndent()
 
         val CONTACTS1 = ""
-        val WEBUSERS = ""
+        val WEBUSERS1 = ""
 
     }
 }

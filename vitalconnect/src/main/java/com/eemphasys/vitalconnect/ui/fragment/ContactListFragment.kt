@@ -64,100 +64,100 @@ class ContactListFragment : Fragment() {
     private var webuserList = arrayListOf<WebUser>()
     private lateinit var adapter: ContactListAdapter
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_contact_list, menu)
-
-        val searchItem = menu.findItem(R.id.filter_contacts)
-        val searchView = searchItem?.actionView as SearchView
-
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                if (newText != null && newText.length >= 3) {
-                if (Constants.SHOW_CONTACTS == "false") {
-                    lifecycleScope.launch {
-                        val listOfSearchedContacts = mutableListOf<ContactListViewItem>()
-                        val httpClientWithToken = OkHttpClient.Builder()
-                            .connectTimeout(300, TimeUnit.SECONDS)
-                            .readTimeout(300, TimeUnit.SECONDS)
-                            .writeTimeout(300, TimeUnit.SECONDS)
-                            .addInterceptor(AuthInterceptor(Constants.AUTH_TOKEN))
-                            .addInterceptor(RetryInterceptor())
-                            .build()
-                        val retrofitWithToken =
-                            RetrofitHelper.getInstance(httpClientWithToken)
-                                .create(TwilioApi::class.java)
-                        var request =
-                            SearchContactRequest(
-                                Constants.USERNAME,
-                                Constants.TENANT_CODE,
-                                newText!!
-                            )
-                        var response = retrofitWithToken.getSearchedContact(request)
-
-                        response.enqueue(object : Callback<List<SearchContactResponse>> {
-                            override fun onResponse(
-                                call: Call<List<SearchContactResponse>>,
-                                response: Response<List<SearchContactResponse>>
-                            ) {
-                                if (response.isSuccessful) {
-                                    var contactsResponse: List<SearchContactResponse>? =
-                                        response.body()
-                                    Log.d("listresponse", response.body().toString())
-                                    if (!contactsResponse.isNullOrEmpty()) {
-
-                                        for (response in contactsResponse) {
-                                            Log.d("listfor", response.mobileNumber)
-                                            var contactItem =
-                                                ContactListViewItem(
-                                                    response.fullName,
-                                                    "",
-                                                    response.mobileNumber,
-                                                    "SMS",
-                                                    Constants.getInitials(response.fullName.trim { it <= ' ' }),
-                                                    response.designation,
-                                                    response.department,
-                                                    response.customerName,
-                                                    "",
-                                                    true
-                                                )
-
-                                            listOfSearchedContacts.add(contactItem)
-                                            Log.d("list1", listOfSearchedContacts.toString())
-                                        }
-                                        setAdapter(listOfSearchedContacts)
-                                    }
-                                }
-                            }
-
-                            override fun onFailure(
-                                call: Call<List<SearchContactResponse>>,
-                                t: Throwable
-                            ) {
-
-                            }
-
-                        })
-
-                    }
-                }
-                adapter.filter(newText.orEmpty())
-                return true
-            }
-                else{return false}
-            }
-        })
-
-        super.onCreateOptionsMenu(menu, inflater)
-    }
+//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+//        inflater.inflate(R.menu.menu_contact_list, menu)
+//
+//        val searchItem = menu.findItem(R.id.filter_contacts)
+//        val searchView = searchItem?.actionView as SearchView
+//
+//        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+//            override fun onQueryTextSubmit(query: String?): Boolean {
+//                return false
+//            }
+//
+//            override fun onQueryTextChange(newText: String?): Boolean {
+//                if (newText != null && newText.length >= 3) {
+//                if (Constants.SHOW_CONTACTS == "false") {
+//                    lifecycleScope.launch {
+//                        val listOfSearchedContacts = mutableListOf<ContactListViewItem>()
+//                        val httpClientWithToken = OkHttpClient.Builder()
+//                            .connectTimeout(300, TimeUnit.SECONDS)
+//                            .readTimeout(300, TimeUnit.SECONDS)
+//                            .writeTimeout(300, TimeUnit.SECONDS)
+//                            .addInterceptor(AuthInterceptor(Constants.AUTH_TOKEN))
+//                            .addInterceptor(RetryInterceptor())
+//                            .build()
+//                        val retrofitWithToken =
+//                            RetrofitHelper.getInstance(httpClientWithToken)
+//                                .create(TwilioApi::class.java)
+//                        var request =
+//                            SearchContactRequest(
+//                                Constants.USERNAME,
+//                                Constants.TENANT_CODE,
+//                                newText!!
+//                            )
+//                        var response = retrofitWithToken.getSearchedContact(request)
+//
+//                        response.enqueue(object : Callback<List<SearchContactResponse>> {
+//                            override fun onResponse(
+//                                call: Call<List<SearchContactResponse>>,
+//                                response: Response<List<SearchContactResponse>>
+//                            ) {
+//                                if (response.isSuccessful) {
+//                                    var contactsResponse: List<SearchContactResponse>? =
+//                                        response.body()
+//                                    Log.d("listresponse", response.body().toString())
+//                                    if (!contactsResponse.isNullOrEmpty()) {
+//
+//                                        for (response in contactsResponse) {
+//                                            Log.d("listfor", response.mobileNumber)
+//                                            var contactItem =
+//                                                ContactListViewItem(
+//                                                    response.fullName,
+//                                                    "",
+//                                                    response.mobileNumber,
+//                                                    "SMS",
+//                                                    Constants.getInitials(response.fullName.trim { it <= ' ' }),
+//                                                    response.designation,
+//                                                    response.department,
+//                                                    response.customerName,
+//                                                    "",
+//                                                    true
+//                                                )
+//
+//                                            listOfSearchedContacts.add(contactItem)
+//                                            Log.d("list1", listOfSearchedContacts.toString())
+//                                        }
+//                                        setAdapter(listOfSearchedContacts)
+//                                    }
+//                                }
+//                            }
+//
+//                            override fun onFailure(
+//                                call: Call<List<SearchContactResponse>>,
+//                                t: Throwable
+//                            ) {
+//
+//                            }
+//
+//                        })
+//
+//                    }
+//                }
+//                adapter.filter(newText.orEmpty())
+//                return true
+//            }
+//                else{return false}
+//            }
+//        })
+//
+//        super.onCreateOptionsMenu(menu, inflater)
+//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onCreate Called")
-        setHasOptionsMenu(true)
+//        setHasOptionsMenu(true)
 
         contactListViewModel.onParticipantAdded.observe(this) { identity ->
             binding?.contactsListLayout?.showSnackbar(
@@ -216,8 +216,8 @@ class ContactListFragment : Fragment() {
         // Bind TabLayout with ViewPager2
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             tab.text = when (position) {
-                0 -> "Tab 1"
-                1 -> "Tab 2"
+                0 -> "Internal"
+                1 -> "External"
                 else -> ""
             }
         }.attach()

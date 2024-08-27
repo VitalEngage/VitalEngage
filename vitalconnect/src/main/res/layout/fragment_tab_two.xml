@@ -3,9 +3,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
+    <!--    <TextView-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:text="This is Tab One"-->
+    <!--        android:layout_centerInParent="true"/>-->
+    <ProgressBar
+        android:id="@+id/progressBar_ID"
+        style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="This is Tab Two"
-        android:layout_centerInParent="true"/>
+        android:layout_gravity="center"
+        android:visibility="gone"
+        />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/contactList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        />
+    <include
+        android:id="@+id/no_result_found"
+        layout="@layout/view_search_contacts" />
 </RelativeLayout>

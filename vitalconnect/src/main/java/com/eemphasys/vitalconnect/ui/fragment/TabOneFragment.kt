@@ -166,14 +166,14 @@ class TabOneFragment : Fragment() {
         }
     }
 
-    private fun combineLists(contacts: List<Contact>, webUsers: List<WebUser>): List<ContactListViewItem> {
+    private fun formatList(webUsers: List<WebUser>): List<ContactListViewItem> {
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " combineLists Called")
         val combinedList = mutableListOf<ContactListViewItem>()
 
-        // Convert Contact objects to ContactListViewItem
-        val contactItems = contacts.map {
-            ContactListViewItem(it.name, "", it.number, "SMS",it.initials,it.designation,it.department,it.customer,it.countryCode,false)
-        }
+//        // Convert Contact objects to ContactListViewItem
+//        val contactItems = contacts.map {
+//            ContactListViewItem(it.name, "", it.number, "SMS",it.initials,it.designation,it.department,it.customer,it.countryCode,false)
+//        }
 
         // Convert WebUser objects to ContactListViewItem
         val webUserItems = webUsers.map {
@@ -181,7 +181,7 @@ class TabOneFragment : Fragment() {
         }
 
         // Add all ContactListViewItem objects to the combined list
-        combinedList.addAll(contactItems)
+//        combinedList.addAll(contactItems)
         combinedList.addAll(webUserItems)
 
         return combinedList
@@ -198,24 +198,24 @@ class TabOneFragment : Fragment() {
             if(!isNetworkAvailable)
                 activity?.finish()
         }
-        contactsList = ArrayList<Contact>()
+//        contactsList = ArrayList<Contact>()
         webuserList = ArrayList<WebUser>()
-        if(!Constants.CONTACTS.isNullOrEmpty()) {
-            val jsonObjectcontacts = JSONObject(Constants.CONTACTS)
-            val jsonArrayContacts = jsonObjectcontacts.getJSONArray("contacts")
-            for (i in 0 until jsonArrayContacts.length()) {
-                val jsonObject = jsonArrayContacts.getJSONObject(i)
-                val name = jsonObject.getString("name")
-                val number = Constants.formatPhoneNumber(jsonObject.getString("number"),jsonObject.getString("countryCode"))
-                val customerName = jsonObject.getString("customerName")
-                val initials = Constants.getInitials(name.trim { it <= ' ' })
-                val designation = jsonObject.getString("designation")
-                val department = jsonObject.getString("department")
-                val customer = jsonObject.getString("customer")
-                val countryCode = jsonObject.getString("countryCode")
-                contactsList.add(Contact(name, number, customerName, initials, designation, department, customer,countryCode))
-            }
-        }
+//        if(!Constants.CONTACTS.isNullOrEmpty()) {
+//            val jsonObjectcontacts = JSONObject(Constants.CONTACTS)
+//            val jsonArrayContacts = jsonObjectcontacts.getJSONArray("contacts")
+//            for (i in 0 until jsonArrayContacts.length()) {
+//                val jsonObject = jsonArrayContacts.getJSONObject(i)
+//                val name = jsonObject.getString("name")
+//                val number = Constants.formatPhoneNumber(jsonObject.getString("number"),jsonObject.getString("countryCode"))
+//                val customerName = jsonObject.getString("customerName")
+//                val initials = Constants.getInitials(name.trim { it <= ' ' })
+//                val designation = jsonObject.getString("designation")
+//                val department = jsonObject.getString("department")
+//                val customer = jsonObject.getString("customer")
+//                val countryCode = jsonObject.getString("countryCode")
+//                contactsList.add(Contact(name, number, customerName, initials, designation, department, customer,countryCode))
+//            }
+//        }
         if(!Constants.WEBUSERS.isNullOrEmpty()) {
             val jsonObjectwebusers = JSONObject(Constants.WEBUSERS)
             val jsonArrayWebUsers = jsonObjectwebusers.getJSONArray("webUser")
@@ -232,9 +232,9 @@ class TabOneFragment : Fragment() {
             }
         }
 
-        val combinedList = combineLists(contactsList, webuserList)
+        val formattedList = formatList(webuserList)
 
-        setAdapter(combinedList)
+        setAdapter(formattedList)
     }
 
     private fun setAdapter(list : List<ContactListViewItem>){
