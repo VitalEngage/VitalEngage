@@ -106,10 +106,20 @@
         android:ellipsize="middle"
         android:textColor="@color/text_title_weak"
         app:layout_constraintStart_toStartOf="@+id/contactName"
-        app:layout_constraintTop_toBottomOf="@id/department"
+        app:layout_constraintTop_toBottomOf="@id/barrier"
         tools:text="Type"
         tools:ignore="MissingConstraints"
         android:visibility="visible"/>
+    <!-- Barrier to group designation and department -->
+    <androidx.constraintlayout.widget.Barrier
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/barrier"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="department,designation"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/contactName" />
     <ImageView
         android:id="@+id/defaultContact"
         android:layout_width="wrap_content"
