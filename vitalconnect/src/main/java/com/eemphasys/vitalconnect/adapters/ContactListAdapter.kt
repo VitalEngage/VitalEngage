@@ -51,7 +51,7 @@ class ContactListAdapter(
             if (item.department.isNullOrBlank() || Constants.SHOW_DEPARTMENT == "false") {
                 itemBinding.department.visibility = View.GONE
             }
-            if (item.department.isNullOrBlank() || Constants.SHOW_DESIGNATION == "false") {
+            if (item.designation.isNullOrBlank() || Constants.SHOW_DESIGNATION == "false") {
                 itemBinding.designation.visibility = View.GONE
             }
             if (itemBinding.contactNumber.text.isNullOrBlank()) {
