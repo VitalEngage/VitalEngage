@@ -2,6 +2,7 @@ package com.eemphasys.vitalconnect.ui.fragment
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.text.InputFilter
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
@@ -10,6 +11,7 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -28,6 +30,7 @@ import com.eemphasys.vitalconnect.api.data.SearchContactResponse
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.Constants.Companion.isValidPhoneNumber
 import com.eemphasys.vitalconnect.common.AppContextHelper
+import com.eemphasys.vitalconnect.common.Constants.Companion.getSearchViewEditText
 import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.common.extensions.lazyActivityViewModel
 import com.eemphasys.vitalconnect.common.extensions.showSnackbar
@@ -47,6 +50,7 @@ import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.lang.reflect.Field
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
@@ -66,6 +70,8 @@ class ContactListFragment : Fragment() {
         val searchItem = menu.findItem(R.id.filter_contacts)
         val searchView = searchItem?.actionView as SearchView
 
+        val searchEditText = getSearchViewEditText(searchView)
+        searchEditText?.filters = arrayOf(InputFilter.LengthFilter(15))
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false

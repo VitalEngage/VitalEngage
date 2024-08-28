@@ -3,12 +3,15 @@ package com.eemphasys.vitalconnect.common
 import android.graphics.Color
 import android.os.Build
 import android.util.Log
+import android.widget.EditText
+import androidx.appcompat.widget.SearchView
 import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.data.models.ParticipantListViewItem
 import com.google.i18n.phonenumbers.NumberParseException
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import java.io.ByteArrayInputStream
 import java.io.InputStream
+import java.lang.reflect.Field
 import java.util.Random
 
 class Constants   {
@@ -72,6 +75,18 @@ class Constants   {
                 nameInitials.append("")
             }
             return nameInitials.toString().trim { it <= ' ' }
+        }
+
+         @JvmStatic
+         fun getSearchViewEditText(searchView: SearchView): EditText? {
+            try {
+                val searchEditTextField: Field = searchView.javaClass.getDeclaredField("mSearchSrcTextView")
+                searchEditTextField.isAccessible = true
+                return searchEditTextField.get(searchView) as? EditText
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            return null
         }
 
         @JvmStatic

@@ -1,11 +1,13 @@
 package com.eemphasys.vitalconnect.ui.fragment
 
 import android.os.Bundle
+import android.text.InputFilter
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
@@ -16,6 +18,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.adapters.ConversationListAdapter
 import com.eemphasys.vitalconnect.adapters.OnConversationEvent
+import com.eemphasys.vitalconnect.common.Constants.Companion.getSearchViewEditText
 import com.eemphasys.vitalconnect.common.extensions.getErrorMessage
 import com.eemphasys.vitalconnect.common.extensions.lazyActivityViewModel
 import com.eemphasys.vitalconnect.databinding.FragmentConversationListBinding
@@ -28,6 +31,7 @@ import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.data.models.ConversationListViewItem
 import com.eemphasys.vitalconnect.ui.activity.MessageListActivity
 import com.eemphasys_enterprise.commonmobilelib.EETLog
+import java.lang.reflect.Field
 
 class ConversationListFragment:Fragment(), OnConversationEvent {
     lateinit var binding: FragmentConversationListBinding
@@ -134,7 +138,8 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
 
         (filterMenuItem.actionView as SearchView).apply {
             queryHint = getString(R.string.conversation_filter_hint)
-
+            val searchEditText = getSearchViewEditText(this)
+            searchEditText?.filters = arrayOf(InputFilter.LengthFilter(15))
             if (conversationListViewModel.conversationFilter.isNotEmpty()) {
                 setQuery(conversationListViewModel.conversationFilter, false)
             }

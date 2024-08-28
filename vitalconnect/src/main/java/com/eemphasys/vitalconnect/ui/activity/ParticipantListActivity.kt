@@ -3,6 +3,7 @@ package com.eemphasys.vitalconnect.ui.activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputFilter
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
@@ -10,6 +11,7 @@ import androidx.appcompat.widget.SearchView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.adapters.ParticipantListAdapter
+import com.eemphasys.vitalconnect.common.Constants.Companion.getSearchViewEditText
 import com.eemphasys.vitalconnect.common.SheetListener
 import com.eemphasys.vitalconnect.common.extensions.*
 import com.eemphasys.vitalconnect.common.injector
@@ -55,6 +57,10 @@ class ParticipantListActivity : AppCompatActivity() {
         }
         (filterMenuItem.actionView as SearchView).apply {
             queryHint = getString(R.string.participant_filter_hint)
+
+            val searchEditText = getSearchViewEditText(this)
+            searchEditText?.filters = arrayOf(InputFilter.LengthFilter(15))
+
             if (participantListViewModel.participantFilter.isNotEmpty()) {
                 setQuery(participantListViewModel.participantFilter, false)
             }
