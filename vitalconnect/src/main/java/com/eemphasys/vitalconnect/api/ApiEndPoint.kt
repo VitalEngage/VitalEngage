@@ -1,17 +1,21 @@
 package com.eemphasys.vitalconnect.api
 
 import com.eemphasys.vitalconnect.api.data.AuthToken
+import com.eemphasys.vitalconnect.api.data.ContactListRequest
+import com.eemphasys.vitalconnect.api.data.ContactListResponse
 import com.eemphasys.vitalconnect.api.data.EncryptionRequest
 import com.eemphasys.vitalconnect.api.data.ParticipantExistingConversation
 import com.eemphasys.vitalconnect.api.data.RequestToken
 import com.eemphasys.vitalconnect.api.data.SearchContactRequest
 import com.eemphasys.vitalconnect.api.data.SearchContactResponse
+import com.eemphasys.vitalconnect.api.data.SearchUsersResponse
 import com.eemphasys.vitalconnect.api.data.SendOtpReq
 import com.eemphasys.vitalconnect.api.data.TenantDetails
 import com.eemphasys.vitalconnect.api.data.Token
 import com.eemphasys.vitalconnect.api.data.UpdatePasswordReq
 import com.eemphasys.vitalconnect.api.data.UpdatePasswordResp
 import com.eemphasys.vitalconnect.api.data.UserAlertRequest
+import com.eemphasys.vitalconnect.api.data.UserListResponse
 import com.eemphasys.vitalconnect.api.data.ValidateUserReq
 import retrofit2.Call
 import retrofit2.Response
@@ -60,4 +64,13 @@ interface TwilioApi {
 
     @POST("Contact/GetSearchedContact")
     fun getSearchedContact(@Body requestData : SearchContactRequest) : Call<List<SearchContactResponse>>
+
+    @POST("User/GetSearchedUsers")
+    fun getSearchedUsers(@Body requestData : SearchContactRequest) : Call<List<SearchUsersResponse>>
+
+    @POST("User/GetContactList")
+    fun getContactList(@Body requestData: ContactListRequest) : Call<List<ContactListResponse>>
+
+    @POST("User/GetUserList")
+    fun getUserList(@Body requestData: ContactListRequest) : Call<List<UserListResponse>>
 }

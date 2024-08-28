@@ -12,11 +12,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.viewpager2.widget.ViewPager2
 import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.adapters.ContactListAdapter
 import com.eemphasys.vitalconnect.adapters.OnContactItemClickListener
-import com.eemphasys.vitalconnect.adapters.PagerAdapter
 import com.eemphasys.vitalconnect.api.AuthInterceptor
 import com.eemphasys.vitalconnect.api.RetrofitHelper
 import com.eemphasys.vitalconnect.api.RetryInterceptor
@@ -32,15 +30,11 @@ import com.eemphasys.vitalconnect.common.extensions.showSnackbar
 import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.data.models.Contact
 import com.eemphasys.vitalconnect.data.models.ContactListViewItem
-import com.eemphasys.vitalconnect.data.models.WebUser
-import com.eemphasys.vitalconnect.databinding.FragmentContactListBinding
-import com.eemphasys.vitalconnect.databinding.FragmentTabOneBinding
+import com.eemphasys.vitalconnect.databinding.FragmentExternalBinding
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
 import com.twilio.conversations.Attributes
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
@@ -51,14 +45,15 @@ import retrofit2.Response
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
-class TabOneFragment : Fragment() {
-    var binding: FragmentTabOneBinding? = null
+class ExternalFragment : Fragment() {
+    var binding: FragmentExternalBinding? = null
     val contactListViewModel by lazyActivityViewModel { injector.createContactListViewModel(applicationContext) }
     private val noInternetSnackBar by lazy {
         Snackbar.make(binding!!.contactList, R.string.no_internet_connection, Snackbar.LENGTH_INDEFINITE)
     }
-    private var webuserList = arrayListOf<WebUser>()
+    private var contactsList = arrayListOf<Contact>()
     private lateinit var adapter: ContactListAdapter
+    private lateinit var originalList: List<ContactListViewItem>
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_contact_list, menu)
@@ -143,7 +138,9 @@ class TabOneFragment : Fragment() {
                     adapter.filter(newText.orEmpty())
                     return true
                 }
-                else{return false}
+                else{
+                    setAdapter(originalList)
+                    return false}
             }
         })
 
@@ -165,19 +162,19 @@ class TabOneFragment : Fragment() {
         }
     }
 
-    private fun formatList(webUsers: List<WebUser>): List<ContactListViewItem> {
+    private fun formatLists(contacts: List<Contact>): List<ContactListViewItem> {
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " combineLists Called")
-        val formattedList = mutableListOf<ContactListViewItem>()
+        val combinedList = mutableListOf<ContactListViewItem>()
 
-        // Convert WebUser objects to ContactListViewItem
-        val webUserItems = webUsers.map {
-            ContactListViewItem(it.name, it.userName, "", "Chat",it.initials,it.designation,it.department,it.customer,it.countryCode,false)
+        // Convert Contact objects to ContactListViewItem
+        val contactItems = contacts.map {
+            ContactListViewItem(it.name, "", it.number, "SMS",it.initials,it.designation,it.department,it.customer,it.countryCode,false)
         }
 
         // Add all ContactListViewItem objects to the combined list
-        formattedList.addAll(webUserItems)
+        combinedList.addAll(contactItems)
 
-        return formattedList
+        return combinedList
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -191,27 +188,27 @@ class TabOneFragment : Fragment() {
             if(!isNetworkAvailable)
                 activity?.finish()
         }
-        webuserList = ArrayList<WebUser>()
-
-        if(!Constants.WEBUSERS.isNullOrEmpty()) {
-            val jsonObjectwebusers = JSONObject(Constants.WEBUSERS)
-            val jsonArrayWebUsers = jsonObjectwebusers.getJSONArray("webUser")
-            for (i in 0 until jsonArrayWebUsers.length()) {
-                val jsonObject = jsonArrayWebUsers.getJSONObject(i)
+        contactsList = ArrayList<Contact>()
+        if(!Constants.CONTACTS.isNullOrEmpty()) {
+            val jsonObjectcontacts = JSONObject(Constants.CONTACTS)
+            val jsonArrayContacts = jsonObjectcontacts.getJSONArray("contacts")
+            for (i in 0 until jsonArrayContacts.length()) {
+                val jsonObject = jsonArrayContacts.getJSONObject(i)
                 val name = jsonObject.getString("name")
-                val userName = jsonObject.getString("userName")
+                val number = Constants.formatPhoneNumber(jsonObject.getString("number"),jsonObject.getString("countryCode"))
+                val customerName = jsonObject.getString("customerName")
                 val initials = Constants.getInitials(name.trim { it <= ' ' })
                 val designation = jsonObject.getString("designation")
                 val department = jsonObject.getString("department")
                 val customer = jsonObject.getString("customer")
                 val countryCode = jsonObject.getString("countryCode")
-                webuserList.add(WebUser(name, userName, initials, designation, department, customer,countryCode))
+                contactsList.add(Contact(name, number, customerName, initials, designation, department, customer,countryCode))
             }
         }
 
-        val formattedList = formatList(webuserList)
+        originalList = formatLists(contactsList)
 
-        setAdapter(formattedList)
+        setAdapter(originalList)
     }
 
     private fun setAdapter(list : List<ContactListViewItem>){
@@ -541,7 +538,7 @@ class TabOneFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onCreateView Called")
-        binding = FragmentTabOneBinding.inflate(inflater, container, false)
+        binding = FragmentExternalBinding.inflate(inflater, container, false)
         return binding!!.root
     }
 }

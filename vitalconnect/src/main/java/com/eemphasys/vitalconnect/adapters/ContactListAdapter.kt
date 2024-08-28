@@ -41,12 +41,18 @@ class ContactListAdapter(
 
         fun bind(item: ContactListViewItem, isFirst: Boolean) {
             itemBinding.contactName.text = item.name
-            itemBinding.contactNumber.text = item.number
+//            itemBinding.contactNumber.text = item.number
             itemBinding.contactType.text = item.type
             itemBinding.participantIcon.text = item.initials
             itemBinding.designation.text = item.designation
             itemBinding.department.text = "(" + item.department + ")"
             itemBinding.customerName.text = item.customerName
+
+            if(item.type == "SMS"){
+                itemBinding.contactNumber.text = item.number
+            }else {
+                itemBinding.contactNumber.text = item.email
+            }
 
             if (item.department.isNullOrBlank() || Constants.SHOW_DEPARTMENT == "false") {
                 itemBinding.department.visibility = View.GONE
@@ -101,7 +107,7 @@ class ContactListAdapter(
             val lowerCaseQuery = query.toLowerCase()
             originalList.filter { contact ->
                 contact.name.toLowerCase().contains(lowerCaseQuery) ||
-                        contact.number.contains(lowerCaseQuery)
+                        contact.number.contains(lowerCaseQuery) || contact.email.contains(lowerCaseQuery)
                 // Add more fields to search through if necessary
             }
         }

@@ -12,11 +12,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.viewpager2.widget.ViewPager2
 import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.adapters.ContactListAdapter
 import com.eemphasys.vitalconnect.adapters.OnContactItemClickListener
-import com.eemphasys.vitalconnect.adapters.PagerAdapter
 import com.eemphasys.vitalconnect.api.AuthInterceptor
 import com.eemphasys.vitalconnect.api.RetrofitHelper
 import com.eemphasys.vitalconnect.api.RetryInterceptor
@@ -24,23 +22,20 @@ import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.ParticipantExistingConversation
 import com.eemphasys.vitalconnect.api.data.SearchContactRequest
 import com.eemphasys.vitalconnect.api.data.SearchContactResponse
+import com.eemphasys.vitalconnect.api.data.SearchUsersResponse
 import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.common.extensions.lazyActivityViewModel
 import com.eemphasys.vitalconnect.common.extensions.showSnackbar
 import com.eemphasys.vitalconnect.common.injector
-import com.eemphasys.vitalconnect.data.models.Contact
 import com.eemphasys.vitalconnect.data.models.ContactListViewItem
 import com.eemphasys.vitalconnect.data.models.WebUser
-import com.eemphasys.vitalconnect.databinding.FragmentContactListBinding
-import com.eemphasys.vitalconnect.databinding.FragmentTabTwoBinding
+import com.eemphasys.vitalconnect.databinding.FragmentInternalBinding
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
 import com.twilio.conversations.Attributes
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
@@ -51,14 +46,15 @@ import retrofit2.Response
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
-class TabTwoFragment : Fragment() {
-    var binding: FragmentTabTwoBinding? = null
+class InternalFragment : Fragment() {
+    var binding: FragmentInternalBinding? = null
     val contactListViewModel by lazyActivityViewModel { injector.createContactListViewModel(applicationContext) }
     private val noInternetSnackBar by lazy {
         Snackbar.make(binding!!.contactList, R.string.no_internet_connection, Snackbar.LENGTH_INDEFINITE)
     }
-    private var contactsList = arrayListOf<Contact>()
+    private var webuserList = arrayListOf<WebUser>()
     private lateinit var adapter: ContactListAdapter
+    private lateinit var originalList: List<ContactListViewItem>
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_contact_list, menu)
@@ -75,7 +71,7 @@ class TabTwoFragment : Fragment() {
                 if (newText != null && newText.length >= 3) {
                     if (Constants.SHOW_CONTACTS == "false") {
                         lifecycleScope.launch {
-                            val listOfSearchedContacts = mutableListOf<ContactListViewItem>()
+                            val listOfSearchedUsers = mutableListOf<ContactListViewItem>()
                             val httpClientWithToken = OkHttpClient.Builder()
                                 .connectTimeout(300, TimeUnit.SECONDS)
                                 .readTimeout(300, TimeUnit.SECONDS)
@@ -92,45 +88,42 @@ class TabTwoFragment : Fragment() {
                                     Constants.TENANT_CODE,
                                     newText!!
                                 )
-                            var response = retrofitWithToken.getSearchedContact(request)
+                            var response = retrofitWithToken.getSearchedUsers(request)
 
-                            response.enqueue(object : Callback<List<SearchContactResponse>> {
+                            response.enqueue(object : Callback<List<SearchUsersResponse>> {
                                 override fun onResponse(
-                                    call: Call<List<SearchContactResponse>>,
-                                    response: Response<List<SearchContactResponse>>
+                                    call: Call<List<SearchUsersResponse>>,
+                                    response: Response<List<SearchUsersResponse>>
                                 ) {
                                     if (response.isSuccessful) {
-                                        var contactsResponse: List<SearchContactResponse>? =
+                                        var contactsResponse: List<SearchUsersResponse>? =
                                             response.body()
-                                        Log.d("listresponse", response.body().toString())
                                         if (!contactsResponse.isNullOrEmpty()) {
 
                                             for (response in contactsResponse) {
-                                                Log.d("listfor", response.mobileNumber)
                                                 var contactItem =
                                                     ContactListViewItem(
                                                         response.fullName,
-                                                        "",
+                                                        response.userName,
                                                         response.mobileNumber,
-                                                        "SMS",
+                                                        "Web",
                                                         Constants.getInitials(response.fullName.trim { it <= ' ' }),
-                                                        response.designation,
+                                                        "",
                                                         response.department,
-                                                        response.customerName,
+                                                        "",
                                                         "",
                                                         true
                                                     )
 
-                                                listOfSearchedContacts.add(contactItem)
-                                                Log.d("list1", listOfSearchedContacts.toString())
+                                                listOfSearchedUsers.add(contactItem)
                                             }
-                                            setAdapter(listOfSearchedContacts)
+                                            setAdapter(listOfSearchedUsers)
                                         }
                                     }
                                 }
 
                                 override fun onFailure(
-                                    call: Call<List<SearchContactResponse>>,
+                                    call: Call<List<SearchUsersResponse>>,
                                     t: Throwable
                                 ) {
 
@@ -143,7 +136,9 @@ class TabTwoFragment : Fragment() {
                     adapter.filter(newText.orEmpty())
                     return true
                 }
-                else{return false}
+                else{
+                    setAdapter(originalList)
+                    return false}
             }
         })
 
@@ -165,19 +160,19 @@ class TabTwoFragment : Fragment() {
         }
     }
 
-    private fun formatLists(contacts: List<Contact>): List<ContactListViewItem> {
+    private fun formatList(webUsers: List<WebUser>): List<ContactListViewItem> {
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " combineLists Called")
-        val combinedList = mutableListOf<ContactListViewItem>()
+        val formattedList = mutableListOf<ContactListViewItem>()
 
-        // Convert Contact objects to ContactListViewItem
-        val contactItems = contacts.map {
-            ContactListViewItem(it.name, "", it.number, "SMS",it.initials,it.designation,it.department,it.customer,it.countryCode,false)
+        // Convert WebUser objects to ContactListViewItem
+        val webUserItems = webUsers.map {
+            ContactListViewItem(it.name, it.userName, "", "Chat",it.initials,it.designation,it.department,it.customer,it.countryCode,false)
         }
 
         // Add all ContactListViewItem objects to the combined list
-        combinedList.addAll(contactItems)
+        formattedList.addAll(webUserItems)
 
-        return combinedList
+        return formattedList
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -191,27 +186,27 @@ class TabTwoFragment : Fragment() {
             if(!isNetworkAvailable)
                 activity?.finish()
         }
-        contactsList = ArrayList<Contact>()
-        if(!Constants.CONTACTS.isNullOrEmpty()) {
-            val jsonObjectcontacts = JSONObject(Constants.CONTACTS)
-            val jsonArrayContacts = jsonObjectcontacts.getJSONArray("contacts")
-            for (i in 0 until jsonArrayContacts.length()) {
-                val jsonObject = jsonArrayContacts.getJSONObject(i)
+        webuserList = ArrayList<WebUser>()
+
+        if(!Constants.WEBUSERS.isNullOrEmpty()) {
+            val jsonObjectwebusers = JSONObject(Constants.WEBUSERS)
+            val jsonArrayWebUsers = jsonObjectwebusers.getJSONArray("webUser")
+            for (i in 0 until jsonArrayWebUsers.length()) {
+                val jsonObject = jsonArrayWebUsers.getJSONObject(i)
                 val name = jsonObject.getString("name")
-                val number = Constants.formatPhoneNumber(jsonObject.getString("number"),jsonObject.getString("countryCode"))
-                val customerName = jsonObject.getString("customerName")
+                val userName = jsonObject.getString("userName")
                 val initials = Constants.getInitials(name.trim { it <= ' ' })
                 val designation = jsonObject.getString("designation")
                 val department = jsonObject.getString("department")
                 val customer = jsonObject.getString("customer")
                 val countryCode = jsonObject.getString("countryCode")
-                contactsList.add(Contact(name, number, customerName, initials, designation, department, customer,countryCode))
+                webuserList.add(WebUser(name, userName, initials, designation, department, customer,countryCode))
             }
         }
 
-        val formattedList = formatLists(contactsList)
-
-        setAdapter(formattedList)
+//        val formattedList = formatList(webuserList)
+        originalList = formatList(webuserList)
+        setAdapter(originalList)
     }
 
     private fun setAdapter(list : List<ContactListViewItem>){
@@ -541,7 +536,7 @@ class TabTwoFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onCreateView Called")
-        binding = FragmentTabTwoBinding.inflate(inflater, container, false)
+        binding = FragmentInternalBinding.inflate(inflater, container, false)
         return binding!!.root
     }
 }
