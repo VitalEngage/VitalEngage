@@ -469,6 +469,8 @@ class LoginActivity : AppCompatActivity() {
             intent.putExtra("mobileNumber",LoginConstants.MOBILENUMBER)
             intent.putExtra("defaultcountryCode","")
             intent.putExtra("timeoffset","0")
+            intent.putExtra("withContext",LoginConstants.WITH_CONTEXT)
+            intent.putExtra("openChat",LoginConstants.OPEN_CHAT)
             context.startActivity(intent)
         }
     }

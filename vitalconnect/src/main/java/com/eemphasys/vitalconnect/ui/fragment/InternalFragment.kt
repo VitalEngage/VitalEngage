@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.adapters.ContactListAdapter
 import com.eemphasys.vitalconnect.adapters.OnContactItemClickListener
@@ -19,10 +20,12 @@ import com.eemphasys.vitalconnect.api.AuthInterceptor
 import com.eemphasys.vitalconnect.api.RetrofitHelper
 import com.eemphasys.vitalconnect.api.RetryInterceptor
 import com.eemphasys.vitalconnect.api.TwilioApi
+import com.eemphasys.vitalconnect.api.data.ContactListRequest
 import com.eemphasys.vitalconnect.api.data.ParticipantExistingConversation
 import com.eemphasys.vitalconnect.api.data.SearchContactRequest
 import com.eemphasys.vitalconnect.api.data.SearchContactResponse
 import com.eemphasys.vitalconnect.api.data.SearchUsersResponse
+import com.eemphasys.vitalconnect.api.data.UserListResponse
 import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.extensions.applicationContext
@@ -50,11 +53,13 @@ class InternalFragment : Fragment() {
     var binding: FragmentInternalBinding? = null
     val contactListViewModel by lazyActivityViewModel { injector.createContactListViewModel(applicationContext) }
     private val noInternetSnackBar by lazy {
-        Snackbar.make(binding!!.contactList, R.string.no_internet_connection, Snackbar.LENGTH_INDEFINITE)
+        Snackbar.make(binding!!.userList, R.string.no_internet_connection, Snackbar.LENGTH_INDEFINITE)
     }
     private var webuserList = arrayListOf<WebUser>()
     private lateinit var adapter: ContactListAdapter
     private lateinit var originalList: List<ContactListViewItem>
+    private var listOfUsers = mutableListOf<ContactListViewItem>()
+    var currentIndex: Int = 1
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_contact_list, menu)
@@ -69,7 +74,8 @@ class InternalFragment : Fragment() {
 
             override fun onQueryTextChange(newText: String?): Boolean {
                 if (newText != null && newText.length >= 3) {
-                    if (Constants.SHOW_CONTACTS == "false") {
+                    if (Constants.WITH_CONTEXT == "false") {
+                        //Search using SearchedUsers api
                         lifecycleScope.launch {
                             val listOfSearchedUsers = mutableListOf<ContactListViewItem>()
                             val httpClientWithToken = OkHttpClient.Builder()
@@ -133,11 +139,20 @@ class InternalFragment : Fragment() {
 
                         }
                     }
+                    else{
+                            setAdapter(originalList)
+                    }
                     adapter.filter(newText.orEmpty())
                     return true
                 }
                 else{
-                    setAdapter(originalList)
+                    if(Constants.WITH_CONTEXT == "false"){
+                        setAdapter(listOfUsers)
+                    }
+                    else
+                    {
+                        setAdapter(originalList)
+                    }
                     return false}
             }
         })
@@ -151,13 +166,64 @@ class InternalFragment : Fragment() {
         setHasOptionsMenu(true)
 
         contactListViewModel.onParticipantAdded.observe(this) { identity ->
-            binding?.contactList?.showSnackbar(
+            binding?.userList?.showSnackbar(
                 getString(
                     R.string.participant_added_message,
                     identity
                 )
             )
         }
+    }
+
+    fun getAllUserList(){
+        val httpClientWithToken = OkHttpClient.Builder()
+            .connectTimeout(300, TimeUnit.SECONDS)
+            .readTimeout(300, TimeUnit.SECONDS)
+            .writeTimeout(300, TimeUnit.SECONDS)
+            .addInterceptor(AuthInterceptor(Constants.AUTH_TOKEN))
+            .addInterceptor(RetryInterceptor())
+            .build()
+        val retrofitWithToken =
+            RetrofitHelper.getInstance(httpClientWithToken)
+                .create(TwilioApi::class.java)
+        var request = ContactListRequest(currentIndex,20,"","fullName","asc",Constants.TENANT_CODE,Constants.USERNAME,0)
+        var response = retrofitWithToken.getUserList(request)
+
+        response.enqueue(object : Callback<List<UserListResponse>>{
+            override fun onResponse(
+                call: Call<List<UserListResponse>>,
+                response: Response<List<UserListResponse>>
+            ) {
+                if(response.isSuccessful){
+                    var usersResponse: List<UserListResponse>? =
+                        response.body()
+                    if (!usersResponse.isNullOrEmpty()) {
+                    var previousPosition = listOfUsers.size
+                        for (response in usersResponse) {
+                            var userItem = ContactListViewItem(
+                                response.fullName,
+                                response.userName,
+                                response.mobileNumber,
+                                "Web",
+                                Constants.getInitials(response.fullName.trim { it <= ' ' }),
+                                "",
+                                response.department,
+                                "",
+                                "",
+                                true
+                                )
+                            listOfUsers.add(userItem)
+                        }
+                        adapter.notifyItemRangeInserted(previousPosition,listOfUsers.size)
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<List<UserListResponse>>, t: Throwable) {
+                TODO("Not yet implemented")
+            }
+
+        })
     }
 
     private fun formatList(webUsers: List<WebUser>): List<ContactListViewItem> {
@@ -179,7 +245,7 @@ class InternalFragment : Fragment() {
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onViewCreated Called")
         super.onViewCreated(view, savedInstanceState)
         requireActivity().title = getString(R.string.contacts)
-
+        binding?.userList?.addItemDecoration(DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL))
 
         contactListViewModel.isNetworkAvailable.observe(viewLifecycleOwner) { isNetworkAvailable ->
             showNoInternetSnackbar(!isNetworkAvailable)
@@ -204,9 +270,30 @@ class InternalFragment : Fragment() {
             }
         }
 
-//        val formattedList = formatList(webuserList)
-        originalList = formatList(webuserList)
-        setAdapter(originalList)
+        if(Constants.WITH_CONTEXT == "false"){
+            getAllUserList()
+            setAdapter(listOfUsers)
+        }
+        else
+            {
+                originalList = formatList(webuserList)
+                setAdapter(originalList)
+            }
+
+        if(Constants.WITH_CONTEXT == "false") {
+            binding?.userList!!.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                    super.onScrollStateChanged(recyclerView, newState)
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        if (!recyclerView.canScrollVertically(1)) {
+                            Log.d("scroll---up1", newState.toString())
+                            currentIndex++
+                            getAllUserList()
+                        }
+                    }
+                }
+            })
+        }
     }
 
     private fun setAdapter(list : List<ContactListViewItem>){
@@ -446,7 +533,7 @@ class InternalFragment : Fragment() {
                         })
                     }
                     else{
-                        binding!!.contactList .showSnackbar("Invalid Phone number.")
+                        binding!!.userList .showSnackbar("Invalid Phone number.")
                     }
 
                 } else {
@@ -500,16 +587,15 @@ class InternalFragment : Fragment() {
         })
 
         //Providing Linearlayoutmanager to recyclerview
-        binding?.contactList?.layoutManager = LinearLayoutManager(context,
+        binding?.userList?.layoutManager = LinearLayoutManager(context,
             LinearLayoutManager.VERTICAL,false)
         //Assigning the created adapter to recyclerview
-        binding?.contactList?.adapter = adapter
-        binding?.contactList?.addItemDecoration(DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL))
-        if (binding!!.contactList.adapter!!.itemCount < 1){
-            binding!!.noResultFound.root.visibility = View.VISIBLE
-        }
-        else
-            binding!!.noResultFound.root.visibility = View.GONE
+        binding?.userList?.adapter = adapter
+//        if (binding!!.userList.adapter!!.itemCount < 1){
+//            binding!!.noResultFound.root.visibility = View.VISIBLE
+//        }
+//        else
+//            binding!!.noResultFound.root.visibility = View.GONE
 
     }
 
@@ -522,13 +608,6 @@ class InternalFragment : Fragment() {
         }
     }
 
-
-//    override fun onCreateView(
-//        inflater: LayoutInflater, container: ViewGroup?,
-//        savedInstanceState: Bundle?
-//    ): View? {
-//        return inflater.inflate(R.layout.fragment_tab_one, container, false)
-//    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

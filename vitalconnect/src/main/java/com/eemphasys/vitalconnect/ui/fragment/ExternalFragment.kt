@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.adapters.ContactListAdapter
 import com.eemphasys.vitalconnect.adapters.OnContactItemClickListener
@@ -19,11 +20,15 @@ import com.eemphasys.vitalconnect.api.AuthInterceptor
 import com.eemphasys.vitalconnect.api.RetrofitHelper
 import com.eemphasys.vitalconnect.api.RetryInterceptor
 import com.eemphasys.vitalconnect.api.TwilioApi
+import com.eemphasys.vitalconnect.api.data.ContactListRequest
+import com.eemphasys.vitalconnect.api.data.ContactListResponse
 import com.eemphasys.vitalconnect.api.data.ParticipantExistingConversation
 import com.eemphasys.vitalconnect.api.data.SearchContactRequest
 import com.eemphasys.vitalconnect.api.data.SearchContactResponse
+import com.eemphasys.vitalconnect.api.data.UserListResponse
 import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.Constants
+import com.eemphasys.vitalconnect.common.Constants.Companion.parseJson
 import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.common.extensions.lazyActivityViewModel
 import com.eemphasys.vitalconnect.common.extensions.showSnackbar
@@ -54,6 +59,8 @@ class ExternalFragment : Fragment() {
     private var contactsList = arrayListOf<Contact>()
     private lateinit var adapter: ContactListAdapter
     private lateinit var originalList: List<ContactListViewItem>
+    private var listOfContacts = mutableListOf<ContactListViewItem>()
+    var currentIndex: Int = 1
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_contact_list, menu)
@@ -68,7 +75,8 @@ class ExternalFragment : Fragment() {
 
             override fun onQueryTextChange(newText: String?): Boolean {
                 if (newText != null && newText.length >= 3) {
-                    if (Constants.SHOW_CONTACTS == "false") {
+                    if (Constants.WITH_CONTEXT == "false") {
+                        //Search using SearchedUsers api
                         lifecycleScope.launch {
                             val listOfSearchedContacts = mutableListOf<ContactListViewItem>()
                             val httpClientWithToken = OkHttpClient.Builder()
@@ -97,11 +105,9 @@ class ExternalFragment : Fragment() {
                                     if (response.isSuccessful) {
                                         var contactsResponse: List<SearchContactResponse>? =
                                             response.body()
-                                        Log.d("listresponse", response.body().toString())
                                         if (!contactsResponse.isNullOrEmpty()) {
 
                                             for (response in contactsResponse) {
-                                                Log.d("listfor", response.mobileNumber)
                                                 var contactItem =
                                                     ContactListViewItem(
                                                         response.fullName,
@@ -117,7 +123,6 @@ class ExternalFragment : Fragment() {
                                                     )
 
                                                 listOfSearchedContacts.add(contactItem)
-                                                Log.d("list1", listOfSearchedContacts.toString())
                                             }
                                             setAdapter(listOfSearchedContacts)
                                         }
@@ -135,11 +140,20 @@ class ExternalFragment : Fragment() {
 
                         }
                     }
+                    else{
+                        setAdapter(originalList)
+                    }
                     adapter.filter(newText.orEmpty())
                     return true
                 }
                 else{
-                    setAdapter(originalList)
+                    if(Constants.WITH_CONTEXT == "false"){
+                        setAdapter(listOfContacts)
+                    }
+                    else
+                    {
+                        setAdapter(originalList)
+                    }
                     return false}
             }
         })
@@ -162,7 +176,81 @@ class ExternalFragment : Fragment() {
         }
     }
 
-    private fun formatLists(contacts: List<Contact>): List<ContactListViewItem> {
+    fun getAllContactList(){
+        lifecycleScope.launch {
+        val httpClientWithToken = OkHttpClient.Builder()
+            .connectTimeout(300, TimeUnit.SECONDS)
+            .readTimeout(300, TimeUnit.SECONDS)
+            .writeTimeout(300, TimeUnit.SECONDS)
+            .addInterceptor(AuthInterceptor(Constants.AUTH_TOKEN))
+            .addInterceptor(RetryInterceptor())
+            .build()
+        val retrofitWithToken =
+            RetrofitHelper.getInstance(httpClientWithToken)
+                .create(TwilioApi::class.java)
+        var request = ContactListRequest(1,10,"","fullName","asc","VitalEdge","hkothari@e-emphasys.com",0)
+        var response = retrofitWithToken.getContactList(request)
+
+//        val apiResponse = parseJson(response)
+Log.d("response",response.body().toString())
+        if (response.isSuccessful) {
+            var previousPosition = listOfContacts.size
+            for (contact in response.body()!!.contacts) {
+                var userItem = ContactListViewItem(
+                    contact.fullName,
+                    "",
+                    contact.mobileNumber,
+                    "SMS",
+                    Constants.getInitials(contact.fullName.trim { it <= ' ' }),
+                    contact.designation,
+                    contact.department,
+                    contact.customerName,
+                    "",
+                    true
+                )
+                listOfContacts.add(userItem)
+            }
+            adapter.notifyItemRangeInserted(previousPosition,listOfContacts.size)
+        }
+
+//        response.enqueue(object : Callback<ContactListResponse>{
+//            override fun onResponse(
+//                call: Call<ContactListResponse>,
+//                response: Response<ContactListResponse>
+//            ) {
+//                Log.d("response",response.message().toString())
+//                if(response.isSuccessful){
+//                    var usersResponse =
+//                        response.body()
+//                    Log.d("response",response.body()!!.contacts.toString())
+//                        var previousPosition = listOfContacts.size
+//                        for (response in usersResponse!!.contacts) {
+//                            var userItem = ContactListViewItem(
+//                                response.fullName,
+//                                "",
+//                                response.mobileNumber,
+//                                "SMS",
+//                                Constants.getInitials(response.fullName.trim { it <= ' ' }),
+//                                response.designation,
+//                                response.department,
+//                                response.customerName,
+//                                "",
+//                                true
+//                            )
+//                            listOfContacts.add(userItem)
+//                        }
+//                        adapter.notifyItemRangeInserted(previousPosition,listOfContacts.size)
+//                    }
+//                }
+//
+//            override fun onFailure(call: Call<ContactListResponse>, t: Throwable) {
+//
+//            }
+//
+//        })
+    }
+    }
+    private fun formatList(contacts: List<Contact>): List<ContactListViewItem> {
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " combineLists Called")
         val combinedList = mutableListOf<ContactListViewItem>()
 
@@ -181,7 +269,7 @@ class ExternalFragment : Fragment() {
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onViewCreated Called")
         super.onViewCreated(view, savedInstanceState)
         requireActivity().title = getString(R.string.contacts)
-
+        binding?.contactList?.addItemDecoration(DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL))
 
         contactListViewModel.isNetworkAvailable.observe(viewLifecycleOwner) { isNetworkAvailable ->
             showNoInternetSnackbar(!isNetworkAvailable)
@@ -205,10 +293,30 @@ class ExternalFragment : Fragment() {
                 contactsList.add(Contact(name, number, customerName, initials, designation, department, customer,countryCode))
             }
         }
+        if(Constants.WITH_CONTEXT == "false"){
+            getAllContactList()
+            setAdapter(listOfContacts)
+        }
+        else
+        {
+            originalList = formatList(contactsList)
+            setAdapter(originalList)
+        }
 
-        originalList = formatLists(contactsList)
-
-        setAdapter(originalList)
+        if(Constants.WITH_CONTEXT == "false") {
+            binding?.contactList!!.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                    super.onScrollStateChanged(recyclerView, newState)
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        if (!recyclerView.canScrollVertically(1)) {
+                            Log.d("scroll---up1", newState.toString())
+                            currentIndex++
+                            getAllContactList()
+                        }
+                    }
+                }
+            })
+        }
     }
 
     private fun setAdapter(list : List<ContactListViewItem>){
@@ -506,12 +614,11 @@ class ExternalFragment : Fragment() {
             LinearLayoutManager.VERTICAL,false)
         //Assigning the created adapter to recyclerview
         binding?.contactList?.adapter = adapter
-        binding?.contactList?.addItemDecoration(DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL))
-        if (binding!!.contactList.adapter!!.itemCount < 1){
-            binding!!.noResultFound.root.visibility = View.VISIBLE
-        }
-        else
-            binding!!.noResultFound.root.visibility = View.GONE
+//        if (binding!!.contactList.adapter!!.itemCount < 1){
+//            binding!!.noResultFound.root.visibility = View.VISIBLE
+//        }
+//        else
+//            binding!!.noResultFound.root.visibility = View.GONE
 
     }
 

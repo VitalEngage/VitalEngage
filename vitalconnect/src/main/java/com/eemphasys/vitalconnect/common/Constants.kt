@@ -4,7 +4,9 @@ import android.graphics.Color
 import android.os.Build
 import android.util.Log
 import com.eemphasys.vitalconnect.R
+import com.eemphasys.vitalconnect.api.data.ContactListResponse
 import com.eemphasys.vitalconnect.data.models.ParticipantListViewItem
+import com.google.gson.Gson
 import com.google.i18n.phonenumbers.NumberParseException
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import java.io.ByteArrayInputStream
@@ -50,6 +52,8 @@ class Constants   {
         var MEDIA_NAME : String? = ""
         var MEDIA_TYPE : String? = ""
         var TIME_OFFSET : Int? = 0
+        var WITH_CONTEXT = ""
+        var OPEN_CHAT = ""
 
 
         @JvmStatic
@@ -113,7 +117,11 @@ class Constants   {
             return  phoneNumber.replace("[\\s()\\-]".toRegex(), "")
 
         }
-
+        @JvmStatic
+        fun parseJson(jsonString: String): ContactListResponse {
+            val gson = Gson()
+            return gson.fromJson(jsonString, ContactListResponse::class.java)
+        }
         @JvmStatic
         fun isValidPhoneNumber(phoneNumberStr: String, defaultRegion: String): Boolean {
             // Check for empty or null phone number string

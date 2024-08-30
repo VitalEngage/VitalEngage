@@ -69,7 +69,7 @@ interface TwilioApi {
     fun getSearchedUsers(@Body requestData : SearchContactRequest) : Call<List<SearchUsersResponse>>
 
     @POST("User/GetContactList")
-    fun getContactList(@Body requestData: ContactListRequest) : Call<List<ContactListResponse>>
+    suspend fun getContactList(@Body requestData: ContactListRequest) : Response<ContactListResponse>
 
     @POST("User/GetUserList")
     fun getUserList(@Body requestData: ContactListRequest) : Call<List<UserListResponse>>

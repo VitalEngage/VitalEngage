@@ -62,6 +62,8 @@ class MainActivity : AppCompatActivity() {
         val mobileNumber = intent.getStringExtra("mobileNumber")
         val defaultcountryCode = intent.getStringExtra("defaultcountryCode")
         val timeoffset = intent.getStringExtra("timeoffset")
+        val withContext = intent.getStringExtra("withContext")
+        val openChat = intent.getStringExtra("openChat")
 
         Constants.AUTH_TOKEN = authToken!!
         Constants.CONTACTS = contacts!!
@@ -92,12 +94,12 @@ class MainActivity : AppCompatActivity() {
         Constants.MOBILENUMBER = mobileNumber!!
         Constants.DEFAULT_COUNTRYCODE = defaultcountryCode!!
         Constants.TIME_OFFSET = Integer.valueOf( timeoffset)
-
-        Log.d("timezoneoffset", timeoffset!!)
+        Constants.WITH_CONTEXT = withContext!!
+        Constants.OPEN_CHAT = openChat!!
 
 //        mainViewModel.create()
         super.onCreate(savedInstanceState)
-        if(Constants.SHOW_CONTACTS.lowercase() == "true" && Constants.IS_STANDALONE.lowercase() == "false" && Constants.SHOW_CONVERSATIONS.lowercase() == "false") {
+        if(Constants.OPEN_CHAT.lowercase() == "true") {
             val httpClientWithToken = OkHttpClient.Builder()
                 .connectTimeout(300, TimeUnit.SECONDS)
                 .readTimeout(300, TimeUnit.SECONDS)
