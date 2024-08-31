@@ -55,33 +55,38 @@ class AttachFileDialog : BaseBottomSheetDialogFragment() {
     }
 
     private val openDocument = registerForActivityResult(OpenDocument()) { uri: Uri? ->
-        val contentResolver = requireContext().contentResolver
-        val inputStream = contentResolver.openInputStream(uri!!)
-        val type = contentResolver.getType(uri)
-        val sizeInBytes: Long = getAttachmentSize(inputStream)
+        if(uri != null) {
+            val contentResolver = requireContext().contentResolver
+            val inputStream = contentResolver.openInputStream(uri!!)
+            val type = contentResolver.getType(uri)
+            val sizeInBytes: Long = getAttachmentSize(inputStream)
             val sizeInKB: Double = sizeInBytes / 1024.0  // Convert bytes to KB
             val sizeInMB: Double = sizeInBytes / (1024.0 * 1024.0) // Convert bytes to MB
             when (type) {
                 "application/pdf" -> {
                     if (sizeInKB > 600) {
-                        messageListViewModel.onMessageError.value = ConversationsError.FILE_TOO_LARGE
-                    }
-                    else{
+                        messageListViewModel.onMessageError.value =
+                            ConversationsError.FILE_TOO_LARGE
+                    } else {
                         uri?.let { sendMediaMessage(it) }
                     }
                 }
+
                 "image/jpeg", "image/png", "image/jpg" -> {
                     if (sizeInMB > 5) {
-                        messageListViewModel.onMessageError.value = ConversationsError.FILE_TOO_LARGE
-                    }
-                    else{
+                        messageListViewModel.onMessageError.value =
+                            ConversationsError.FILE_TOO_LARGE
+                    } else {
                         uri?.let { sendMediaMessage(it) }
                     }
                 }
+
                 else -> {
-                    messageListViewModel.onMessageError.value = ConversationsError.INVALID_CONTENT_TYPE
+                    messageListViewModel.onMessageError.value =
+                        ConversationsError.INVALID_CONTENT_TYPE
                 }
             }
+        }
         dismiss()
     }
 
