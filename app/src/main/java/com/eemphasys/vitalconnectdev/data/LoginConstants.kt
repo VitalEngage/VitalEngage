@@ -31,6 +31,7 @@ class LoginConstants   {
         var MOBILENUMBER = ""
         var WITH_CONTEXT = "false"
         var OPEN_CHAT = "false"
+        var CONTEXT = ""
 
         val CONTACTS =
             """{

@@ -21,11 +21,15 @@ import com.eemphasys.vitalconnect.api.RetrofitHelper
 import com.eemphasys.vitalconnect.api.RetryInterceptor
 import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.ContactListRequest
+import com.eemphasys.vitalconnect.api.data.ConversationSidFromFriendlyNameRequest
+import com.eemphasys.vitalconnect.api.data.ConversationSidFromFriendlyNameResponse
 import com.eemphasys.vitalconnect.api.data.ParticipantExistingConversation
 import com.eemphasys.vitalconnect.api.data.SearchContactRequest
 import com.eemphasys.vitalconnect.api.data.SearchContactResponse
 import com.eemphasys.vitalconnect.api.data.SearchUsersResponse
 import com.eemphasys.vitalconnect.api.data.UserListResponse
+import com.eemphasys.vitalconnect.api.data.addParticipantToWebConversationRequest
+import com.eemphasys.vitalconnect.api.data.webParticipant
 import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.extensions.applicationContext
@@ -36,6 +40,7 @@ import com.eemphasys.vitalconnect.data.models.ContactListViewItem
 import com.eemphasys.vitalconnect.data.models.WebUser
 import com.eemphasys.vitalconnect.databinding.FragmentInternalBinding
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
+import com.eemphasys.vitalconnect.ui.activity.MessageListActivity
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.google.android.material.snackbar.Snackbar
@@ -537,51 +542,13 @@ class InternalFragment : Fragment() {
                     }
 
                 } else {
+//                  Web to web chat
                     binding?.progressBarID?.visibility = View.VISIBLE
-                    //Below code can be uncommented if we want universal channel for webchatusers too.
 
-                    //If contact is webchat user
-//                    val existingConversation  = retrofitWithToken.fetchExistingConversation(
-//                        Constants.TENANT_CODE,
-//                        contact.email,
-//                        true,
-//                        1
-//                    )
-//
-//                    existingConversation.enqueue(object : Callback<List<ParticipantExistingConversation>> {
-//                        override fun onResponse(
-//                            call: Call<List<ParticipantExistingConversation>>,
-//                            response: Response<List<ParticipantExistingConversation>>
-//                        ) {
-//                            if (response.isSuccessful) {
-//                                val conversationList: List<ParticipantExistingConversation>? = response.body()
-//
-//                                // Check if the list is not null and not empty
-//                                if (!conversationList.isNullOrEmpty()) {
-//                                    // Iterate through the list and access each Conversation object
-//                                    for (conversation in conversationList) {
-//                                        // Access properties of each Conversation object
-//                                        println("Conversation SID: ${conversation.conversationSid}")
-//
-//                                        //Starting and redirecting to Existing conversation
-//                                        MessageListActivity.startfromFragment(applicationContext,conversation.conversationSid)
-//                                    }
-//                                } else { //If there is no existing conversation with web user, create new
-                    contactListViewModel.createConversation(
-                        contact.name, contact.email, contact.number,
-                        Attributes("")
-                    )
+//                  Check if existing coversation exist
+                    contactListViewModel.checkExistingconversation(contact)
+
                     binding?.progressBarID?.visibility = View.GONE
-                    //                                }
-//                            } else {
-//                                println("Response was not successful: ${response.code()}")
-//                            }
-//                        }
-//
-//                        override fun onFailure(call: Call<List<ParticipantExistingConversation>>, t: Throwable) {
-//                            println("Failed to fetch existing conversations: ${t.message}")
-//                        }
-//                    })
                 }
             }
         })

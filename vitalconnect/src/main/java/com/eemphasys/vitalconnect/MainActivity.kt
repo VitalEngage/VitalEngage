@@ -64,6 +64,7 @@ class MainActivity : AppCompatActivity() {
         val timeoffset = intent.getStringExtra("timeoffset")
         val withContext = intent.getStringExtra("withContext")
         val openChat = intent.getStringExtra("openChat")
+        val context = intent.getStringExtra("context")
 
         Constants.AUTH_TOKEN = authToken!!
         Constants.CONTACTS = contacts!!
@@ -96,6 +97,7 @@ class MainActivity : AppCompatActivity() {
         Constants.TIME_OFFSET = Integer.valueOf( timeoffset)
         Constants.WITH_CONTEXT = withContext!!
         Constants.OPEN_CHAT = openChat!!
+        Constants.CONTEXT = context!!
 
 //        mainViewModel.create()
         super.onCreate(savedInstanceState)

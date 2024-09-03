@@ -21,14 +21,11 @@ import com.eemphasys.vitalconnect.api.RetrofitHelper
 import com.eemphasys.vitalconnect.api.RetryInterceptor
 import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.ContactListRequest
-import com.eemphasys.vitalconnect.api.data.ContactListResponse
 import com.eemphasys.vitalconnect.api.data.ParticipantExistingConversation
 import com.eemphasys.vitalconnect.api.data.SearchContactRequest
 import com.eemphasys.vitalconnect.api.data.SearchContactResponse
-import com.eemphasys.vitalconnect.api.data.UserListResponse
 import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.Constants
-import com.eemphasys.vitalconnect.common.Constants.Companion.parseJson
 import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.common.extensions.lazyActivityViewModel
 import com.eemphasys.vitalconnect.common.extensions.showSnackbar
@@ -188,11 +185,9 @@ class ExternalFragment : Fragment() {
         val retrofitWithToken =
             RetrofitHelper.getInstance(httpClientWithToken)
                 .create(TwilioApi::class.java)
-        var request = ContactListRequest(1,10,"","fullName","asc","VitalEdge","hkothari@e-emphasys.com",0)
+        var request = ContactListRequest(currentIndex,20,"","fullName","asc",Constants.TENANT_CODE,Constants.USERNAME,0)
         var response = retrofitWithToken.getContactList(request)
 
-//        val apiResponse = parseJson(response)
-Log.d("response",response.body().toString())
         if (response.isSuccessful) {
             var previousPosition = listOfContacts.size
             for (contact in response.body()!!.contacts) {
@@ -212,42 +207,6 @@ Log.d("response",response.body().toString())
             }
             adapter.notifyItemRangeInserted(previousPosition,listOfContacts.size)
         }
-
-//        response.enqueue(object : Callback<ContactListResponse>{
-//            override fun onResponse(
-//                call: Call<ContactListResponse>,
-//                response: Response<ContactListResponse>
-//            ) {
-//                Log.d("response",response.message().toString())
-//                if(response.isSuccessful){
-//                    var usersResponse =
-//                        response.body()
-//                    Log.d("response",response.body()!!.contacts.toString())
-//                        var previousPosition = listOfContacts.size
-//                        for (response in usersResponse!!.contacts) {
-//                            var userItem = ContactListViewItem(
-//                                response.fullName,
-//                                "",
-//                                response.mobileNumber,
-//                                "SMS",
-//                                Constants.getInitials(response.fullName.trim { it <= ' ' }),
-//                                response.designation,
-//                                response.department,
-//                                response.customerName,
-//                                "",
-//                                true
-//                            )
-//                            listOfContacts.add(userItem)
-//                        }
-//                        adapter.notifyItemRangeInserted(previousPosition,listOfContacts.size)
-//                    }
-//                }
-//
-//            override fun onFailure(call: Call<ContactListResponse>, t: Throwable) {
-//
-//            }
-//
-//        })
     }
     }
     private fun formatList(contacts: List<Contact>): List<ContactListViewItem> {

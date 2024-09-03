@@ -471,6 +471,7 @@ class LoginActivity : AppCompatActivity() {
             intent.putExtra("timeoffset","0")
             intent.putExtra("withContext",LoginConstants.WITH_CONTEXT)
             intent.putExtra("openChat",LoginConstants.OPEN_CHAT)
+            intent.putExtra("context",LoginConstants.CONTEXT)
             context.startActivity(intent)
         }
     }

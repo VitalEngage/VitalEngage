@@ -20,7 +20,7 @@
         android:id="@+id/contactList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
+        android:scrollbars="vertical"
         />
     <include
         android:id="@+id/no_result_found"
