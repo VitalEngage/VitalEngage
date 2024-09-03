@@ -35,9 +35,9 @@ class ParticipantListAdapter(private val onParticipantClicked: (participant: Par
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.binding.participant = participants[position]
         val chatParticipant = holder.binding.participant
-        holder.binding.participantItem.setOnClickListener {
-            chatParticipant?.let { onParticipantClicked(it) }
-        }
+//        holder.binding.participantItem.setOnClickListener {
+//            chatParticipant?.let { onParticipantClicked(it) }
+//        }
         holder.binding.participantAvatar.text = Constants.getInitials(chatParticipant?.friendlyName!!.trim { it <= ' '} )
 
         changeButtonBackgroundColor(

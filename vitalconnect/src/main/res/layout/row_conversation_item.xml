@@ -55,7 +55,7 @@
         app:layout_constraintStart_toEndOf="@+id/conversationStateIcon"
         app:layout_constraintTop_toTopOf="@id/participant_icon"
         app:layout_constraintEnd_toStartOf="@id/unreadCount"
-        app:layout_constraintWidth_max="wrap"
+
         tools:text="Conversation friendly name bla bla bla bla" />
 <!--    app:layout_constraintEnd_toStartOf="@+id/participantsCount"-->
     <TextView

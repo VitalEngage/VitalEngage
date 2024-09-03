@@ -8,6 +8,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.recyclerview.widget.DividerItemDecoration
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.adapters.ParticipantListAdapter
@@ -91,13 +92,13 @@ class ParticipantListActivity : AppCompatActivity() {
         sheetBehavior.addBottomSheetCallback(sheetListener)
         title = getString(R.string.participant_title)
         val adapter = ParticipantListAdapter { participant ->
-            participantListViewModel.selectedParticipant = participant
-
-            binding.participantDetailsSheet.participantDetailsName.text = participant.friendlyName
-            binding.participantDetailsSheet.participantDetailsStatus.setText(if (participant.isOnline) R.string.participant_online else R.string.participant_offline)
-            sheetBehavior.show()
+//            participantListViewModel.selectedParticipant = participant
+//
+//            binding.participantDetailsSheet.participantDetailsName.text = participant.friendlyName
+//            binding.participantDetailsSheet.participantDetailsStatus.setText(if (participant.isOnline) R.string.participant_online else R.string.participant_offline)
+//            sheetBehavior.show()
         }
-
+        binding?.participantList?.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         binding.participantRefresh.setOnRefreshListener { participantListViewModel.getConversationParticipants() }
         binding.participantList.adapter = adapter
 

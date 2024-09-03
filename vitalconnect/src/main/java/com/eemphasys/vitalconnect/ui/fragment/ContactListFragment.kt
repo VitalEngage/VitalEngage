@@ -149,7 +149,9 @@ class ContactListFragment : Fragment() {
                 adapter.filter(newText.orEmpty())
                 return true
             }
-                else{return false}
+                else{
+                    setAdapter(emptyList())
+                    return false}
             }
         })
 
@@ -208,7 +210,7 @@ class ContactListFragment : Fragment() {
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onViewCreated Called")
         super.onViewCreated(view, savedInstanceState)
         requireActivity().title = getString(R.string.contacts)
-
+        binding?.contactList?.addItemDecoration(DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL))
         contactListViewModel.isNetworkAvailable.observe(viewLifecycleOwner) { isNetworkAvailable ->
             showNoInternetSnackbar(!isNetworkAvailable)
             if(!isNetworkAvailable)
@@ -366,9 +368,9 @@ class ContactListFragment : Fragment() {
                                                     conversation.attributes.CustomerName.isNullOrEmpty()
                                                 ) {
 
-                                                    var customer = contact.customerName
-                                                    var department = contact.department
-                                                    var designation = contact.designation
+                                                    var customer = contact.customerName ?: ""
+                                                    var department = contact.department ?: ""
+                                                    var designation = contact.designation ?: ""
 
                                                     val attributes = mapOf(
                                                         "Designation" to designation,
@@ -397,9 +399,9 @@ class ContactListFragment : Fragment() {
                                                     conversation.attributes.CustomerName.isNullOrEmpty()
                                                 ) {
 
-                                                    customer = contact.customerName!!
-                                                    department = contact.department!!
-                                                    designation = contact.designation!!
+                                                    customer = contact.customerName ?: ""
+                                                    department = contact.department ?: ""
+                                                    designation = contact.designation ?: ""
                                                 } else {
                                                     customer = conversation.attributes.CustomerName
                                                     department = conversation.attributes.Department
@@ -413,12 +415,11 @@ class ContactListFragment : Fragment() {
                                                 )
                                                 val jsonObject = JSONObject(attributes)
                                                 contactListViewModel.createConversation(
-                                                    "$contact.name ${
-                                                        Constants.formatPhoneNumber(
+                                                    contact.name + " " +
+                                                            Constants.formatPhoneNumber(
                                                             contact.number!!,
                                                             contact.countryCode
-                                                        )
-                                                    }",
+                                                        ),
                                                     " ",
                                                     "${
                                                         Constants.cleanedNumber(
@@ -437,9 +438,9 @@ class ContactListFragment : Fragment() {
                                         try {
                                             //If there is no existing conversation with SMS user, create new
                                             //set attributes fetched from parent
-                                            var customer = contact.customerName
-                                            var department = contact.department
-                                            var designation = contact.designation
+                                            var customer = contact.customerName ?: ""
+                                            var department = contact.department ?: ""
+                                            var designation = contact.designation ?: ""
 
                                             val attributes = mapOf(
                                                 "Designation" to designation,
@@ -547,7 +548,6 @@ class ContactListFragment : Fragment() {
         binding?.contactList?.layoutManager = LinearLayoutManager(context,LinearLayoutManager.VERTICAL,false)
         //Assigning the created adapter to recyclerview
         binding?.contactList?.adapter = adapter
-        binding?.contactList?.addItemDecoration(DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL))
         if (binding!!.contactList.adapter!!.itemCount < 1){
             binding!!.noResultFound.root.visibility =  VISIBLE}
         else

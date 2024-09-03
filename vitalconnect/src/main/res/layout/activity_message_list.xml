@@ -67,9 +67,11 @@
                 android:paddingLeft="5dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/messageInputHolder"
                 tools:text="user00 is typing"
                 style="@style/TextViewMessageTyping"
-                android:background="@drawable/bg_typing_indicator"/>
+                />
+<!--            android:background="@drawable/bg_typing_indicator"-->
 
 
             <com.google.android.material.textfield.TextInputLayout
@@ -128,17 +130,20 @@
             <TextView
                 android:id="@+id/note"
                 style="@style/Size_note"
-                android:layout_width="250dp"
+                android:layout_width="0dp"
                 android:layout_marginStart="10dp"
                 android:layout_height="wrap_content"
+                app:layout_constraintEnd_toStartOf="@+id/messageCharCount"
                 app:layout_constraintStart_toStartOf="@+id/messageInputHolder"
                 app:layout_constraintTop_toBottomOf="@+id/messageInputHolder"
                 android:text="@string/size_note"
                 />
             <TextView
                 android:id="@+id/messageCharCount"
+                style="@style/Size_note"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
                 app:layout_constraintEnd_toEndOf="@+id/messageInputHolder"
                 app:layout_constraintTop_toBottomOf="@+id/messageInputHolder"
                 android:text="0 / 300"
@@ -181,32 +186,6 @@
                 app:layout_constraintTop_toTopOf="@id/attachmentPreview"
                 app:layout_constraintStart_toEndOf="@id/attachmentPreview"
                 android:visibility="gone"/>
-
-            <!--            <View-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="match_parent"-->
-<!--                app:layout_constraintTop_toTopOf="@id/typingIndicator"-->
-<!--                android:background="@color/divider"-->
-<!--                app:layout_constraintStart_toStartOf="@id/messageInputHolder"-->
-<!--                />-->
-<!--            <TextView-->
-<!--                android:id="@+id/attachmentPreview"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                app:layout_constraintTop_toBottomOf="@+id/typingIndicator"-->
-<!--                app:layout_constraintEnd_toEndOf="@id/note"-->
-<!--                app:layout_constraintStart_toStartOf="@id/note"-->
-<!--                android:visibility="gone"-->
-<!--                />-->
-<!--            <TextView-->
-<!--                android:id="@+id/deleteAttachment"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                app:layout_constraintStart_toEndOf="@id/attachmentPreview"-->
-<!--                app:layout_constraintTop_toBottomOf="@id/typingIndicator"-->
-<!--                android:text="x"-->
-<!--                android:visibility="gone"-->
-<!--                />-->
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
