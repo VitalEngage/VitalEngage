@@ -391,9 +391,9 @@ class ExternalFragment : Fragment() {
                                                     conversation.attributes.CustomerName.isNullOrEmpty()
                                                 ) {
 
-                                                    var customer = contact.customerName
-                                                    var department = contact.department
-                                                    var designation = contact.designation
+                                                    var customer = contact.customerName ?: ""
+                                                    var department = contact.department ?: ""
+                                                    var designation = contact.designation ?: ""
 
                                                     val attributes = mapOf(
                                                         "Designation" to designation,
@@ -422,9 +422,9 @@ class ExternalFragment : Fragment() {
                                                     conversation.attributes.CustomerName.isNullOrEmpty()
                                                 ) {
 
-                                                    customer = contact.customerName!!
-                                                    department = contact.department!!
-                                                    designation = contact.designation!!
+                                                    customer = contact.customerName ?: ""
+                                                    department = contact.department ?: ""
+                                                    designation = contact.designation ?: ""
                                                 } else {
                                                     customer = conversation.attributes.CustomerName
                                                     department = conversation.attributes.Department
@@ -438,12 +438,11 @@ class ExternalFragment : Fragment() {
                                                 )
                                                 val jsonObject = JSONObject(attributes)
                                                 contactListViewModel.createConversation(
-                                                    "$contact.name ${
-                                                        Constants.formatPhoneNumber(
-                                                            contact.number!!,
-                                                            contact.countryCode
-                                                        )
-                                                    }",
+                                                    contact.name + " " +
+                                                            Constants.formatPhoneNumber(
+                                                                contact.number!!,
+                                                                contact.countryCode
+                                                            ),
                                                     " ",
                                                     "${
                                                         Constants.cleanedNumber(
@@ -462,9 +461,9 @@ class ExternalFragment : Fragment() {
                                         try {
                                             //If there is no existing conversation with SMS user, create new
                                             //set attributes fetched from parent
-                                            var customer = contact.customerName
-                                            var department = contact.department
-                                            var designation = contact.designation
+                                            var customer = contact.customerName ?: ""
+                                            var department = contact.department ?: ""
+                                            var designation = contact.designation ?: ""
 
                                             val attributes = mapOf(
                                                 "Designation" to designation,
