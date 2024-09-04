@@ -1,10 +1,14 @@
 package com.eemphasys.vitalconnect.viewModel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.eemphasys.vitalconnect.api.AuthInterceptor
 import com.eemphasys.vitalconnect.api.RetrofitHelper
+import com.eemphasys.vitalconnect.api.RetryInterceptor
 import com.eemphasys.vitalconnect.api.TwilioApi
+import com.eemphasys.vitalconnect.api.data.GetUserAlertStatusRequest
 import com.eemphasys.vitalconnect.api.data.UserAlertRequest
 import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.Constants
@@ -21,6 +25,8 @@ import com.eemphasys.vitalconnect.manager.UserManager
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
+import okhttp3.OkHttpClient
+import java.util.concurrent.TimeUnit
 
 class ProfileViewModel(
     private val conversationsRepository: ConversationsRepository,
@@ -89,6 +95,27 @@ class ProfileViewModel(
             val requestData = UserAlertRequest(Constants.USERNAME,"false", Constants.TENANT_CODE)
             val response= apicall.updateUserAlertStatus(requestData)
             Constants.USER_SMS_ALERT = response.body()!!.status
+        }
+    }
+
+    fun getUserAlertStatus() = viewModelScope.launch {
+        EETLog.saveUserJourney("vitaltext:  ProfileViewModel getUserAlertStatus Called")
+        val httpClientWithToken = OkHttpClient.Builder()
+            .connectTimeout(300, TimeUnit.SECONDS)
+            .readTimeout(300, TimeUnit.SECONDS)
+            .writeTimeout(300, TimeUnit.SECONDS)
+            .addInterceptor(AuthInterceptor(Constants.AUTH_TOKEN))
+            .addInterceptor(RetryInterceptor())
+            .build()
+        val retrofitWithToken =
+            RetrofitHelper.getInstance(httpClientWithToken).create(TwilioApi::class.java)
+        val request = GetUserAlertStatusRequest(Constants.TENANT_CODE,Constants.USERNAME)
+        val response =retrofitWithToken.getUserAlertStatus(request)
+        if(response.isSuccessful) {
+            Constants.USER_SMS_ALERT = response.body()!!.status
+        }
+        else{
+            Log.d("useralertstatus", response.code().toString() + " " + response.message())
         }
     }
 

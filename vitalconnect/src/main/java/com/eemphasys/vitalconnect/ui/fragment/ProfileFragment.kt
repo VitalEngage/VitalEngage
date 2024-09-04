@@ -55,6 +55,8 @@ class ProfileFragment:Fragment() {
         super.onViewCreated(view, savedInstanceState)
         requireActivity().title = getString(R.string.title_settings)
 
+                profileViewModel.getUserAlertStatus()
+
         profileViewModel.selfUser.observe(viewLifecycleOwner) { user ->
             binding.profileName.text = user.friendlyName
             binding.profileIdentity.text = user.identity

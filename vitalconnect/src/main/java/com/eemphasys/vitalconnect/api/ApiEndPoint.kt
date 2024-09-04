@@ -2,6 +2,8 @@ package com.eemphasys.vitalconnect.api
 
 import com.eemphasys.vitalconnect.api.data.AuthToken
 import com.eemphasys.vitalconnect.api.data.EncryptionRequest
+import com.eemphasys.vitalconnect.api.data.GetUserAlertStatusRequest
+import com.eemphasys.vitalconnect.api.data.GetUserAlertStatusResponse
 import com.eemphasys.vitalconnect.api.data.ParticipantExistingConversation
 import com.eemphasys.vitalconnect.api.data.RequestToken
 import com.eemphasys.vitalconnect.api.data.SearchContactRequest
@@ -60,4 +62,7 @@ interface TwilioApi {
 
     @POST("Contact/GetSearchedContact")
     fun getSearchedContact(@Body requestData : SearchContactRequest) : Call<List<SearchContactResponse>>
+
+    @POST("User/GetUserAlertStatus")
+    suspend fun getUserAlertStatus(@Body requestData : GetUserAlertStatusRequest ) : Response<GetUserAlertStatusResponse>
 }

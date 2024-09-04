@@ -97,11 +97,11 @@
             android:id="@+id/message_background_barrier"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:barrierDirection="end"
+            app:barrierDirection="start"
             app:barrierMargin="2dp"
             app:constraint_referenced_ids="
                 message_body,
-                attachment_background" />
+                attachment_background,message_background" />
         <View
             android:id="@+id/message_background"
             android:layout_width="0dp"
@@ -142,7 +142,7 @@
             android:background="@color/white"
             app:layout_constraintBottom_toBottomOf="@+id/attachment_footer"
             app:layout_constraintEnd_toEndOf="@+id/message_background"
-            app:layout_constraintStart_toStartOf="@+id/message_background"
+            app:layout_constraintStart_toEndOf="@+id/participant_icon"
             app:layout_constraintTop_toBottomOf="@+id/message_body" />
 
         <ImageView
