@@ -562,7 +562,7 @@ class ConversationsRepositoryImpl(
     }
 
     override fun getFriendlyName(identity : String) : String {
-        return localCache.messagesDao().fetchFriendlyName(identity)
+        return localCache.messagesDao().fetchFriendlyName(identity) ?: identity
     }
 
     override fun updateFriendlyName() {

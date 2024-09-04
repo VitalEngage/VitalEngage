@@ -12,6 +12,7 @@ import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.data.models.MessageListViewItem
 import com.eemphasys.vitalconnect.databinding.DialogReactionDetailsBinding
 import com.eemphasys.vitalconnect.databinding.RowReactionDetailsItemBinding
+import com.eemphasys.vitalconnect.viewModel.MessageListViewModel
 
 class ReactionDetailsDialog : BaseBottomSheetDialogFragment() {
 
@@ -44,7 +45,7 @@ class ReactionDetailsDialog : BaseBottomSheetDialogFragment() {
             dismiss()
         }
 
-        binding.participantsList.adapter = ReactionDetailsAdapter(message)
+        binding.participantsList.adapter = ReactionDetailsAdapter(message,messageListViewModel)
     }
 
     companion object {
@@ -59,7 +60,7 @@ class ReactionDetailsDialog : BaseBottomSheetDialogFragment() {
     }
 }
 
-private class ReactionDetailsAdapter(message: MessageListViewItem) :
+private class ReactionDetailsAdapter(message: MessageListViewItem, messageListViewModel: MessageListViewModel) :
     RecyclerView.Adapter<ReactionDetailsAdapter.ViewHolder>() {
 
     private val reactions: List<ReactionViewItem>
@@ -67,7 +68,7 @@ private class ReactionDetailsAdapter(message: MessageListViewItem) :
     init {
         reactions = message.reactions
             .flatMap { (reaction, identityList) ->
-                identityList.map { ReactionViewItem(message.friendlyName, reaction) }
+                identityList.map { ReactionViewItem(messageListViewModel.getFriendlyName(it), reaction) }
             }
             .sortedWith(Comparator { item1, item2 ->
                 item1.reaction.sortOrder.compareTo(item2.reaction.sortOrder)

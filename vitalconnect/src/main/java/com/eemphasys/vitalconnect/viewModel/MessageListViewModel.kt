@@ -601,5 +601,9 @@ class MessageListViewModel(
             conversationsRepository.updateFriendlyName()
                 }
         }
+
+    fun getFriendlyName(identity : String): String {
+        return conversationsRepository.getFriendlyName(identity)
+    }
     private val ParticipantDataItem.typingIndicatorName get() = if (friendlyName.isNotEmpty()) friendlyName else identity
 }
