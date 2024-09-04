@@ -63,6 +63,7 @@ class ContactListFragment : Fragment() {
     private var contactsList = arrayListOf<Contact>()
     private var webuserList = arrayListOf<WebUser>()
     private lateinit var adapter: ContactListAdapter
+    lateinit var combinedList: List<ContactListViewItem>
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_contact_list, menu)
@@ -150,7 +151,12 @@ class ContactListFragment : Fragment() {
                 return true
             }
                 else{
-                    setAdapter(emptyList())
+                    if(Constants.SHOW_CONTACTS=="false") {
+                        setAdapter(emptyList())
+                    }
+                    else{
+                        setAdapter(combinedList)
+                    }
                     return false}
             }
         })
@@ -250,7 +256,7 @@ class ContactListFragment : Fragment() {
             }
         }
 
-        val combinedList = combineLists(contactsList, webuserList)
+        combinedList = combineLists(contactsList, webuserList)
 
         setAdapter(combinedList)
     }

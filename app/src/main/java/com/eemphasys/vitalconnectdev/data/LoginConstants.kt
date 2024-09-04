@@ -64,17 +64,17 @@ class LoginConstants   {
                 "userName":"abelorkar@e-emphasys.com",
                 "initials":"",
                 "designation":"Technician",
-                "department":"",
-                "customer":"",
+                "department":"Xapps",
+                "customer":"VitalEdge",
                 "countryCode":""
             },
             {
                 "name":"Hardik Kothari",
                 "userName":"hkothari",
                 "initials":"",
-                "designation":"Supervisor",
-                "department":"",
-                "customer":"",
+                "designation":"",
+                "department":"Xapps",
+                "customer":"VitalEdge",
                 "countryCode":""
             }
             ]

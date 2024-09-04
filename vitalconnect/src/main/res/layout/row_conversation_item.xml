@@ -170,8 +170,17 @@
         android:text="@{conversation.customer}"
         android:textColor="@{conversation.lastMessageColor}"
         app:layout_constraintStart_toStartOf="@+id/conversationName"
-        app:layout_constraintTop_toBottomOf="@+id/department"
+        app:layout_constraintTop_toBottomOf="@+id/barrier"
         tools:text="Customer"
         android:visibility="@{conversation.customer.isEmpty() ? View.GONE : View.VISIBLE}"/>
+    <!-- Barrier to group designation and department -->
+    <androidx.constraintlayout.widget.Barrier
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/barrier"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="department,designation"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
