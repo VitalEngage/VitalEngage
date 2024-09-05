@@ -50,12 +50,25 @@ class ProfileFragment:Fragment() {
         return binding.root
     }
 
+    override fun onStart() {
+        super.onStart()
+        binding.switchbtn.setOnCheckedChangeListener{ buttonView,isChecked ->
+
+            profileViewModel.changeUserAlertStatus(isChecked)
+        }
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onViewCreated Called")
         super.onViewCreated(view, savedInstanceState)
         requireActivity().title = getString(R.string.title_settings)
 
-                profileViewModel.getUserAlertStatus()
+        if(Constants.USER_SMS_ALERT.equals("true", ignoreCase = true)){
+            binding.switchbtn.isChecked = true
+        }
+        else if(Constants.USER_SMS_ALERT.equals("false", ignoreCase = true)) {
+            binding.switchbtn.isChecked = false
+        }
+
 
         profileViewModel.selfUser.observe(viewLifecycleOwner) { user ->
             binding.profileName.text = user.friendlyName
@@ -86,16 +99,16 @@ class ProfileFragment:Fragment() {
 
 //        binding.editProfile.setOnClickListener { showEditProfileDialog() }
         binding.signOut.setOnClickListener { showSignOutDialog() }
-        if(Constants.USER_SMS_ALERT.equals("true", ignoreCase = true)){
-            binding.switchbtn.isChecked = true
-        }
-        else if(Constants.USER_SMS_ALERT.equals("false", ignoreCase = true)) {
-            binding.switchbtn.isChecked = false
-        }
-        binding.switchbtn.setOnCheckedChangeListener{ buttonView,isChecked ->
-
-            profileViewModel.changeUserAlertStatus(isChecked)
-        }
+//        if(Constants.USER_SMS_ALERT.equals("true", ignoreCase = true)){
+//            binding.switchbtn.isChecked = true
+//        }
+//        else if(Constants.USER_SMS_ALERT.equals("false", ignoreCase = true)) {
+//            binding.switchbtn.isChecked = false
+//        }
+//        binding.switchbtn.setOnCheckedChangeListener{ buttonView,isChecked ->
+//
+//            profileViewModel.changeUserAlertStatus(isChecked)
+//        }
 
         profileViewModel.isNetworkAvailable.observe(viewLifecycleOwner) { isNetworkAvailable ->
             showNoInternetSnackbar(!isNetworkAvailable)

@@ -85,21 +85,6 @@ class ProfileViewModel(
 
     fun changeUserAlertStatus(isChecked : Boolean) = viewModelScope.launch {
         EETLog.saveUserJourney("vitaltext:  ProfileViewModel changeUserAlertStatus Called")
-        val apicall = RetrofitHelper.getInstance().create(TwilioApi::class.java)
-        if(isChecked){
-            val requestData = UserAlertRequest(Constants.USERNAME,"true", Constants.TENANT_CODE)
-            val response = apicall.updateUserAlertStatus(requestData)
-            Constants.USER_SMS_ALERT = response.body()!!.status
-        }
-        else{
-            val requestData = UserAlertRequest(Constants.USERNAME,"false", Constants.TENANT_CODE)
-            val response= apicall.updateUserAlertStatus(requestData)
-            Constants.USER_SMS_ALERT = response.body()!!.status
-        }
-    }
-
-    fun getUserAlertStatus() = viewModelScope.launch {
-        EETLog.saveUserJourney("vitaltext:  ProfileViewModel getUserAlertStatus Called")
         val httpClientWithToken = OkHttpClient.Builder()
             .connectTimeout(300, TimeUnit.SECONDS)
             .readTimeout(300, TimeUnit.SECONDS)
@@ -109,13 +94,21 @@ class ProfileViewModel(
             .build()
         val retrofitWithToken =
             RetrofitHelper.getInstance(httpClientWithToken).create(TwilioApi::class.java)
-        val request = GetUserAlertStatusRequest(Constants.TENANT_CODE,Constants.USERNAME)
-        val response =retrofitWithToken.getUserAlertStatus(request)
-        if(response.isSuccessful) {
-            Constants.USER_SMS_ALERT = response.body()!!.status
+        if(isChecked){
+            val requestData = UserAlertRequest(Constants.USERNAME,"true", Constants.TENANT_CODE)
+            val response = retrofitWithToken.updateUserAlertStatus(requestData)
+            if(response.isSuccessful) {
+                Log.d("useralertstatus","changed to true")
+                Constants.USER_SMS_ALERT = response.body()!!.status
+            }
         }
         else{
-            Log.d("useralertstatus", response.code().toString() + " " + response.message())
+            val requestData = UserAlertRequest(Constants.USERNAME,"false", Constants.TENANT_CODE)
+            val response= retrofitWithToken.updateUserAlertStatus(requestData)
+            if(response.isSuccessful) {
+                Log.d("useralertstatus","changed to false")
+                Constants.USER_SMS_ALERT = response.body()!!.status
+            }
         }
     }
 

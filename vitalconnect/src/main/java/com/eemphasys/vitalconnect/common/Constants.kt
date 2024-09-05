@@ -6,13 +6,19 @@ import android.util.Log
 import android.widget.EditText
 import androidx.appcompat.widget.SearchView
 import com.eemphasys.vitalconnect.R
+import com.eemphasys.vitalconnect.api.AuthInterceptor
+import com.eemphasys.vitalconnect.api.RetrofitHelper
+import com.eemphasys.vitalconnect.api.RetryInterceptor
+import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.data.models.ParticipantListViewItem
 import com.google.i18n.phonenumbers.NumberParseException
 import com.google.i18n.phonenumbers.PhoneNumberUtil
+import okhttp3.OkHttpClient
 import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.lang.reflect.Field
 import java.util.Random
+import java.util.concurrent.TimeUnit
 
 class Constants   {
     companion object{
@@ -63,18 +69,19 @@ class Constants   {
                     return ""
                 }
 
-                //split the string using 'space'
-                //and print the first character of every word
-                val words = name.split(" ".toRegex()).dropLastWhile { it.isEmpty() }
-                    .toTypedArray()
-                for (word in words) {
-                    nameInitials.append(word[0].uppercaseChar())
-                    //                System.out.print(Character.toUpperCase(word.charAt(0)));
+                // Split the string using space and filter out empty words
+                val words = name.split(" ".toRegex()).filter { it.isNotEmpty() }
+
+                // Collect only the first character of each word
+                for (i in words.indices) {
+                    if (i >= 2) break // Stop if we've already added 2 initials
+                    nameInitials.append(words[i][0].uppercaseChar())
                 }
             } catch (e: Exception) {
-                nameInitials.append("")
+                // Handle exceptions (though it's unlikely one would occur here)
+                e.printStackTrace()
             }
-            return nameInitials.toString().trim { it <= ' ' }
+            return nameInitials.toString()
         }
 
          @JvmStatic
