@@ -67,6 +67,7 @@ class LoginManagerImpl(
             LoginConstants.SHOW_DESIGNATION = result.body()!!.showDesignation.toString()
             LoginConstants.EMAIL = result.body()!!.email
             LoginConstants.MOBILENUMBER = result.body()!!.mobileNumber
+            LoginConstants.DEALER_NAME = result.body()!!.dealerName
             credentialStorage.storeCredentials(identity,password)
         }
     }

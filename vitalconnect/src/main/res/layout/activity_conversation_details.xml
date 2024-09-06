@@ -125,15 +125,19 @@
                         <TextView
                             android:id="@+id/add_chat_participant_button"
                             android:layout_width="match_parent"
-                            android:layout_height="48dp"
+                            android:layout_height="70dp"
                             android:background="?attr/selectableItemBackground"
-                            android:drawableStart="@drawable/ic_chat_participant_add"
+                            android:drawableStart="@drawable/icon_add_chat_participant"
                             android:drawablePadding="16dp"
                             android:gravity="center_vertical"
                             android:text="@string/details_add_chat_participant"
-                            android:textColor="@color/text_title"
-                            android:textSize="14sp"
+                            style="@style/TextViewConversationDetails"
+                            android:padding="16dp"
                             android:visibility="gone" />
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="0.7dp"
+                            android:background="@color/divider"/>
 
                         <TextView
                             android:id="@+id/add_non_chat_participant_button"

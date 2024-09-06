@@ -26,16 +26,16 @@ abstract class LocalCacheProvider: RoomDatabase() {
 
         fun createInstance(context: Context) {
             check(_instance == null) { "LocalCacheProvider singleton instance has been already created" }
-//            _instance = Room.inMemoryDatabaseBuilder(
-//                context.applicationContext,
-//                LocalCacheProvider::class.java
-//            ).allowMainThreadQueries().build()
-            _instance = Room.databaseBuilder(
+            _instance = Room.inMemoryDatabaseBuilder(
                 context.applicationContext,
-                LocalCacheProvider::class.java,
-                "vitaltext.db"
-            ).setJournalMode(JournalMode.AUTOMATIC)
-                .allowMainThreadQueries().build()
+                LocalCacheProvider::class.java
+            ).allowMainThreadQueries().build()
+//            _instance = Room.databaseBuilder(
+//                context.applicationContext,
+//                LocalCacheProvider::class.java,
+//                "vitaltext.db"
+//            ).setJournalMode(JournalMode.AUTOMATIC)
+//                .allowMainThreadQueries().build()
         }
     }
 }

@@ -216,8 +216,8 @@ class ContactListFragment : Fragment() {
         // Bind TabLayout with ViewPager2
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             tab.text = when (position) {
-                0 -> "Internal"
-                1 -> "External"
+                0 -> Constants.DEALER_NAME
+                1 -> "Customer"
                 else -> ""
             }
         }.attach()

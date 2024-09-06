@@ -472,6 +472,7 @@ class LoginActivity : AppCompatActivity() {
             intent.putExtra("withContext",LoginConstants.WITH_CONTEXT)
             intent.putExtra("openChat",LoginConstants.OPEN_CHAT)
             intent.putExtra("context",LoginConstants.CONTEXT)
+            intent.putExtra("dealerName",LoginConstants.DEALER_NAME)
             context.startActivity(intent)
         }
     }

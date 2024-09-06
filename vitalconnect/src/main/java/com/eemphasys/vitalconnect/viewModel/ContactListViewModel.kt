@@ -6,17 +6,19 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.eemphasys.vitalconnect.api.AuthInterceptor
+import com.eemphasys.vitalconnect.api.RetrofitHelper
+import com.eemphasys.vitalconnect.api.RetryInterceptor
+import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.ConversationSidFromFriendlyNameRequest
 import com.eemphasys.vitalconnect.api.data.ConversationSidFromFriendlyNameResponse
 import com.eemphasys.vitalconnect.api.data.addParticipantToWebConversationRequest
 import com.eemphasys.vitalconnect.api.data.webParticipant
 import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.Constants
-import com.eemphasys.vitalconnect.common.Constants.Companion.retrofitWithToken
 import com.eemphasys.vitalconnect.common.SingleLiveEvent
 import com.eemphasys.vitalconnect.common.call
 import com.eemphasys.vitalconnect.common.enums.ConversationsError
-import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.data.models.ContactListViewItem
 import com.eemphasys.vitalconnect.data.models.ConversationListViewItem
 import com.eemphasys.vitalconnect.manager.ConnectivityMonitor
@@ -32,10 +34,12 @@ import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.twilio.conversations.Attributes
 import kotlinx.coroutines.delay
+import okhttp3.OkHttpClient
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.concurrent.TimeUnit
 
 
 class ContactListViewModel(
@@ -131,12 +135,25 @@ class ContactListViewModel(
     }
 
     fun createWebConversation(friendlyName: String,attributes: Attributes,contact: ContactListViewItem)= viewModelScope.launch {
+        Log.d("attributes",attributes.toString())
         val conversationSid = conversationListManager.createConversation(friendlyName,attributes)
         //add participants to conversation
         addWebParticipants(contact,conversationSid)
+//        conversationListManager.removeConversation("CH5c9ba2bb3cd04bd29033fc8661c3da6a")
+//        conversationListManager.removeConversation("CHa4a05b44724b4e3a847b467fc381b809")
+
     }
 
     fun checkExistingconversation(contact : ContactListViewItem){
+        val httpClientWithToken = OkHttpClient.Builder()
+            .connectTimeout(300, TimeUnit.SECONDS)
+            .readTimeout(300, TimeUnit.SECONDS)
+            .writeTimeout(300, TimeUnit.SECONDS)
+            .addInterceptor(AuthInterceptor(Constants.AUTH_TOKEN))
+            .addInterceptor(RetryInterceptor())
+            .build()
+        val retrofitWithToken =
+            RetrofitHelper.getInstance(httpClientWithToken).create(TwilioApi::class.java)
         var request = ConversationSidFromFriendlyNameRequest(Constants.TENANT_CODE,Constants.USERNAME,Constants.CONTEXT)
         val existingWebConversation = retrofitWithToken.getTwilioConversationSidFromFriendlyName(request)
 
@@ -160,11 +177,13 @@ class ContactListViewModel(
                         }
                         //add participants to conversation
                         addWebParticipants(contact,conversationSid)
+                        //Redirect to existing conversation
+                        MessageListActivity.startfromFragment(applicationContext,conversationSid)
                     }
                     else{
                         //Create new conversation and add participant to it
                         val attributes = mapOf(
-                            "isWebChat" to "true"
+                            "isWebChat" to true
                         )
                         val jsonObject = JSONObject(attributes)
                         createWebConversation(Constants.CONTEXT,Attributes(jsonObject),contact)
@@ -187,6 +206,15 @@ class ContactListViewModel(
         val webUser = ArrayList<webParticipant>()
         webUser.add(webParticipant(Constants.USERNAME,Constants.FRIENDLY_NAME,""))
         webUser.add(webParticipant(contact.email,contact.name,""))
+        val httpClientWithToken = OkHttpClient.Builder()
+            .connectTimeout(300, TimeUnit.SECONDS)
+            .readTimeout(300, TimeUnit.SECONDS)
+            .writeTimeout(300, TimeUnit.SECONDS)
+            .addInterceptor(AuthInterceptor(Constants.AUTH_TOKEN))
+            .addInterceptor(RetryInterceptor())
+            .build()
+        val retrofitWithToken =
+            RetrofitHelper.getInstance(httpClientWithToken).create(TwilioApi::class.java)
         val request = addParticipantToWebConversationRequest(Constants.TENANT_CODE,Constants.USERNAME,webUser,conversationSid,Constants.CONTEXT,true,Constants.PROXY_NUMBER)
         val participantDetails = retrofitWithToken.addParticipantToWebToWebConversation(request)
 

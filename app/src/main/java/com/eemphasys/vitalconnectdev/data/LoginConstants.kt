@@ -29,9 +29,10 @@ class LoginConstants   {
         var SHOW_DEPARTMENT = ""
         var EMAIL = ""
         var MOBILENUMBER = ""
-        var WITH_CONTEXT = "false"
+        var WITH_CONTEXT = "true"
         var OPEN_CHAT = "false"
-        var CONTEXT = ""
+        var CONTEXT = "ABC0005"
+        var DEALER_NAME = ""
 
         val CONTACTS =
             """{
@@ -72,8 +73,8 @@ class LoginConstants   {
                 "countryCode":""
             },
             {
-                "name":"Hardik Kothari",
-                "userName":"hkothari@e-emphasys.com",
+                "name":"Himanshu Mahajan",
+                "userName":"hmahajan@e-emphasys.com",
                 "initials":"",
                 "designation":"Supervisor",
                 "department":"Xapps",

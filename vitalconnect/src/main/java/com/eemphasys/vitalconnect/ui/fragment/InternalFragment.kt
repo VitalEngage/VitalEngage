@@ -315,7 +315,8 @@ class InternalFragment : Fragment() {
         adapter = ContactListAdapter(list,list,object : OnContactItemClickListener {
             @SuppressLint("SuspiciousIndentation")
             override fun onContactItemClick(contact: ContactListViewItem) {
-
+                Log.d(
+                    "WebUserClicked",contact.name)
 //                  Web to web chat
                     binding?.progressBarID?.visibility = View.VISIBLE
 

@@ -7,12 +7,14 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
+import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.ui.text.toLowerCase
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -143,6 +145,20 @@ class MessageListActivity: AppCompatActivity() {
             }
             messageListViewModel.conversationName.observe(this) { conversationName ->
                 title = conversationName
+            }
+            messageListViewModel.isWebChat.observe(this){ isWebChat ->
+                if(isWebChat.toLowerCase() == "true") {
+                    binding.toolbarSubtitle.visibility = View.VISIBLE
+                    binding.toolbarSubtitle.text = Constants.DEALER_NAME
+                    binding.toolbarSubtitle.setBackgroundResource(R.drawable.bg_dealer)
+                    binding.toolbarSubtitle.setTextColor(resources.getColor(R.color.dealer_name))
+                }
+                else {
+                    binding.toolbarSubtitle.visibility = View.VISIBLE
+                    binding.toolbarSubtitle.text = "Customer"
+                    binding.toolbarSubtitle.setBackgroundResource(R.drawable.bg_customer)
+                    binding.toolbarSubtitle.setTextColor(resources.getColor(R.color.customer_name))
+                }
             }
             messageListViewModel.messageItems.observe(this) { messages ->
                 val lastVisibleMessageIndex =

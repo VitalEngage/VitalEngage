@@ -3,6 +3,7 @@ package com.eemphasys.vitalconnect.ui.activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -31,6 +32,9 @@ class ConversationDetailsActivity : AppCompatActivity() {
 
     val conversationDetailsViewModel by lazyViewModel {
         injector.createConversationDetailsViewModel(applicationContext, intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
+    }
+    val messageListViewModel by lazyViewModel {
+        injector.createMessageListViewModel(applicationContext, intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
     }
     private val noInternetSnackBar by lazy {
         Snackbar.make(binding.conversationDetailsLayout, R.string.no_internet_connection, Snackbar.LENGTH_INDEFINITE)
@@ -150,11 +154,17 @@ class ConversationDetailsActivity : AppCompatActivity() {
             }
         }
 
+        messageListViewModel.isWebChat.observe(this){ isWebChat ->
+            if(isWebChat.toLowerCase() == "true") {
+                binding.addChatParticipantButton.visibility = View.VISIBLE
+            }
+            else{
+                binding.addChatParticipantButton.visibility = View.GONE
+            }
+        }
+
         conversationDetailsViewModel.conversationDetails.observe(this) { conversationDetails ->
-//            conversationDetails.friendlyName = conversationDetailsViewModel.getFriendlyName(binding.details!!.createdBy)
             binding.details = conversationDetails
-//            val friendlyName = conversationDetailsViewModel.getFriendlyName(binding.details.createdBy)
-//            binding.textView3.text = "Created by: " + friendlyName
             binding.renameConversationSheet.renameConversationInput.setText(conversationDetails.conversationName)
         }
 

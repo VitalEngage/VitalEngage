@@ -197,7 +197,12 @@ fun ConversationDataItem.asConversationListViewItem(
     } catch (e: Exception) {
         ""
     },
-    this.messagesCount
+    this.messagesCount,
+    try {
+        JSONObject(this.attributes).optString("isWebChat", " ")
+    } catch (e: Exception) {
+        " "
+    }
 )
 
 fun ConversationDataItem.asConversationDetailsViewItem() = ConversationDetailsViewItem(

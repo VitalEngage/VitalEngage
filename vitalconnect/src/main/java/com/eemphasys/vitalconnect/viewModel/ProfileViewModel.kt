@@ -3,7 +3,9 @@ package com.eemphasys.vitalconnect.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.eemphasys.vitalconnect.api.AuthInterceptor
 import com.eemphasys.vitalconnect.api.RetrofitHelper
+import com.eemphasys.vitalconnect.api.RetryInterceptor
 import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.UserAlertRequest
 import com.eemphasys.vitalconnect.common.AppContextHelper
@@ -21,6 +23,8 @@ import com.eemphasys.vitalconnect.manager.UserManager
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
+import okhttp3.OkHttpClient
+import java.util.concurrent.TimeUnit
 
 class ProfileViewModel(
     private val conversationsRepository: ConversationsRepository,
@@ -79,15 +83,23 @@ class ProfileViewModel(
 
     fun changeUserAlertStatus(isChecked : Boolean) = viewModelScope.launch {
         EETLog.saveUserJourney("vitaltext:  ProfileViewModel changeUserAlertStatus Called")
-        val apicall = RetrofitHelper.getInstance().create(TwilioApi::class.java)
+        val httpClientWithToken = OkHttpClient.Builder()
+            .connectTimeout(300, TimeUnit.SECONDS)
+            .readTimeout(300, TimeUnit.SECONDS)
+            .writeTimeout(300, TimeUnit.SECONDS)
+            .addInterceptor(AuthInterceptor(Constants.AUTH_TOKEN))
+            .addInterceptor(RetryInterceptor())
+            .build()
+        val retrofitWithToken =
+            RetrofitHelper.getInstance(httpClientWithToken).create(TwilioApi::class.java)
         if(isChecked){
             val requestData = UserAlertRequest(Constants.USERNAME,"true", Constants.TENANT_CODE)
-            val response = apicall.updateUserAlertStatus(requestData)
+            val response = retrofitWithToken.updateUserAlertStatus(requestData)
             Constants.USER_SMS_ALERT = response.body()!!.status
         }
         else{
             val requestData = UserAlertRequest(Constants.USERNAME,"false", Constants.TENANT_CODE)
-            val response= apicall.updateUserAlertStatus(requestData)
+            val response= retrofitWithToken.updateUserAlertStatus(requestData)
             Constants.USER_SMS_ALERT = response.body()!!.status
         }
     }

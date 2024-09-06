@@ -7,6 +7,7 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.call
 import com.eemphasys.vitalconnect.common.enums.MessageType.MEDIA
 import com.eemphasys.vitalconnect.common.extensions.applicationContext
@@ -42,6 +43,17 @@ class MessageActionsDialog : BaseBottomSheetDialogFragment() {
         messageListViewModel.selfUser.observe(this) { reactionsView.identity = it.identity }
 
         binding.copy.visibility = if (message.type == MEDIA) GONE else VISIBLE
+
+        messageListViewModel.isWebChat.observe(this){ isWebChat ->
+            if(isWebChat.toLowerCase() == "true") {
+                if(message.author == Constants.USERNAME) {
+                    binding.delete.visibility = View.VISIBLE
+                }
+            }
+            else{
+                binding.delete.visibility = View.GONE
+            }
+        }
 
         reactionsView.onChangeListener = {
             messageListViewModel.setReactions(reactionsView.reactions)

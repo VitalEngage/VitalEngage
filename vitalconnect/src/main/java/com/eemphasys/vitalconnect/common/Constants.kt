@@ -61,6 +61,7 @@ class Constants   {
         var WITH_CONTEXT = ""
         var OPEN_CHAT = ""
         var CONTEXT = ""
+        var DEALER_NAME =""
 
 
         @JvmStatic
@@ -85,18 +86,6 @@ class Constants   {
             }
             return nameInitials.toString()
         }
-        @JvmStatic
-        val httpClientWithToken = OkHttpClient.Builder()
-            .connectTimeout(300, TimeUnit.SECONDS)
-            .readTimeout(300, TimeUnit.SECONDS)
-            .writeTimeout(300, TimeUnit.SECONDS)
-            .addInterceptor(AuthInterceptor(AUTH_TOKEN))
-            .addInterceptor(RetryInterceptor())
-            .build()
-        @JvmStatic
-        val retrofitWithToken =
-            RetrofitHelper.getInstance(httpClientWithToken).create(TwilioApi::class.java)
-
         @JvmStatic
         val randomColor: Int
             get() {
