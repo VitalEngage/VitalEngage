@@ -56,6 +56,11 @@ class EditReactionsView @JvmOverloads constructor(
     }
 
     private fun addReaction(reaction: Reaction) {
+        for (existingReaction in myReactions) {
+            reactions= reactions.toMutableMap().apply{
+                put(existingReaction, getOrPut(existingReaction, ::emptySet) - identity)
+            }
+        }
         reactions = reactions.toMutableMap().apply {
             put(reaction, getOrPut(reaction, ::emptySet) + identity)
         }
