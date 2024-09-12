@@ -33,6 +33,7 @@ class LoginConstants   {
         var OPEN_CHAT = "false"
         var CONTEXT = "ABC0005"
         var DEALER_NAME = ""
+        var PINNED_CONVO : ArrayList<String> = arrayListOf()
 
         val CONTACTS =
             """{

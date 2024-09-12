@@ -66,6 +66,7 @@ class MainActivity : AppCompatActivity() {
         val openChat = intent.getStringExtra("openChat")
         val context = intent.getStringExtra("context")
         val dealerName = intent.getStringExtra("dealerName")
+        val pinnedConvo = intent.getStringArrayListExtra("pinnedConvo")
 
         Constants.AUTH_TOKEN = authToken!!
         Constants.CONTACTS = contacts!!
@@ -100,6 +101,7 @@ class MainActivity : AppCompatActivity() {
         Constants.OPEN_CHAT = openChat!!
         Constants.CONTEXT = context!!
         Constants.DEALER_NAME = dealerName!!
+        Constants.PINNED_CONVO = pinnedConvo!!
 
 //        mainViewModel.create()
         super.onCreate(savedInstanceState)

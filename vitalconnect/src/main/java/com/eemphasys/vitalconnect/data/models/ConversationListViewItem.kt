@@ -17,5 +17,6 @@ data class ConversationListViewItem (
     val designation: String,
     val customer: String,
     val messageCount: Long,
-    val isWebChat: String
+    val isWebChat: String,
+    var isPinned : Boolean
 )

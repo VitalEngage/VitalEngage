@@ -68,6 +68,7 @@ class LoginManagerImpl(
             LoginConstants.EMAIL = result.body()!!.email
             LoginConstants.MOBILENUMBER = result.body()!!.mobileNumber
             LoginConstants.DEALER_NAME = result.body()!!.dealerName
+            LoginConstants.PINNED_CONVO = result.body()!!.pinedConversation
             credentialStorage.storeCredentials(identity,password)
         }
     }

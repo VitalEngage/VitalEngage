@@ -473,6 +473,7 @@ class LoginActivity : AppCompatActivity() {
             intent.putExtra("openChat",LoginConstants.OPEN_CHAT)
             intent.putExtra("context",LoginConstants.CONTEXT)
             intent.putExtra("dealerName",LoginConstants.DEALER_NAME)
+            intent.putStringArrayListExtra("pinnedConvo",LoginConstants.PINNED_CONVO)
             context.startActivity(intent)
         }
     }

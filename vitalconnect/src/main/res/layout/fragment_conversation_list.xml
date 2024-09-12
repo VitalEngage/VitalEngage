@@ -24,19 +24,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-<!--            <TextView-->
-<!--                android:id="@+id/label0"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginEnd="8dp"-->
-<!--                android:text="All"-->
-<!--                android:textSize="14sp"-->
-<!--                android:padding="8dp"-->
-<!--                android:textStyle="bold"-->
-<!--                android:background="@drawable/bg_selectedlabel"-->
-<!--                android:textColor="@color/white"/>-->
             <TextView
-                android:id="@+id/label1"
+                android:id="@+id/lblUnread"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
@@ -47,7 +36,7 @@
                 android:textColor="@color/alternate_message_text"/>
 
             <TextView
-                android:id="@+id/label2"
+                android:id="@+id/lblInternal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
@@ -58,7 +47,7 @@
                 android:textColor="@color/alternate_message_text"/>
 
             <TextView
-                android:id="@+id/label3"
+                android:id="@+id/lblExternal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"

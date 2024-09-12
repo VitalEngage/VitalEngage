@@ -47,6 +47,13 @@ class ConversationListAdapter(private val callback: OnConversationEvent) : Recyc
             holder.binding.conversation?.sid?.let { callback.onConversationClicked(it) }
         }
 
+        holder.binding.conversationItem.setOnLongClickListener {
+            holder.binding.conversation?.let { conversation ->
+                callback.onConversationLongClicked(conversation)
+            }
+            true
+        }
+
         if (Constants.SHOW_DEPARTMENT == "false") {
             holder.binding.department.visibility = View.GONE
         }
@@ -85,7 +92,7 @@ class ConversationListAdapter(private val callback: OnConversationEvent) : Recyc
     }
 
     private fun filterConversations(conversations: List<ConversationListViewItem>): List<ConversationListViewItem> {
-        return conversations.filter { conversation ->
+        val filteredConversations = conversations.filter { conversation ->
             if(filterCriteria.contains(Constants.DEALER_NAME) && filterCriteria.contains("Customer") && filterCriteria.size == 2){
                 filterCriteria.all { criteria ->
                     when ("All") {
@@ -96,7 +103,6 @@ class ConversationListAdapter(private val callback: OnConversationEvent) : Recyc
             }
             else {
                 filterCriteria.all { criteria ->
-                    Log.d("Criteria", criteria)
                     when (criteria) {
                         "All" -> conversation.sid != ""
                         "Unread" -> conversation.unreadMessageCount != "0"
@@ -107,9 +113,20 @@ class ConversationListAdapter(private val callback: OnConversationEvent) : Recyc
                 }
             }
         }
+        return filteredConversations.sortedWith(compareByDescending { it.isPinned })
     }
 
-    class ViewHolder(val binding: RowConversationItemBinding) : RecyclerView.ViewHolder(binding.root)
+    class ViewHolder(val binding: RowConversationItemBinding) : RecyclerView.ViewHolder(binding.root){
+        init {
+            // Handle long click events
+            itemView.setOnLongClickListener {
+                binding.conversation?.let { conversation ->
+                    (itemView.context as? OnConversationEvent)?.onConversationLongClicked(conversation)
+                }
+                true
+            }
+        }
+    }
 
     class ConversationDiff(private val oldItems: List<ConversationListViewItem>,
                            private val newItems: List<ConversationListViewItem>
@@ -131,4 +148,5 @@ class ConversationListAdapter(private val callback: OnConversationEvent) : Recyc
 
 interface OnConversationEvent {
     fun onConversationClicked(conversationSid: String)
+    fun onConversationLongClicked(conversation: ConversationListViewItem)
 }

@@ -6,6 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.eemphasys.vitalconnect.adapters.ConversationListAdapter
+import com.eemphasys.vitalconnect.api.data.SavePinnedConversationRequest
 import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.SingleLiveEvent
@@ -277,5 +279,21 @@ class ConversationListViewModel(
         finally {
             setConversationLoading(conversationSid, false)
         }
+    }
+
+    fun savePinnedConversation(conversation: ConversationListViewItem,add:Boolean,adapter: ConversationListAdapter) = viewModelScope.launch{
+        if(add){
+            Constants.PINNED_CONVO.add(conversation.sid)
+            conversation.isPinned= add
+            adapter.notifyDataSetChanged()
+            getUserConversations()
+        }
+        else{
+            Constants.PINNED_CONVO.remove(conversation.sid)
+            conversation.isPinned= !add
+            adapter.notifyDataSetChanged()
+            getUserConversations()
+        }
+//        val request = SavePinnedConversationRequest(Constants.USERNAME,,Constants.TENANT_CODE)
     }
 }

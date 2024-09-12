@@ -76,13 +76,11 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
     private fun onLabelSelect(label: TextView) {
         //when a label is selected
         adapter.setFilter(label.text.toString(),true)
-        println("${label.text} selected")
     }
 
     private fun onLabelDeselect(label: TextView) {
         //when a label is deselected
         adapter.setFilter(label.text.toString(),false)
-        println("${label.text} deselected")
     }
 
     fun shouldInterceptBackPress() = true
@@ -98,18 +96,18 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
         requireActivity().title = getString(R.string.title_conversations_list)
 
 
-        binding.label1.text = "Unread"
-        binding.label2.text = Constants.DEALER_NAME
-        binding.label3.text = "Customer"
+        binding.lblUnread.text = "Unread"
+        binding.lblInternal.text = Constants.DEALER_NAME
+        binding.lblExternal.text = "Customer"
 
-        isSelectedMap[binding.label1.id] = true
-        isSelectedMap[binding.label2.id] = true
-        isSelectedMap[binding.label3.id] = true
+        isSelectedMap[binding.lblUnread.id] = true
+        isSelectedMap[binding.lblInternal.id] = true
+        isSelectedMap[binding.lblExternal.id] = true
         // Set click listeners
 //        binding.label0.setOnClickListener { handleLabelClick(binding.label0) }
-        binding.label1.setOnClickListener { handleLabelClick(binding.label1) }
-        binding.label2.setOnClickListener { handleLabelClick(binding.label2) }
-        binding.label3.setOnClickListener { handleLabelClick(binding.label3) }
+        binding.lblUnread.setOnClickListener { handleLabelClick(binding.lblUnread) }
+        binding.lblInternal.setOnClickListener { handleLabelClick(binding.lblInternal) }
+        binding.lblExternal.setOnClickListener { handleLabelClick(binding.lblExternal) }
 
         conversationListViewModel.userConversationItems.observe(viewLifecycleOwner) { it:List<ConversationListViewItem>->
             adapter.notifyDataSetChanged()
@@ -213,6 +211,50 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
         MessageListActivity.start(requireContext(), conversationSid)
     }
 
+    override fun onConversationLongClicked(conversation: ConversationListViewItem) {
+        EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onConversationLongClicked Called")
+        showPinnedConversationDialog(conversation)
+    }
+
+    fun showPinnedConversationDialog(conversation : ConversationListViewItem){
+
+        if(conversation.isPinned){
+            val dialog = AlertDialog.Builder(requireContext())
+                .setTitle("Unpin Conversation?")
+                .setPositiveButton("Cancel", null)
+                .setNegativeButton("Yes") { _, _ -> conversationListViewModel.savePinnedConversation(conversation,false,adapter) }
+                .create()
+            dialog.setOnShowListener {
+                val color = ContextCompat.getColor(requireContext(), R.color.colorAccent)
+                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(color)
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                    .setTextColor(ContextCompat.getColor(requireContext(), R.color.alternate_message_text))
+
+                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).isAllCaps = false
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).isAllCaps = false
+            }
+
+            dialog.show()
+        }
+        else {
+    val dialog = AlertDialog.Builder(requireContext())
+        .setTitle("Pin Conversation?")
+        .setPositiveButton("Cancel", null)
+        .setNegativeButton("Yes") { _, _ -> conversationListViewModel.savePinnedConversation(conversation,true,adapter) }
+        .create()
+    dialog.setOnShowListener {
+        val color = ContextCompat.getColor(requireContext(), R.color.colorAccent)
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(color)
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            .setTextColor(ContextCompat.getColor(requireContext(), R.color.alternate_message_text))
+
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).isAllCaps = false
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).isAllCaps = false
+    }
+
+    dialog.show()
+    }
+    }
     private fun showLeaveConfirmationDialog(conversationSid: String) {
         val dialog = AlertDialog.Builder(requireContext())
             .setTitle(R.string.leave_dialog_title)

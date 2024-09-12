@@ -86,5 +86,5 @@ interface TwilioApi {
     fun addParticipantToWebToWebConversation(@Body requestData : addParticipantToWebConversationRequest ) : Call<List<webParticipant>>
 
     @POST("Conversation/SavePinnedConversation")
-    fun savePinnedConversation(@Body requestData: SavePinnedConversationRequest) : Response<String>
+    suspend fun savePinnedConversation(@Body requestData: SavePinnedConversationRequest) : Response<String>
 }

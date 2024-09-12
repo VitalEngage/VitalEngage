@@ -63,7 +63,7 @@ class Constants   {
         var OPEN_CHAT = ""
         var CONTEXT = ""
         var DEALER_NAME =""
-        var EXTERNAL_NAME ="Customer"
+        var PINNED_CONVO : ArrayList<String> = arrayListOf()
 
 
         @JvmStatic

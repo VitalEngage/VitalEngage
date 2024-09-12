@@ -54,10 +54,21 @@
             android:textColor="@{conversation.isMuted ? @color/text_title_weak : @color/text_title}"
             app:layout_constraintStart_toEndOf="@+id/conversationStateIcon"
             app:layout_constraintTop_toTopOf="@id/participant_icon"
-            app:layout_constraintEnd_toStartOf="@id/unreadCount"
+            app:layout_constraintEnd_toStartOf="@id/pinned"
 
             tools:text="Conversation friendly name bla bla bla bla" />
         <!--    app:layout_constraintEnd_toStartOf="@+id/participantsCount"-->
+        <ImageView
+            android:id="@+id/pinned"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="4dp"
+            android:src="@drawable/icon_pin"
+            android:visibility="@{conversation.isPinned ? View.VISIBLE : View.GONE}"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toEndOf="@+id/conversationName"
+            app:layout_constraintTop_toTopOf="@+id/conversationName"
+            app:layout_constraintEnd_toStartOf="@id/unreadCount" />
         <TextView
             android:id="@+id/participantsCount"
             style="@style/TextViewSubtitle"

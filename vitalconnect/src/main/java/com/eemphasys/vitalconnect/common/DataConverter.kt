@@ -202,7 +202,8 @@ fun ConversationDataItem.asConversationListViewItem(
         JSONObject(this.attributes).optString("isWebChat", " ")
     } catch (e: Exception) {
         " "
-    }
+    },
+    Constants.PINNED_CONVO.contains(this.sid)
 )
 
 fun ConversationDataItem.asConversationDetailsViewItem() = ConversationDetailsViewItem(
