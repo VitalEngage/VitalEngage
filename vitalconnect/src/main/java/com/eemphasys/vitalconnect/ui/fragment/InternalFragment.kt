@@ -333,12 +333,6 @@ class InternalFragment : Fragment() {
             LinearLayoutManager.VERTICAL,false)
         //Assigning the created adapter to recyclerview
         binding?.userList?.adapter = adapter
-//        if (binding!!.userList.adapter!!.itemCount < 1){
-//            binding!!.noResultFound.root.visibility = View.VISIBLE
-//        }
-//        else
-//            binding!!.noResultFound.root.visibility = View.GONE
-
     }
 
     private fun showNoInternetSnackbar(show: Boolean) {

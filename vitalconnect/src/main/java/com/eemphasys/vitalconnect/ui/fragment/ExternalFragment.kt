@@ -293,7 +293,6 @@ class ExternalFragment : Fragment() {
             @SuppressLint("SuspiciousIndentation")
             override fun onContactItemClick(contact: ContactListViewItem) {
                 var phone  = Constants.cleanedNumber(Constants.formatPhoneNumber(contact.number,contact.countryCode!!))
-                if (contact.type == "SMS") {
                     if(Constants.isValidPhoneNumber(phone, Locale.getDefault().country)) {
                         binding?.progressBarID?.visibility = View.VISIBLE
 
@@ -516,54 +515,6 @@ class ExternalFragment : Fragment() {
                     else{
                         binding!!.contactList .showSnackbar("Invalid Phone number.")
                     }
-
-                } else {
-                    binding?.progressBarID?.visibility = View.VISIBLE
-                    //Below code can be uncommented if we want universal channel for webchatusers too.
-
-                    //If contact is webchat user
-//                    val existingConversation  = retrofitWithToken.fetchExistingConversation(
-//                        Constants.TENANT_CODE,
-//                        contact.email,
-//                        true,
-//                        1
-//                    )
-//
-//                    existingConversation.enqueue(object : Callback<List<ParticipantExistingConversation>> {
-//                        override fun onResponse(
-//                            call: Call<List<ParticipantExistingConversation>>,
-//                            response: Response<List<ParticipantExistingConversation>>
-//                        ) {
-//                            if (response.isSuccessful) {
-//                                val conversationList: List<ParticipantExistingConversation>? = response.body()
-//
-//                                // Check if the list is not null and not empty
-//                                if (!conversationList.isNullOrEmpty()) {
-//                                    // Iterate through the list and access each Conversation object
-//                                    for (conversation in conversationList) {
-//                                        // Access properties of each Conversation object
-//                                        println("Conversation SID: ${conversation.conversationSid}")
-//
-//                                        //Starting and redirecting to Existing conversation
-//                                        MessageListActivity.startfromFragment(applicationContext,conversation.conversationSid)
-//                                    }
-//                                } else { //If there is no existing conversation with web user, create new
-                    contactListViewModel.createConversation(
-                        contact.name, contact.email, contact.number,
-                        Attributes("")
-                    )
-                    binding?.progressBarID?.visibility = View.GONE
-                    //                                }
-//                            } else {
-//                                println("Response was not successful: ${response.code()}")
-//                            }
-//                        }
-//
-//                        override fun onFailure(call: Call<List<ParticipantExistingConversation>>, t: Throwable) {
-//                            println("Failed to fetch existing conversations: ${t.message}")
-//                        }
-//                    })
-                }
             }
         })
 
@@ -572,11 +523,6 @@ class ExternalFragment : Fragment() {
             LinearLayoutManager.VERTICAL,false)
         //Assigning the created adapter to recyclerview
         binding?.contactList?.adapter = adapter
-//        if (binding!!.contactList.adapter!!.itemCount < 1){
-//            binding!!.noResultFound.root.visibility = View.VISIBLE
-//        }
-//        else
-//            binding!!.noResultFound.root.visibility = View.GONE
 
     }
 

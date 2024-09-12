@@ -74,6 +74,7 @@
     <string name="search_contact">Search Contacts</string>
     <string name="try_name_or_number">Try name or mobile number.</string>
     <string name="size_note">Select a single file: either a JPEG or PNG up to 5MB, or a PDF up to 600KB</string>
+    <string name="webSize_note">Select a single file:PDF, JPEG or PNG up to 20MB</string>
 
     <string name="no_conversations">No Conversations </string>
     <string name="no_conversations_description">Conversations you create or are involved in will appear here</string>
@@ -130,7 +131,7 @@
     <string name="leave_conversation">Leave Conversation</string>
     <string name="cancel">Cancel</string>
     <string name="remove_conversation_title">Are you sure you wish to remove this conversation?</string>
-    <string name="conversation_filter_hint">Filter Conversations</string>
+    <string name="conversation_filter_hint">Search Conversations</string>
 
     <!-- Message list -->
     <string name="new_message">Enter your message here</string>

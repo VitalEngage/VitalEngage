@@ -3,19 +3,44 @@ package com.eemphasys.vitalconnect.ui.activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import android.view.View
+import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.eemphasys.vitalconnect.R
+import com.eemphasys.vitalconnect.adapters.SuggestionAdapter
+import com.eemphasys.vitalconnect.api.AuthInterceptor
+import com.eemphasys.vitalconnect.api.RetrofitHelper
+import com.eemphasys.vitalconnect.api.RetryInterceptor
+import com.eemphasys.vitalconnect.api.TwilioApi
+import com.eemphasys.vitalconnect.api.data.SearchContactRequest
+import com.eemphasys.vitalconnect.api.data.SearchUsersResponse
+import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.SheetListener
 import com.eemphasys.vitalconnect.common.enums.ConversationsError
 import com.eemphasys.vitalconnect.common.extensions.*
 import com.eemphasys.vitalconnect.common.injector
+import com.eemphasys.vitalconnect.data.models.ContactListViewItem
 import com.eemphasys.vitalconnect.databinding.ActivityConversationDetailsBinding
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.util.concurrent.TimeUnit
 
 class ConversationDetailsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityConversationDetailsBinding
@@ -40,6 +65,10 @@ class ConversationDetailsActivity : AppCompatActivity() {
         Snackbar.make(binding.conversationDetailsLayout, R.string.no_internet_connection, Snackbar.LENGTH_INDEFINITE)
     }
 
+    private lateinit var editText: EditText
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: SuggestionAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onCreate Called")
@@ -50,6 +79,104 @@ class ConversationDetailsActivity : AppCompatActivity() {
             }
 
         initViews()
+
+        editText = findViewById(R.id.add_chat_participant_id_input)
+        recyclerView = findViewById(R.id.recyclerView)
+        recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+        recyclerView.layoutManager = LinearLayoutManager(this)
+
+        editText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if(s!!.length >= 3){
+                lifecycleScope.launch {
+                    val listOfSearchedUsers = mutableListOf<ContactListViewItem>()
+                    val httpClientWithToken = OkHttpClient.Builder()
+                        .connectTimeout(300, TimeUnit.SECONDS)
+                        .readTimeout(300, TimeUnit.SECONDS)
+                        .writeTimeout(300, TimeUnit.SECONDS)
+                        .addInterceptor(AuthInterceptor(Constants.AUTH_TOKEN))
+                        .addInterceptor(RetryInterceptor())
+                        .build()
+                    val retrofitWithToken =
+                        RetrofitHelper.getInstance(httpClientWithToken)
+                            .create(TwilioApi::class.java)
+                    var request =
+                        SearchContactRequest(
+                            Constants.USERNAME,
+                            Constants.TENANT_CODE,
+                            s.toString()
+                        )
+                    var response = retrofitWithToken.getSearchedUsers(request)
+
+                    response.enqueue(object : Callback<List<SearchUsersResponse>> {
+                        override fun onResponse(
+                            call: Call<List<SearchUsersResponse>>,
+                            response: Response<List<SearchUsersResponse>>
+                        ) {
+                            if (response.isSuccessful) {
+                                var contactsResponse: List<SearchUsersResponse>? =
+                                    response.body()
+                                if (!contactsResponse.isNullOrEmpty()) {
+
+                                    for (response in contactsResponse) {
+                                        var contactItem =
+                                            ContactListViewItem(
+                                                response.fullName,
+                                                response.userName,
+                                                response.mobileNumber,
+                                                "Web",
+                                                Constants.getInitials(response.fullName.trim { it <= ' ' }),
+                                                "",
+                                                response.department,
+                                                "",
+                                                "",
+                                                true
+                                            )
+
+                                        listOfSearchedUsers.add(contactItem)
+                                    }
+                                    setAdapter(listOfSearchedUsers)
+                                }
+                            }
+                        }
+
+                        override fun onFailure(
+                            call: Call<List<SearchUsersResponse>>,
+                            t: Throwable
+                        ) {
+
+                        }
+
+                    })
+
+                }
+                }
+                else{
+                    setAdapter(emptyList())
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+    }
+
+    private fun onSuggestionClick(suggestion: ContactListViewItem) {
+        editText.setText(suggestion.name)
+        binding.addChatParticipantSheet.identity.text = suggestion.email
+//        editText.setSelection(suggestion.name.length)
+        adapter= SuggestionAdapter(emptyList()){}
+        adapter.notifyDataSetChanged()
+    }
+
+    fun setAdapter(list : List<ContactListViewItem>){
+        Log.d("setadapter",list.toString()
+        )
+        adapter = SuggestionAdapter(list) { suggestion ->
+            onSuggestionClick(suggestion)
+        }
+        recyclerView.adapter = adapter
     }
 
     override fun onBackPressed() {
@@ -127,11 +254,13 @@ class ConversationDetailsActivity : AppCompatActivity() {
         binding.addChatParticipantSheet.addChatParticipantIdCancelButton.setOnClickListener {
             addChatParticipantSheetBehavior.hide()
         }
-
+//add chat participant through this button
         binding.addChatParticipantSheet.addChatParticipantIdButton.setOnClickListener {
             addChatParticipantSheetBehavior.hide()
-            conversationDetailsViewModel.addChatParticipant(binding.addChatParticipantSheet.addChatParticipantIdInput.text.toString())
+            conversationDetailsViewModel.addChatParticipant(binding.addChatParticipantSheet.identity.text.toString())
         }
+
+        binding.addChatParticipantSheet.recyclerView
 
         binding.addNonChatParticipantSheet.addNonChatParticipantIdCancelButton.setOnClickListener {
             addNonChatParticipantSheetBehavior.hide()

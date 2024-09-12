@@ -40,4 +40,5 @@
     <color name="sent_tick">#4CAF50</color>
     <color name="dealer_name">#0B602D</color>
     <color name="customer_name">#C72323</color>
+    <color name="tabSelected">#d92337</color>
 </resources>

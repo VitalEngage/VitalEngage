@@ -52,6 +52,7 @@ class Constants   {
         var EMAIL : String = ""
         var MOBILENUMBER :String = ""
         var DEFAULT_COUNTRYCODE :String = ""
+        var CURRENT_CONVERSATION_ISWEBCHAT : String = ""
 
         var URI : String = ""
         var INPUTSTREAM : InputStream = ByteArrayInputStream(ByteArray(0))
@@ -62,6 +63,7 @@ class Constants   {
         var OPEN_CHAT = ""
         var CONTEXT = ""
         var DEALER_NAME =""
+        var EXTERNAL_NAME ="Customer"
 
 
         @JvmStatic

@@ -45,8 +45,11 @@ class AttachFileDialog : BaseBottomSheetDialogFragment() {
             val inputStream = contentResolver.openInputStream(imageCaptureUri)
             val sizeInBytes: Long = getAttachmentSize(inputStream)
             val sizeInMB: Double = sizeInBytes / (1024.0 * 1024.0) // Convert bytes to MB
-            if(sizeInMB < 5){
+            if(Constants.CURRENT_CONVERSATION_ISWEBCHAT == "false" && sizeInMB < 5){
             sendMediaMessage(imageCaptureUri)
+            }
+            else if(Constants.CURRENT_CONVERSATION_ISWEBCHAT == "true" && sizeInMB < 20){
+                sendMediaMessage(imageCaptureUri)
             }
             else{
                 messageListViewModel.onMessageError.value = ConversationsError.FILE_TOO_LARGE
@@ -55,33 +58,43 @@ class AttachFileDialog : BaseBottomSheetDialogFragment() {
     }
 
     private val openDocument = registerForActivityResult(OpenDocument()) { uri: Uri? ->
-        val contentResolver = requireContext().contentResolver
-        val inputStream = contentResolver.openInputStream(uri!!)
-        val type = contentResolver.getType(uri)
-        val sizeInBytes: Long = getAttachmentSize(inputStream)
+        if(uri != null) {
+            val contentResolver = requireContext().contentResolver
+            val inputStream = contentResolver.openInputStream(uri!!)
+            val type = contentResolver.getType(uri)
+            val sizeInBytes: Long = getAttachmentSize(inputStream)
             val sizeInKB: Double = sizeInBytes / 1024.0  // Convert bytes to KB
             val sizeInMB: Double = sizeInBytes / (1024.0 * 1024.0) // Convert bytes to MB
             when (type) {
                 "application/pdf" -> {
-                    if (sizeInKB > 600) {
-                        messageListViewModel.onMessageError.value = ConversationsError.FILE_TOO_LARGE
-                    }
-                    else{
+                    if (Constants.CURRENT_CONVERSATION_ISWEBCHAT == "false" && sizeInKB < 600) {
                         uri?.let { sendMediaMessage(it) }
+                    } else if (Constants.CURRENT_CONVERSATION_ISWEBCHAT == "true" && sizeInMB < 20) {
+                        uri?.let { sendMediaMessage(it) }
+                    } else {
+                        messageListViewModel.onMessageError.value =
+                            ConversationsError.FILE_TOO_LARGE
                     }
                 }
+
                 "image/jpeg", "image/png", "image/jpg" -> {
-                    if (sizeInMB > 5) {
-                        messageListViewModel.onMessageError.value = ConversationsError.FILE_TOO_LARGE
-                    }
-                    else{
+                    if(Constants.CURRENT_CONVERSATION_ISWEBCHAT == "false" && sizeInMB < 5){
                         uri?.let { sendMediaMessage(it) }
                     }
+                    else if(Constants.CURRENT_CONVERSATION_ISWEBCHAT == "true" && sizeInMB < 20){
+                        uri?.let { sendMediaMessage(it) }
+                    }
+                    else{
+                        messageListViewModel.onMessageError.value = ConversationsError.FILE_TOO_LARGE
+                    }
                 }
+
                 else -> {
-                    messageListViewModel.onMessageError.value = ConversationsError.INVALID_CONTENT_TYPE
+                    messageListViewModel.onMessageError.value =
+                        ConversationsError.INVALID_CONTENT_TYPE
                 }
             }
+        }
         dismiss()
     }
 

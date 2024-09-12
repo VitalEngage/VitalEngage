@@ -148,16 +148,20 @@ class MessageListActivity: AppCompatActivity() {
             }
             messageListViewModel.isWebChat.observe(this){ isWebChat ->
                 if(isWebChat.toLowerCase() == "true") {
+                    Constants.CURRENT_CONVERSATION_ISWEBCHAT = "true"
                     binding.toolbarSubtitle.visibility = View.VISIBLE
                     binding.toolbarSubtitle.text = Constants.DEALER_NAME
                     binding.toolbarSubtitle.setBackgroundResource(R.drawable.bg_dealer)
                     binding.toolbarSubtitle.setTextColor(resources.getColor(R.color.dealer_name))
+                    binding.note.text = getString(R.string.webSize_note)
                 }
                 else {
+                    Constants.CURRENT_CONVERSATION_ISWEBCHAT = "false"
                     binding.toolbarSubtitle.visibility = View.VISIBLE
                     binding.toolbarSubtitle.text = "Customer"
                     binding.toolbarSubtitle.setBackgroundResource(R.drawable.bg_customer)
                     binding.toolbarSubtitle.setTextColor(resources.getColor(R.color.customer_name))
+                    binding.note.text = getString(R.string.size_note)
                 }
             }
             messageListViewModel.messageItems.observe(this) { messages ->

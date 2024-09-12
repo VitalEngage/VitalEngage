@@ -110,7 +110,12 @@ class ConversationListViewModel(
         if (name.isEmpty()) {
             this
         } else {
-            filter { it.name.contains(name, ignoreCase = true) }
+            filter {
+                it.name.contains(name, ignoreCase = true) ||
+                        it.customer.contains(name, ignoreCase = true) ||
+                        it.department.contains(name, ignoreCase = true) ||
+                        it.designation.contains(name, ignoreCase = true)
+            }
         }
 
     fun muteConversation(conversationSid: String) = viewModelScope.launch {

@@ -51,12 +51,7 @@ class ConversationListActivity:AppCompatActivity() {
         }
 
         if (savedInstanceState == null) {
-//            if (isDataAvailable) {
                 replaceFragment(ContactListFragment())
-//            }
-//            else {
-//                replaceFragment(ConversationListFragment())
-//            }
         }
         if(Constants.IS_STANDALONE == "false")
         {
@@ -67,12 +62,10 @@ class ConversationListActivity:AppCompatActivity() {
     override fun onBackPressed() {
 
         if(Constants.IS_STANDALONE == "true") {
-//            this.moveTaskToBack(true)
         }
         else
         {
             super.onBackPressed()
-//            profileViewModel.signOut()
         }
     }
     private fun replaceFragment(fragment: Fragment) {

@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
@@ -13,9 +14,12 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.adapters.ConversationListAdapter
 import com.eemphasys.vitalconnect.adapters.OnConversationEvent
+import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.extensions.getErrorMessage
 import com.eemphasys.vitalconnect.common.extensions.lazyActivityViewModel
 import com.eemphasys.vitalconnect.databinding.FragmentConversationListBinding
@@ -28,6 +32,7 @@ import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.data.models.ConversationListViewItem
 import com.eemphasys.vitalconnect.ui.activity.MessageListActivity
 import com.eemphasys_enterprise.commonmobilelib.EETLog
+import kotlinx.coroutines.delay
 
 class ConversationListFragment:Fragment(), OnConversationEvent {
     lateinit var binding: FragmentConversationListBinding
@@ -39,11 +44,45 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
     }
 
     val conversationListViewModel by lazyActivityViewModel { injector.createConversationListViewModel(applicationContext) }
+    var isSelectedMap = mutableMapOf<Int, Boolean>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onCreate Called")
         setHasOptionsMenu(true)
+    }
+
+    private fun handleLabelClick(clickedLabel: TextView) {
+        val isSelected = isSelectedMap[clickedLabel.id] ?: true
+        if (isSelected) {
+            clickedLabel?.let {
+                it.background = resources.getDrawable(R.drawable.bg_selectedlabel)
+                it.setTextColor(resources.getColorStateList(R.color.white))
+                // Perform logic on deselection
+                onLabelSelect(it)
+            }
+        }
+        else{
+            clickedLabel?.let {
+                it.background = resources.getDrawable(R.drawable.bg_unselectedlabel)
+                it.setTextColor(resources.getColorStateList(R.color.alternate_message_text))
+                // Perform logic on deselection
+                onLabelDeselect(it)
+            }
+        }
+        isSelectedMap[clickedLabel.id] = !isSelected
+    }
+
+    private fun onLabelSelect(label: TextView) {
+        //when a label is selected
+        adapter.setFilter(label.text.toString(),true)
+        println("${label.text} selected")
+    }
+
+    private fun onLabelDeselect(label: TextView) {
+        //when a label is deselected
+        adapter.setFilter(label.text.toString(),false)
+        println("${label.text} deselected")
     }
 
     fun shouldInterceptBackPress() = true
@@ -58,8 +97,24 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
         super.onViewCreated(view, savedInstanceState)
         requireActivity().title = getString(R.string.title_conversations_list)
 
+
+        binding.label1.text = "Unread"
+        binding.label2.text = Constants.DEALER_NAME
+        binding.label3.text = "Customer"
+
+        isSelectedMap[binding.label1.id] = true
+        isSelectedMap[binding.label2.id] = true
+        isSelectedMap[binding.label3.id] = true
+        // Set click listeners
+//        binding.label0.setOnClickListener { handleLabelClick(binding.label0) }
+        binding.label1.setOnClickListener { handleLabelClick(binding.label1) }
+        binding.label2.setOnClickListener { handleLabelClick(binding.label2) }
+        binding.label3.setOnClickListener { handleLabelClick(binding.label3) }
+
         conversationListViewModel.userConversationItems.observe(viewLifecycleOwner) { it:List<ConversationListViewItem>->
+            adapter.notifyDataSetChanged()
             adapter.conversations = it
+            adapter.allConversations = it
             binding.conversationRefresh.isRefreshing = false
         }
 
@@ -120,6 +175,7 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
 //        binding.newConversationFab.setOnClickListener {
 //            NewConversationDialog().showNow(childFragmentManager, null)
 //        }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

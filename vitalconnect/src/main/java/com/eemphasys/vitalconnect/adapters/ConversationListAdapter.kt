@@ -1,5 +1,6 @@
 package com.eemphasys.vitalconnect.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,41 +16,41 @@ import java.util.Locale
 import kotlin.properties.Delegates
 
 class ConversationListAdapter(private val callback: OnConversationEvent) : RecyclerView.Adapter<ConversationListAdapter.ViewHolder>() {
+
+    // The list of all conversations
+    var allConversations: List<ConversationListViewItem> by Delegates.observable(emptyList()) { _, old, new ->
+        // Apply filter whenever the list is set or filtered
+        conversations = filterConversations(new)
+        DiffUtil.calculateDiff(ConversationDiff(old, conversations)).dispatchUpdatesTo(this)
+    }
+
+    // The list of conversations to display
     var conversations: List<ConversationListViewItem> by Delegates.observable(emptyList()) { _, old, new ->
         DiffUtil.calculateDiff(ConversationDiff(old, new)).dispatchUpdatesTo(this)
     }
+    // Current filter state
+    private var filterCriteria: MutableSet<String> = mutableSetOf("All")
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = RowConversationItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-//        val context = parent.context
-//        if(binding.conversation!!.isWebChat =="true"){
-//            binding.conversationType.text = Constants.DEALER_NAME
-//            binding.conversationType.setBackgroundResource(R.drawable.bg_dealer)
-//            binding.conversationType.setTextColor(ContextCompat.getColor(context,R.color.dealer_name))
-//        }
-//        else{
-//            binding.conversationType.text = Constants.DEALER_NAME
-//            binding.conversationType.setBackgroundResource(R.drawable.bg_customer)
-//            binding.conversationType.setTextColor(ContextCompat.getColor(context,R.color.customer_name))
-//        }
         return ViewHolder(binding)
     }
+
     override fun getItemCount(): Int = conversations.size
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-//        holder.binding.conversation = conversations[position]
         val conversationItem = conversations[position]
 
-        // Bind the conversation item
         holder.binding.conversation = conversationItem
 
         holder.binding.conversationItem.setOnClickListener {
             holder.binding.conversation?.sid?.let { callback.onConversationClicked(it) }
         }
 
-        if(Constants.SHOW_DEPARTMENT == "false" ) {
+        if (Constants.SHOW_DEPARTMENT == "false") {
             holder.binding.department.visibility = View.GONE
         }
-        if(Constants.SHOW_DESIGNATION == "false") {
+        if (Constants.SHOW_DESIGNATION == "false") {
             holder.binding.designation.visibility = View.GONE
         }
 
@@ -63,9 +64,50 @@ class ConversationListAdapter(private val callback: OnConversationEvent) : Recyc
             holder.binding.conversationType.setBackgroundResource(R.drawable.bg_customer)
             holder.binding.conversationType.setTextColor(ContextCompat.getColor(context, R.color.customer_name))
         }
-
     }
     fun isMuted(position: Int) = conversations[position].isMuted
+
+    fun setFilter(criteria: String, add: Boolean) {
+        notifyDataSetChanged()
+        if (add) {
+            filterCriteria.add(criteria)
+            if(criteria != "All"){
+            filterCriteria.remove("All")
+            }
+        } else {
+            filterCriteria.remove(criteria)
+            if(filterCriteria.size == 0) {
+                filterCriteria.add("All")
+            }
+        }
+        conversations = filterConversations(allConversations)
+        notifyDataSetChanged()
+    }
+
+    private fun filterConversations(conversations: List<ConversationListViewItem>): List<ConversationListViewItem> {
+        return conversations.filter { conversation ->
+            if(filterCriteria.contains(Constants.DEALER_NAME) && filterCriteria.contains("Customer") && filterCriteria.size == 2){
+                filterCriteria.all { criteria ->
+                    when ("All") {
+                        "All" -> conversation.sid!= ""
+                        else -> true
+                    }
+                }
+            }
+            else {
+                filterCriteria.all { criteria ->
+                    Log.d("Criteria", criteria)
+                    when (criteria) {
+                        "All" -> conversation.sid != ""
+                        "Unread" -> conversation.unreadMessageCount != "0"
+                        Constants.DEALER_NAME -> conversation.isWebChat == "true"
+                        "Customer" -> conversation.isWebChat != "true"
+                        else -> true
+                    }
+                }
+            }
+        }
+    }
 
     class ViewHolder(val binding: RowConversationItemBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -85,10 +127,8 @@ class ConversationListAdapter(private val callback: OnConversationEvent) : Recyc
             return oldItems[oldItemPosition] == newItems[newItemPosition]
         }
     }
-
 }
 
 interface OnConversationEvent {
-
     fun onConversationClicked(conversationSid: String)
 }
