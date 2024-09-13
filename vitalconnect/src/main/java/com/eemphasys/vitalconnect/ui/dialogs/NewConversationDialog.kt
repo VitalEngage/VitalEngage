@@ -10,13 +10,14 @@ import com.eemphasys.vitalconnect.common.extensions.enableErrorResettingOnTextCh
 import com.eemphasys.vitalconnect.common.extensions.lazyActivityViewModel
 import com.eemphasys.vitalconnect.common.extensions.onSubmit
 import com.eemphasys.vitalconnect.common.injector
+import com.eemphasys.vitalconnect.data.models.ContactListViewItem
 import com.eemphasys.vitalconnect.databinding.DialogNewConversationBinding
 
 class NewConversationDialog: BaseBottomSheetDialogFragment() {
     lateinit var binding: DialogNewConversationBinding
 
     val conversationListViewModel by lazyActivityViewModel { injector.createConversationListViewModel(applicationContext) }
-
+    val contactListViewModel by lazyActivityViewModel { injector.createContactListViewModel(applicationContext) }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DialogNewConversationBinding.inflate(inflater, container, false)
         return binding.root
@@ -37,7 +38,9 @@ class NewConversationDialog: BaseBottomSheetDialogFragment() {
             return
         }
 
-            //conversationListViewModel.createConversation(friendlyName)
+        contactListViewModel.checkName(friendlyName)
+
+//            conversationListViewModel.createConversation(friendlyName)
         dismiss()
     }
 }

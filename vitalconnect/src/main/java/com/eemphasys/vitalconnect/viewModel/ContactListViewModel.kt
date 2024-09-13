@@ -144,6 +144,24 @@ class ContactListViewModel(
 
     }
 
+    fun checkName(friendlyName : String){
+        val httpClientWithToken = OkHttpClient.Builder()
+            .connectTimeout(300, TimeUnit.SECONDS)
+            .readTimeout(300, TimeUnit.SECONDS)
+            .writeTimeout(300, TimeUnit.SECONDS)
+            .addInterceptor(AuthInterceptor(Constants.AUTH_TOKEN))
+            .addInterceptor(RetryInterceptor())
+            .build()
+        val retrofitWithToken =
+            RetrofitHelper.getInstance(httpClientWithToken).create(TwilioApi::class.java)
+
+        var request = ConversationSidFromFriendlyNameRequest(Constants.TENANT_CODE,Constants.USERNAME,Constants.CONTEXT)
+        val existingWebConversation = retrofitWithToken.getTwilioConversationSidFromFriendlyName(request)
+
+
+
+    }
+
     fun checkExistingconversation(contact : ContactListViewItem){
         val httpClientWithToken = OkHttpClient.Builder()
             .connectTimeout(300, TimeUnit.SECONDS)

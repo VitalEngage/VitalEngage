@@ -7,6 +7,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.eemphasys.vitalconnect.adapters.ConversationListAdapter
+import com.eemphasys.vitalconnect.api.AuthInterceptor
+import com.eemphasys.vitalconnect.api.RetrofitHelper
+import com.eemphasys.vitalconnect.api.RetryInterceptor
+import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.SavePinnedConversationRequest
 import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.Constants
@@ -27,6 +31,8 @@ import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceHelper
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
+import okhttp3.OkHttpClient
+import java.util.concurrent.TimeUnit
 
 class ConversationListViewModel(
     private val applicationContext: Context,
@@ -47,6 +53,7 @@ class ConversationListViewModel(
     val onConversationLeft = SingleLiveEvent<Unit>()
     val onConversationMuted = SingleLiveEvent<Boolean>()
     val onConversationError = SingleLiveEvent<ConversationsError>()
+    val pinConversation = SingleLiveEvent<Boolean>()
 
     var conversationFilter by Delegates.observable("") { _, _, _ -> updateUserConversationItems() }
 
@@ -282,18 +289,44 @@ class ConversationListViewModel(
     }
 
     fun savePinnedConversation(conversation: ConversationListViewItem,add:Boolean,adapter: ConversationListAdapter) = viewModelScope.launch{
+        EETLog.saveUserJourney("vitaltext:  ConversationListViewModel savePinnedConversation Called")
         if(add){
             Constants.PINNED_CONVO.add(conversation.sid)
             conversation.isPinned= add
+            pinConversation.value = true
             adapter.notifyDataSetChanged()
             getUserConversations()
+
         }
         else{
             Constants.PINNED_CONVO.remove(conversation.sid)
             conversation.isPinned= !add
+            pinConversation.value = false
             adapter.notifyDataSetChanged()
             getUserConversations()
         }
-//        val request = SavePinnedConversationRequest(Constants.USERNAME,,Constants.TENANT_CODE)
+
+            savePinnedConversationToDB()
+    }
+
+    fun savePinnedConversationToDB(){
+        viewModelScope.launch {
+            val httpClientWithToken = OkHttpClient.Builder()
+                .connectTimeout(300, TimeUnit.SECONDS)
+                .readTimeout(300, TimeUnit.SECONDS)
+                .writeTimeout(300, TimeUnit.SECONDS)
+                .addInterceptor(AuthInterceptor(Constants.AUTH_TOKEN))
+                .addInterceptor(RetryInterceptor())
+                .build()
+            val retrofitWithToken =
+                RetrofitHelper.getInstance(httpClientWithToken).create(TwilioApi::class.java)
+            val request = SavePinnedConversationRequest(
+                Constants.USERNAME,
+                Constants.PINNED_CONVO,
+                Constants.TENANT_CODE
+            )
+
+            var response = retrofitWithToken.savePinnedConversation(request)
+        }
     }
 }

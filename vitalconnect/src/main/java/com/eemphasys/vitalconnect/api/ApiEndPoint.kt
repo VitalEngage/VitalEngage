@@ -9,6 +9,7 @@ import com.eemphasys.vitalconnect.api.data.EncryptionRequest
 import com.eemphasys.vitalconnect.api.data.ParticipantExistingConversation
 import com.eemphasys.vitalconnect.api.data.RequestToken
 import com.eemphasys.vitalconnect.api.data.SavePinnedConversationRequest
+import com.eemphasys.vitalconnect.api.data.SavePinnedConversationResponse
 import com.eemphasys.vitalconnect.api.data.SearchContactRequest
 import com.eemphasys.vitalconnect.api.data.SearchContactResponse
 import com.eemphasys.vitalconnect.api.data.SearchUsersResponse
@@ -86,5 +87,5 @@ interface TwilioApi {
     fun addParticipantToWebToWebConversation(@Body requestData : addParticipantToWebConversationRequest ) : Call<List<webParticipant>>
 
     @POST("Conversation/SavePinnedConversation")
-    suspend fun savePinnedConversation(@Body requestData: SavePinnedConversationRequest) : Response<String>
+    suspend fun savePinnedConversation(@Body requestData: SavePinnedConversationRequest) : Response<SavePinnedConversationResponse>
 }

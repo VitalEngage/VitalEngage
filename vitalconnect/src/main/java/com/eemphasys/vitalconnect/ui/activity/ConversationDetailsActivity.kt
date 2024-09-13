@@ -61,6 +61,7 @@ class ConversationDetailsActivity : AppCompatActivity() {
     val messageListViewModel by lazyViewModel {
         injector.createMessageListViewModel(applicationContext, intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
     }
+    val conversationListViewModel by lazyViewModel { injector.createConversationListViewModel(applicationContext) }
     private val noInternetSnackBar by lazy {
         Snackbar.make(binding.conversationDetailsLayout, R.string.no_internet_connection, Snackbar.LENGTH_INDEFINITE)
     }
@@ -231,6 +232,60 @@ class ConversationDetailsActivity : AppCompatActivity() {
                 conversationDetailsViewModel.muteConversation()
             }
         }
+
+        binding.conversationPinButton.setOnClickListener {
+
+            if(binding.conversationPinButton.text == getString(R.string.details_pin_conversation)){
+                Constants.PINNED_CONVO.add(intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
+                conversationListViewModel.savePinnedConversationToDB()
+//                binding.conversationPinButton.text == getString(R.string.details_unpin_conversation)
+//                binding.conversationPinButton.setCompoundDrawables(resources.getDrawable(R.drawable.icon_unpin),null,null,null)
+//                binding.details!!.isPinned = false
+            }
+            else {
+                Constants.PINNED_CONVO.remove(intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
+                conversationListViewModel.savePinnedConversationToDB()
+//                binding.conversationPinButton.text == getString(R.string.details_pin_conversation)
+//                binding.conversationPinButton.setCompoundDrawables(resources.getDrawable(R.drawable.ic_pin),null,null,null)
+//                binding.details!!.isPinned = true
+            }
+//            binding.details!!.isPinned = binding.details!!.isPinned
+        }
+
+//        binding.conversationPinButton.setOnClickListener {
+//            if(binding.conversationPinButton.text == getString(R.string.details_pin_conversation)){
+//                Constants.PINNED_CONVO.add(intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
+//                conversationListViewModel.savePinnedConversationToDB()
+//                binding.conversationPinButton.text == getString(R.string.details_unpin_conversation)
+//                binding.conversationPinButton.setCompoundDrawables(resources.getDrawable(R.drawable.icon_unpin),null,null,null)
+//                binding.details!!.isPinned = false
+//            }
+//            else if(binding.conversationPinButton.text == getString(R.string.details_unpin_conversation)){
+//                Constants.PINNED_CONVO.remove(intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
+//                conversationListViewModel.savePinnedConversationToDB()
+//                binding.conversationPinButton.text == getString(R.string.details_pin_conversation)
+//                binding.conversationPinButton.setCompoundDrawables(resources.getDrawable(R.drawable.ic_pin),null,null,null)
+//                binding.details!!.isPinned = true
+//            }
+//        }
+
+//        binding.conversationPinButton.setOnClickListener {
+//            if(binding.details!!.isPinned){
+//                Log.d("pinned","pinned")
+//                Constants.PINNED_CONVO.add(intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
+//                conversationListViewModel.savePinnedConversationToDB()
+//                binding.conversationPinButton.text == getString(R.string.details_unpin_conversation)
+//                binding.details!!.isPinned = false
+//            }
+//            else{
+//                Log.d("pinned","unpinned")
+//                Constants.PINNED_CONVO.remove(intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
+//                conversationListViewModel.savePinnedConversationToDB()
+//                binding.conversationPinButton.text == getString(R.string.details_pin_conversation)
+//                binding.details!!.isPinned = true
+//            }
+////            binding.details!!.isPinned = !binding.details!!.isPinned
+//        }
 
         binding.conversationLeaveButton.setOnClickListener {
             conversationDetailsViewModel.leaveConversation()

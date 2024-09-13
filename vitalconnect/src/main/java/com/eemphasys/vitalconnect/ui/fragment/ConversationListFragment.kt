@@ -147,6 +147,11 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
             showSnackbar(requireContext().getErrorMessage(error))
         }
 
+        conversationListViewModel.pinConversation.observe(viewLifecycleOwner) { pinned ->
+            val message = if (pinned) R.string.conversation_pinned else R.string.conversation_unpinned
+            showSnackbar(message)
+        }
+
         binding.conversationRefresh.setOnRefreshListener { conversationListViewModel.getUserConversations() }
         binding.conversationList.adapter = adapter
         binding.conversationList.addItemDecoration(DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL))
@@ -220,9 +225,9 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
 
         if(conversation.isPinned){
             val dialog = AlertDialog.Builder(requireContext())
-                .setTitle("Unpin Conversation?")
-                .setPositiveButton("Cancel", null)
-                .setNegativeButton("Yes") { _, _ -> conversationListViewModel.savePinnedConversation(conversation,false,adapter) }
+                .setTitle(getText(R.string.unpinConversation))
+                .setPositiveButton(getText(R.string.cancel), null)
+                .setNegativeButton(getText(R.string.yes)) { _, _ -> conversationListViewModel.savePinnedConversation(conversation,false,adapter) }
                 .create()
             dialog.setOnShowListener {
                 val color = ContextCompat.getColor(requireContext(), R.color.colorAccent)
@@ -238,9 +243,9 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
         }
         else {
     val dialog = AlertDialog.Builder(requireContext())
-        .setTitle("Pin Conversation?")
-        .setPositiveButton("Cancel", null)
-        .setNegativeButton("Yes") { _, _ -> conversationListViewModel.savePinnedConversation(conversation,true,adapter) }
+        .setTitle(getText(R.string.pinConversation))
+        .setPositiveButton(getText(R.string.cancel), null)
+        .setNegativeButton(getText(R.string.yes)) { _, _ -> conversationListViewModel.savePinnedConversation(conversation,true,adapter) }
         .create()
     dialog.setOnShowListener {
         val color = ContextCompat.getColor(requireContext(), R.color.colorAccent)

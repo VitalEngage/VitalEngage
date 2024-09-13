@@ -44,7 +44,7 @@ class ConversationDetailsViewModel(
         }
     }
 
-    private suspend fun getConversationResult() {
+    suspend fun getConversationResult() {
         EETLog.saveUserJourney("vitaltext:  ConversationDetailsViewModel getConversationResult Called")
         conversationsRepository.getConversation(conversationSid).collect { result ->
             if (result.requestStatus is RepositoryRequestStatus.Error) {

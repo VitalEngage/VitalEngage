@@ -41,6 +41,7 @@ import com.eemphasys.vitalconnect.data.models.WebUser
 import com.eemphasys.vitalconnect.databinding.FragmentInternalBinding
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys.vitalconnect.ui.activity.MessageListActivity
+import com.eemphasys.vitalconnect.ui.dialogs.NewConversationDialog
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.google.android.material.snackbar.Snackbar
@@ -320,9 +321,14 @@ class InternalFragment : Fragment() {
 //                  Web to web chat
                     binding?.progressBarID?.visibility = View.VISIBLE
 
+                if(Constants.WITH_CONTEXT.lowercase() == "true") {
 //                  Check if existing coversation exist
                     contactListViewModel.checkExistingconversation(contact)
-
+                }
+                else{
+//                    Constants.CURRENT_CONTACT = contact
+//                    NewConversationDialog().showNow(childFragmentManager, null)
+                }
                     binding?.progressBarID?.visibility = View.GONE
 
             }

@@ -212,7 +212,8 @@ fun ConversationDataItem.asConversationDetailsViewItem() = ConversationDetailsVi
     this.createdBy,
     this.dateCreated.asDateString(),
     this.notificationLevel == NotificationLevel.MUTED.value,
-    ConversationsRepositoryImpl.INSTANCE.getFriendlyName(this.createdBy)
+    ConversationsRepositoryImpl.INSTANCE.getFriendlyName(this.createdBy),
+    Constants.PINNED_CONVO.contains(this.sid)
 )
 
 fun ParticipantDataItem.toParticipantListViewItem() = ParticipantListViewItem(

@@ -9,6 +9,7 @@ import com.eemphasys.vitalconnect.api.RetrofitHelper
 import com.eemphasys.vitalconnect.api.RetryInterceptor
 import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.ContactListResponse
+import com.eemphasys.vitalconnect.data.models.ContactListViewItem
 import com.eemphasys.vitalconnect.data.models.ParticipantListViewItem
 import com.google.gson.Gson
 import com.google.i18n.phonenumbers.NumberParseException
@@ -53,6 +54,18 @@ class Constants   {
         var MOBILENUMBER :String = ""
         var DEFAULT_COUNTRYCODE :String = ""
         var CURRENT_CONVERSATION_ISWEBCHAT : String = ""
+        var CURRENT_CONTACT = ContactListViewItem(
+            name = "",
+            email = "",
+            number = "",
+            type = "",
+            initials = "",
+            designation = null,
+            department = null,
+            customerName = null,
+            countryCode = null,
+            isGlobal = false
+        )
 
         var URI : String = ""
         var INPUTSTREAM : InputStream = ByteArrayInputStream(ByteArray(0))
