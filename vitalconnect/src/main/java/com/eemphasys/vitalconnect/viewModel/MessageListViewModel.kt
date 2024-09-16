@@ -131,7 +131,7 @@ class MessageListViewModel(
                 onMessageError.value = ConversationsError.CONVERSATION_GET_FAILED
                 return@collect
             }
-            isWebChat.value = JSONObject(result.data?.attributes).optString("isWebChat", "")
+            isWebChat.value = try{JSONObject(result.data?.attributes).optString("isWebChat", "")}catch(e: Exception){""}
             conversationName.value = result.data?.friendlyName?.takeIf { it.isNotEmpty() } ?: result.data?.sid
         }
     }

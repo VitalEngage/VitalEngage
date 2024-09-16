@@ -29,11 +29,13 @@ class LoginConstants   {
         var SHOW_DEPARTMENT = ""
         var EMAIL = ""
         var MOBILENUMBER = ""
-        var WITH_CONTEXT = "true"
+        var WITH_CONTEXT = "false"
         var OPEN_CHAT = "false"
-        var CONTEXT = "ABC0005"
+        var CONTEXT = ""
         var DEALER_NAME = ""
         var PINNED_CONVO : ArrayList<String> = arrayListOf()
+        var SHOW_INTERNAL_CONTACTS = false
+        var SHOW_EXTERNAL_CONTACTS = true
 
         val CONTACTS =
             """{

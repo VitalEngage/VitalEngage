@@ -523,6 +523,13 @@ class ExternalFragment : Fragment() {
             LinearLayoutManager.VERTICAL,false)
         //Assigning the created adapter to recyclerview
         binding?.contactList?.adapter = adapter
+        adapter.sizeChange.observe(viewLifecycleOwner,{size ->
+            if (size > 0) {
+                binding!!.progressBarID.visibility = View.GONE
+            } else {
+                binding!!.progressBarID.visibility = View.VISIBLE
+            }
+        })
 
     }
 

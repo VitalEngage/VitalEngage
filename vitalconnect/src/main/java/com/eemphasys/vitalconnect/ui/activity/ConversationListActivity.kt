@@ -45,7 +45,6 @@ class ConversationListActivity:AppCompatActivity() {
                 R.id.page_contact_list -> replaceFragment(ContactListFragment())
                 R.id.page_conversation_list -> replaceFragment(ConversationListFragment())
                 R.id.page_profile -> replaceFragment(ProfileFragment())
-
             }
             return@setOnItemSelectedListener true
         }

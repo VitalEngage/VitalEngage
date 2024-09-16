@@ -51,7 +51,7 @@ class ConversationDetailsViewModel(
                 onDetailsError.value = ConversationsError.CONVERSATION_GET_FAILED
                 return@collect
             }
-            result.data?.let { conversationDetails.value = it.asConversationDetailsViewItem() }
+           try{ result.data?.let { conversationDetails.value = it.asConversationDetailsViewItem() }}catch(e:Exception){}
         }
     }
 

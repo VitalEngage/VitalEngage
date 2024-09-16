@@ -48,16 +48,18 @@ class ContactListFragment : Fragment() {
 
         val tabLayout = view.findViewById<TabLayout>(R.id.tab_layout)
         val viewPager = view.findViewById<ViewPager2>(R.id.view_pager)
+        // Determine flags based on your conditions
+        val showInternal = Constants.SHOW_INTERNAL_CONTACTS
+        val showExternal = Constants.SHOW_EXTERNAL_CONTACTS
 
-        val pagerAdapter = PagerAdapter(this)
+        val pagerAdapter = PagerAdapter(this, showInternal, showExternal)
         viewPager.adapter = pagerAdapter
 
         // Bind TabLayout with ViewPager2
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-            tab.text = when (position) {
-                0 -> Constants.DEALER_NAME
-                1 -> "Customer"
-                else -> ""
+            when (position) {
+                0 -> tab.text = if (showInternal) Constants.DEALER_NAME else "Customer"
+                1 -> tab.text = if (showExternal) "Customer" else Constants.DEALER_NAME
             }
         }.attach()
 

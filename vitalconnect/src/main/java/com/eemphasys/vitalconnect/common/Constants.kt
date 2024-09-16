@@ -77,6 +77,8 @@ class Constants   {
         var CONTEXT = ""
         var DEALER_NAME =""
         var PINNED_CONVO : ArrayList<String> = arrayListOf()
+        var SHOW_INTERNAL_CONTACTS = false
+        var SHOW_EXTERNAL_CONTACTS = false
 
 
         @JvmStatic

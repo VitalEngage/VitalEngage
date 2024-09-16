@@ -95,6 +95,13 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
         super.onViewCreated(view, savedInstanceState)
         requireActivity().title = getString(R.string.title_conversations_list)
 
+        if(!Constants.SHOW_INTERNAL_CONTACTS) {
+            binding.lblInternal.visibility = View.GONE
+        }
+
+        if(!Constants.SHOW_EXTERNAL_CONTACTS){
+            binding.lblExternal.visibility = View.GONE
+        }
 
         binding.lblUnread.text = "Unread"
         binding.lblInternal.text = Constants.DEALER_NAME

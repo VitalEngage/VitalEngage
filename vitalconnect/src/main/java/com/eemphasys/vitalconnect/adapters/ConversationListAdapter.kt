@@ -17,6 +17,10 @@ import kotlin.properties.Delegates
 
 class ConversationListAdapter(private val callback: OnConversationEvent) : RecyclerView.Adapter<ConversationListAdapter.ViewHolder>() {
 
+    init {
+        setHasStableIds(true) // Enable stable IDs
+    }
+
     // The list of all conversations
     var allConversations: List<ConversationListViewItem> by Delegates.observable(emptyList()) { _, old, new ->
         // Apply filter whenever the list is set or filtered
@@ -37,6 +41,11 @@ class ConversationListAdapter(private val callback: OnConversationEvent) : Recyc
     }
 
     override fun getItemCount(): Int = conversations.size
+
+    override fun getItemId(position: Int): Long {
+        // Return a unique ID for the item at the given position
+        return conversations[position].sid.hashCode().toLong()
+    }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val conversationItem = conversations[position]

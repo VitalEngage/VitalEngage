@@ -8,10 +8,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.ParticipantColorManager
 import com.eemphasys.vitalconnect.common.AppContextHelper
+import com.eemphasys.vitalconnect.common.SingleLiveEvent
 import com.eemphasys.vitalconnect.data.models.ContactListViewItem
 import com.eemphasys.vitalconnect.databinding.RowContactItemBinding
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
@@ -24,6 +26,7 @@ class ContactListAdapter(
     private val itemClickListener: OnContactItemClickListener
 ) : RecyclerView.Adapter<ContactListAdapter.ViewHolder>() {
 
+    val sizeChange = SingleLiveEvent<Int>()
     inner class ViewHolder(private val itemBinding: RowContactItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root), View.OnClickListener {
 
@@ -96,6 +99,7 @@ class ContactListAdapter(
     }
 
     override fun getItemCount(): Int {
+        sizeChange.value = itemList.size
         return itemList.size
     }
 

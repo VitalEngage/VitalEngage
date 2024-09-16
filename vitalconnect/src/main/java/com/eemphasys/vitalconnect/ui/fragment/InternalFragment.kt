@@ -46,6 +46,7 @@ import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.google.android.material.snackbar.Snackbar
 import com.twilio.conversations.Attributes
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import org.json.JSONObject
@@ -178,6 +179,7 @@ class InternalFragment : Fragment() {
                     identity
                 )
             )
+            binding!!.progressBarID.visibility = View.VISIBLE
         }
     }
 
@@ -324,12 +326,13 @@ class InternalFragment : Fragment() {
                 if(Constants.WITH_CONTEXT.lowercase() == "true") {
 //                  Check if existing coversation exist
                     contactListViewModel.checkExistingconversation(contact)
+                    binding?.progressBarID?.visibility = View.GONE
                 }
                 else{
-//                    Constants.CURRENT_CONTACT = contact
-//                    NewConversationDialog().showNow(childFragmentManager, null)
-                }
+                    Constants.CURRENT_CONTACT = contact
                     binding?.progressBarID?.visibility = View.GONE
+                    NewConversationDialog().showNow(childFragmentManager, null)
+                }
 
             }
         })
@@ -339,6 +342,14 @@ class InternalFragment : Fragment() {
             LinearLayoutManager.VERTICAL,false)
         //Assigning the created adapter to recyclerview
         binding?.userList?.adapter = adapter
+        adapter.sizeChange.observe(viewLifecycleOwner,{size ->
+            if (size > 0) {
+                binding!!.progressBarID.visibility = View.GONE
+            } else {
+                binding!!.progressBarID.visibility = View.VISIBLE
+            }
+        })
+
     }
 
     private fun showNoInternetSnackbar(show: Boolean) {

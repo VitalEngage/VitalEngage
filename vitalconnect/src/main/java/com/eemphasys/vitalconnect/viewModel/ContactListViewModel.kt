@@ -139,28 +139,44 @@ class ContactListViewModel(
         val conversationSid = conversationListManager.createConversation(friendlyName,attributes)
         //add participants to conversation
         addWebParticipants(contact,conversationSid)
-//        conversationListManager.removeConversation("CH5c9ba2bb3cd04bd29033fc8661c3da6a")
-//        conversationListManager.removeConversation("CHa4a05b44724b4e3a847b467fc381b809")
+//        conversationListManager.removeConversation("CH79e0c9e7195a4494b091e7bfccf3934f")
 
     }
+    fun checkName(friendlyName: String, callback: CheckNameCallback) {
+    val httpClientWithToken = OkHttpClient.Builder()
+        .connectTimeout(300, TimeUnit.SECONDS)
+        .readTimeout(300, TimeUnit.SECONDS)
+        .writeTimeout(300, TimeUnit.SECONDS)
+        .addInterceptor(AuthInterceptor(Constants.AUTH_TOKEN))
+        .addInterceptor(RetryInterceptor())
+        .build()
+    val retrofitWithToken = RetrofitHelper.getInstance(httpClientWithToken).create(TwilioApi::class.java)
 
-    fun checkName(friendlyName : String){
-        val httpClientWithToken = OkHttpClient.Builder()
-            .connectTimeout(300, TimeUnit.SECONDS)
-            .readTimeout(300, TimeUnit.SECONDS)
-            .writeTimeout(300, TimeUnit.SECONDS)
-            .addInterceptor(AuthInterceptor(Constants.AUTH_TOKEN))
-            .addInterceptor(RetryInterceptor())
-            .build()
-        val retrofitWithToken =
-            RetrofitHelper.getInstance(httpClientWithToken).create(TwilioApi::class.java)
+    val request = ConversationSidFromFriendlyNameRequest(Constants.TENANT_CODE, Constants.USERNAME, friendlyName)
+    val existingWebConversation = retrofitWithToken.getTwilioConversationSidFromFriendlyName(request)
 
-        var request = ConversationSidFromFriendlyNameRequest(Constants.TENANT_CODE,Constants.USERNAME,Constants.CONTEXT)
-        val existingWebConversation = retrofitWithToken.getTwilioConversationSidFromFriendlyName(request)
+    existingWebConversation.enqueue(object : Callback<List<ConversationSidFromFriendlyNameResponse>> {
+        override fun onResponse(
+            call: Call<List<ConversationSidFromFriendlyNameResponse>>,
+            response: Response<List<ConversationSidFromFriendlyNameResponse>>
+        ) {
+            val exists = if (response.isSuccessful) {
+                val conversationList = response.body()
+                !conversationList.isNullOrEmpty()
+            } else {
+                false
+            }
+            callback.onResult(exists)
+        }
 
-
-
-    }
+        override fun onFailure(
+            call: Call<List<ConversationSidFromFriendlyNameResponse>>,
+            t: Throwable
+        ) {
+            callback.onResult(false) // Handle failure case appropriately
+        }
+    })
+}
 
     fun checkExistingconversation(contact : ContactListViewItem){
         val httpClientWithToken = OkHttpClient.Builder()
@@ -195,8 +211,6 @@ class ContactListViewModel(
                         }
                         //add participants to conversation
                         addWebParticipants(contact,conversationSid)
-                        //Redirect to existing conversation
-                        MessageListActivity.startfromFragment(applicationContext,conversationSid)
                     }
                     else{
                         //Create new conversation and add participant to it
@@ -375,10 +389,14 @@ class ContactListViewModel(
                     )!!
                 )
                 // Optionally, inform the caller of the error
-                callback("") // Passing an empty string or null depending on your error handling strategy
+                callback("")
             }
         }
     }
+}
+
+interface CheckNameCallback {
+    fun onResult(exists: Boolean)
 }
 
 typealias AttributesCallback = (String) -> Unit

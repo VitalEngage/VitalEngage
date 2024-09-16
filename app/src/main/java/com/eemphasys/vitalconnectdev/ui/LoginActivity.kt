@@ -474,6 +474,8 @@ class LoginActivity : AppCompatActivity() {
             intent.putExtra("context",LoginConstants.CONTEXT)
             intent.putExtra("dealerName",LoginConstants.DEALER_NAME)
             intent.putStringArrayListExtra("pinnedConvo",LoginConstants.PINNED_CONVO)
+            intent.putExtra("showInternalContacts",LoginConstants.SHOW_INTERNAL_CONTACTS)
+            intent.putExtra("showExternalContacts",LoginConstants.SHOW_EXTERNAL_CONTACTS)
             context.startActivity(intent)
         }
     }
