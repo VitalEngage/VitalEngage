@@ -6,5 +6,6 @@ data class MediaMessagePreviewItem(
     val uri : String,
     val inputStream : InputStream,
     val name : String?,
-    val mimeType : String?
+    val mimeType : String?,
+    val size : Double
 )

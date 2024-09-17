@@ -67,9 +67,10 @@
                 android:paddingLeft="5dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/messageInputHolder"
+                app:layout_constraintBottom_toTopOf="@id/attachmentPreview"
                 tools:text="user00 is typing"
                 style="@style/TextViewMessageTyping"
+                app:layout_constraintVertical_bias="0"
                 />
 <!--            android:background="@drawable/bg_typing_indicator"-->
 
@@ -89,7 +90,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/messageSendButton"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/typingIndicator"
+                app:layout_constraintTop_toBottomOf="@+id/attachmentPreview"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 app:layout_goneMarginTop="17dp"
                 app:hintEnabled="false"
@@ -99,7 +100,8 @@
                 app:boxCornerRadiusBottomEnd="30dp"
                 app:boxCornerRadiusTopEnd="30dp"
                 app:boxCornerRadiusBottomStart="30dp"
-                app:boxCornerRadiusTopStart="30dp">
+                app:boxCornerRadiusTopStart="30dp"
+                app:layout_constraintVertical_bias="0">
 
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -137,6 +139,7 @@
                 app:layout_constraintStart_toStartOf="@+id/messageInputHolder"
                 app:layout_constraintTop_toBottomOf="@+id/messageInputHolder"
                 android:text="@string/size_note"
+                app:layout_constraintVertical_bias="0"
                 />
             <TextView
                 android:id="@+id/messageCharCount"
@@ -153,28 +156,52 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_message_attachment"
-                android:padding="16dp"
-                app:layout_constraintTop_toBottomOf="@id/messageInputHolder"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintVertical_bias="0.5"
-                android:visibility="gone">
+                android:padding="10dp"
+                app:layout_constraintTop_toBottomOf="@id/typingIndicator"
+                app:layout_constraintStart_toStartOf="@id/messageInputHolder"
+                app:layout_constraintBottom_toTopOf="@id/messageInputHolder"
+                android:visibility="gone"
+                app:layout_constraintVertical_bias="0">
 
-
+                <ImageView
+                    android:id="@+id/attachIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_attachment_downloaded"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/fileName"
+                    android:layout_marginEnd="8dp"
+                    />
                 <!-- Text Inside the Box -->
                 <TextView
                     android:id="@+id/fileName"
-                    android:layout_width="200dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:maxWidth="200dp"
                     android:text="Your Text Here"
-                    style="@style/TextViewSearch"
-                    android:textSize="16sp"
+                    style="@style/TextViewTitle"
                     android:ellipsize="middle"
-                    android:maxLines="2"
+                    android:maxLines="1"
+                    app:layout_constraintStart_toEndOf="@+id/attachIcon"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/attachmentSize"
+                    app:layout_constraintVertical_bias="0.5"/>
+                <TextView
+                    android:id="@+id/attachmentSize"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/TextViewSize"
+                    android:text="Your Text Here"
+                    app:layout_constraintTop_toBottomOf="@id/fileName"
+                    app:layout_constraintStart_toStartOf="@id/fileName"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    app:layout_constraintVertical_bias="0.5"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    />
             </androidx.constraintlayout.widget.ConstraintLayout>
             <!-- Close Icon -->
             <ImageView

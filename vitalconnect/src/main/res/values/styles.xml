@@ -58,6 +58,11 @@
         <item name="android:textColor">@color/text_subtitle</item>
         <item name="android:fontFamily">sans-serif</item>
     </style>
+    <style name="TextViewSize" parent="TextViewTitle">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/message_background</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
     <style name="TextViewOutgoingTimeStamp" parent="TextViewTitle">
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/message_typing_background</item>

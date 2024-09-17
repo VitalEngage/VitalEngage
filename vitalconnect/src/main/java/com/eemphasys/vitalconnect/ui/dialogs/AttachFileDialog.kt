@@ -25,6 +25,7 @@ import com.eemphasys.vitalconnect.databinding.DialogAttachFileBinding
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import java.io.File
 import java.io.InputStream
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -145,7 +146,8 @@ class AttachFileDialog : BaseBottomSheetDialogFragment() {
             Constants.INPUTSTREAM = inputStream
             Constants.MEDIA_NAME = name
             Constants.MEDIA_TYPE = type
-            messageListViewModel.mediaMessagePreview.value = MediaMessagePreviewItem(uri.toString(),inputStream,name,type)
+            messageListViewModel.mediaMessagePreview.value = MediaMessagePreviewItem(uri.toString(),inputStream,name,type,
+                DecimalFormat("#.##").format(getAttachmentSize(inputStream)/(1024.0 * 1024.0)).toDouble())
 //            messageListViewModel.sendMediaMessage(uri.toString(), inputStream, name, type)
         } else {
             messageListViewModel.onMessageError.value = ConversationsError.MESSAGE_SEND_FAILED

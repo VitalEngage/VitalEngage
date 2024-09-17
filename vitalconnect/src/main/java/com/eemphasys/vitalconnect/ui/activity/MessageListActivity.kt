@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -15,6 +16,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.eemphasys.vitalconnect.R
@@ -29,6 +31,7 @@ import com.eemphasys.vitalconnect.common.extensions.onSubmit
 import com.eemphasys.vitalconnect.common.extensions.showSnackbar
 import com.eemphasys.vitalconnect.common.extensions.showToast
 import com.eemphasys.vitalconnect.common.injector
+import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
 import com.eemphasys.vitalconnect.data.models.MessageListViewItem
 import com.eemphasys.vitalconnect.databinding.ActivityMessageListBinding
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
@@ -39,6 +42,7 @@ import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
+import kotlinx.coroutines.launch
 import java.io.ByteArrayInputStream
 
 class MessageListActivity: AppCompatActivity() {
@@ -181,15 +185,16 @@ class MessageListActivity: AppCompatActivity() {
             }
             messageListViewModel.mediaMessagePreview.observe(this){preview ->
                 binding.fileName.text = preview.name
+                binding.attachmentSize.text = preview.size.toString() + " MB"
                 binding.attachmentPreview.visibility = View.VISIBLE
                 binding.deleteAttachment.visibility = View.VISIBLE
-                binding.note.visibility = View.GONE
+//                binding.note.visibility = View.GONE
 
             }
             binding.deleteAttachment.setOnClickListener{
                 binding.attachmentPreview.visibility = View.GONE
                 binding.deleteAttachment.visibility = View.GONE
-                binding.note.visibility = View.VISIBLE
+//                binding.note.visibility = View.VISIBLE
                 Constants.URI = ""
                 Constants.INPUTSTREAM = ByteArrayInputStream(ByteArray(0))
                 Constants.MEDIA_NAME = ""
@@ -263,10 +268,6 @@ class MessageListActivity: AppCompatActivity() {
         }
 
         private fun sendMessage() {
-            binding.messageInput.text.toString().takeIf { it.isNotBlank() }?.let { message ->
-                messageListViewModel.sendTextMessage(message)
-                binding.messageInput.text?.clear()
-            }
             if(binding.deleteAttachment.visibility == 0x00000000) {
                 messageListViewModel.sendMediaMessage(
                     Constants.URI,
@@ -281,6 +282,10 @@ class MessageListActivity: AppCompatActivity() {
                 Constants.INPUTSTREAM = ByteArrayInputStream(ByteArray(0))
                 Constants.MEDIA_NAME = ""
                 Constants.MEDIA_TYPE = ""
+            }
+            binding.messageInput.text.toString().takeIf { it.isNotBlank() }?.let { message ->
+                messageListViewModel.sendTextMessage(message)
+                binding.messageInput.text?.clear()
             }
         }
 

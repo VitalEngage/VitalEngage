@@ -2,6 +2,7 @@ package com.eemphasys.vitalconnect.ui.fragment
 
 import android.os.Bundle
 import android.text.InputFilter
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -55,6 +56,12 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onCreateView Called")
         binding = FragmentConversationListBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("onResume","onResumeCalled")
+        conversationListViewModel.getUserConversations()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

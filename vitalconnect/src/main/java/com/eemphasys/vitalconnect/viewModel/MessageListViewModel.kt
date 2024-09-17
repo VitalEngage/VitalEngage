@@ -135,7 +135,8 @@ class MessageListViewModel(
         EETLog.saveUserJourney("vitaltext:  MessagelistViewModel sendTextMessage Called")
         val messageUuid = UUID.randomUUID().toString()
         try {
-            messageListManager.sendTextMessage(message, messageUuid)
+            //Message to be sent after triming it
+            messageListManager.sendTextMessage(message.trim(), messageUuid)
             onMessageSent.call()
             LogTraceHelper.trace(
                 appContext,
