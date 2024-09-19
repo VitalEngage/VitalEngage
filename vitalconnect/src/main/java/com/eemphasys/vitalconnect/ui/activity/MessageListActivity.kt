@@ -80,7 +80,61 @@ class MessageListActivity: AppCompatActivity() {
             }
 
         }
+    override fun onStart() {
+        super.onStart()
+        try {
+            lifecycleScope.launch {
+                Log.d(
+                    "onStart MessageListActivity",
+                    ConversationsClientWrapper.INSTANCE.getConversationsClient().myIdentity
+                )
+            }
+            if(ConversationsClientWrapper.INSTANCE.isClientCreated){
 
+            }
+            else{
+                Log.d("onStart MessageListActivity","finishing activity")
+//                this.finish()
+            }
+        }catch(e: Exception){
+            Log.d("onStart MessageListActivity", e.message.toString())
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        try {
+            lifecycleScope.launch {
+                Log.d(
+                    "onResume MessageListActivity",
+                    ConversationsClientWrapper.INSTANCE.getConversationsClient().myIdentity
+                )
+            }
+            if(ConversationsClientWrapper.INSTANCE.isClientCreated){
+
+            }
+            else{
+                Log.d("onResume MessageListActivity","finishing activity")
+//                this.finish()
+            }
+        }catch(e: Exception){
+            Log.d("onResume MessageListActivity", e.message.toString())
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        try {
+            lifecycleScope.launch {
+                Log.d(
+                    "onStop MessageListActivity",
+                    ConversationsClientWrapper.INSTANCE.getConversationsClient().myIdentity
+                )
+            }
+        }catch(e: Exception){
+            Log.d("onStop MessageListActivity", e.message.toString())
+        }
+    }
         override fun onCreateOptionsMenu(menu: Menu): Boolean {
             super.onCreateOptionsMenu(menu)
             menuInflater.inflate(R.menu.menu_message_list, menu)

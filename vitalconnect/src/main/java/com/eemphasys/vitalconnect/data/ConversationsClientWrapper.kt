@@ -40,7 +40,7 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
     suspend fun getConversationsClient() = deferredClient.await()
 
     suspend fun getclient(){
-//        ConversationsClient.setLogLevel(ConversationsClient.LogLevel.VERBOSE);
+        ConversationsClient.setLogLevel(ConversationsClient.LogLevel.VERBOSE);
         val client = createAndSyncConversationsClient(applicationContext, ChatAppModel.twilio_token!!)
         this.deferredClient.complete(client)
         Log.d("client", client.myIdentity)

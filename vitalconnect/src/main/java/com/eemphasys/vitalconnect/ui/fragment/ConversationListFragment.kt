@@ -71,6 +71,7 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
 
         conversationListViewModel.userConversationItems.observe(viewLifecycleOwner) { it:List<ConversationListViewItem>->
             adapter.conversations = it
+            binding.conversationList.scrollToPosition(0)
             binding.conversationRefresh.isRefreshing = false
         }
 
@@ -107,6 +108,7 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
 
         binding.conversationRefresh.setOnRefreshListener { conversationListViewModel.getUserConversations() }
         binding.conversationList.adapter = adapter
+        binding.conversationList.scrollToPosition(0)
         binding.conversationList.addItemDecoration(DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL))
         //binding.conversationList.addFabExtendingOnScrollListener(binding.newConversationFab)
 

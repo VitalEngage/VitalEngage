@@ -101,7 +101,7 @@ dependencies {
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 
     //Twilio
-    implementation("com.twilio:conversations-android:6.0.3")
+    implementation("com.twilio:conversations-android:6.1.1")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
 
     //Kotlin

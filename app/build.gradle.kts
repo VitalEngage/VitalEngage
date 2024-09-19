@@ -59,7 +59,7 @@ dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation(project(":vitalconnect"))
     implementation(project(":commonmobilelib2.6"))
-    implementation("com.twilio:conversations-android:6.0.3")
+    implementation("com.twilio:conversations-android:6.1.1")
     //implementation ("com.twilio:conversations-android-with-symbols:6.0.4")
     implementation ("io.github.chaosleung:pinview:1.4.4")
 

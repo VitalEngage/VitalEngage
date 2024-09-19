@@ -45,9 +45,9 @@ class AttachFileDialog : BaseBottomSheetDialogFragment() {
             val contentResolver = requireContext().contentResolver
             val inputStream = contentResolver.openInputStream(imageCaptureUri)
             val sizeInBytes: Long = getAttachmentSize(inputStream)
-            val sizeInMB: Double = sizeInBytes / (1024.0 * 1024.0) // Convert bytes to MB
+            val sizeInMB: Double = DecimalFormat("#.##").format(sizeInBytes / (1024.0 * 1024.0)).toDouble() // Convert bytes to MB
             if(sizeInMB < 5){
-            sendMediaMessage(imageCaptureUri)
+            sendMediaMessage(imageCaptureUri,sizeInMB)
             }
             else{
                 messageListViewModel.onMessageError.value = ConversationsError.FILE_TOO_LARGE
@@ -62,14 +62,14 @@ class AttachFileDialog : BaseBottomSheetDialogFragment() {
             val type = contentResolver.getType(uri)
             val sizeInBytes: Long = getAttachmentSize(inputStream)
             val sizeInKB: Double = sizeInBytes / 1024.0  // Convert bytes to KB
-            val sizeInMB: Double = sizeInBytes / (1024.0 * 1024.0) // Convert bytes to MB
+            val sizeInMB: Double = DecimalFormat("#.##").format(sizeInBytes / (1024.0 * 1024.0)).toDouble() // Convert bytes to MB
             when (type) {
                 "application/pdf" -> {
                     if (sizeInKB > 600) {
                         messageListViewModel.onMessageError.value =
                             ConversationsError.FILE_TOO_LARGE
                     } else {
-                        uri?.let { sendMediaMessage(it) }
+                        uri?.let { sendMediaMessage(it,sizeInMB) }
                     }
                 }
 
@@ -78,7 +78,7 @@ class AttachFileDialog : BaseBottomSheetDialogFragment() {
                         messageListViewModel.onMessageError.value =
                             ConversationsError.FILE_TOO_LARGE
                     } else {
-                        uri?.let { sendMediaMessage(it) }
+                        uri?.let { sendMediaMessage(it,sizeInMB) }
                     }
                 }
 
@@ -133,7 +133,7 @@ class AttachFileDialog : BaseBottomSheetDialogFragment() {
         takePicture.launch(imageCaptureUri)
     }
 
-    fun sendMediaMessage(uri: Uri) {
+    fun sendMediaMessage(uri: Uri,size : Double) {
         val contentResolver = requireContext().contentResolver
         val inputStream = contentResolver.openInputStream(uri)
         val type = contentResolver.getType(uri)
@@ -146,8 +146,8 @@ class AttachFileDialog : BaseBottomSheetDialogFragment() {
             Constants.INPUTSTREAM = inputStream
             Constants.MEDIA_NAME = name
             Constants.MEDIA_TYPE = type
-            messageListViewModel.mediaMessagePreview.value = MediaMessagePreviewItem(uri.toString(),inputStream,name,type,
-                DecimalFormat("#.##").format(getAttachmentSize(inputStream)/(1024.0 * 1024.0)).toDouble())
+            messageListViewModel.mediaMessagePreview.value = MediaMessagePreviewItem(uri.toString(),inputStream,name,type,size)
+//                DecimalFormat("#.##").format(getAttachmentSize(inputStream)/(1024.0 * 1024.0)).toDouble())
 //            messageListViewModel.sendMediaMessage(uri.toString(), inputStream, name, type)
         } else {
             messageListViewModel.onMessageError.value = ConversationsError.MESSAGE_SEND_FAILED
