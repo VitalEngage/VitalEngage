@@ -28,8 +28,8 @@ interface ConversationsDao {
     fun insert(conversationDataItem: ConversationDataItem)
 
     // Update Conversation
-    @Query("UPDATE conversation_table SET participatingStatus = :status, notificationLevel = :level, friendlyName = :friendlyName WHERE sid = :sid")
-    fun update(sid: String, status: Int, level: Int, friendlyName: String)
+    @Query("UPDATE conversation_table SET participatingStatus = :status, notificationLevel = :level, friendlyName = :friendlyName, attributes= :attributes WHERE sid = :sid")
+    fun update(sid: String, status: Int, level: Int, friendlyName: String, attributes: String)
 
     @Query("UPDATE conversation_table SET participantsCount = :participantsCount WHERE sid = :sid")
     fun updateParticipantCount(sid: String, participantsCount: Long)

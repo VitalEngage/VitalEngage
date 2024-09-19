@@ -34,7 +34,7 @@ class LoginConstants   {
         var CONTEXT = ""
         var DEALER_NAME = ""
         var PINNED_CONVO : ArrayList<String> = arrayListOf()
-        var SHOW_INTERNAL_CONTACTS = false
+        var SHOW_INTERNAL_CONTACTS = true
         var SHOW_EXTERNAL_CONTACTS = true
 
         val CONTACTS =

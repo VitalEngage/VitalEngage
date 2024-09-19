@@ -157,6 +157,12 @@
         <item name="android:fontFamily">Helvetica</item>
         <item name="fontWeight">400</item>
     </style>
+    <style name="Disclaimer" parent="TextViewTitle">
+        <item name="android:textColor">@color/text_gray</item>
+        <item name="android:textSize">14sp</item> <!--12px-->
+        <item name="android:fontFamily">Helvetica</item>
+        <item name="fontWeight">400</item>
+    </style>
 
     <style name="MessageListBackground">
         <item name="backgroundColor">@color/messagelist_background</item>

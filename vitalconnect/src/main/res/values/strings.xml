@@ -100,6 +100,8 @@
 
     <string name="search_conversations">Search Conversations</string>
     <string name="search_contacts">Search Contacts</string>
+    <string name="name_exists">A Conversation exists with same name, please change the name.</string>
+    <string name="history_disclaimer">All Conversation history will be available to participant.</string>
 
     <!-- Profile fragment -->
     <string name="email">Email</string>

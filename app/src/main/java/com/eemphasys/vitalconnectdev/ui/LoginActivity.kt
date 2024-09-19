@@ -134,7 +134,7 @@ class LoginActivity : AppCompatActivity() {
             signInPressed() }
         binding.passwordTv.onSubmit {
             hideKeyboard()
-            signInPressed() }
+             }
         binding.signInBtn.setOnClickListener {
             hideKeyboard()
             signInPressed() }

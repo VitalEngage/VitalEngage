@@ -37,7 +37,7 @@ class NewConversationDialog: BaseBottomSheetDialogFragment() {
     }
 
     private fun createConversation() {
-        val friendlyName = binding.newConversationNameInput.text.toString()
+        val friendlyName = binding.newConversationNameInput.text.toString().trim()
         if (friendlyName.isBlank()) {
             binding.newConversationNameInputHolder.error = getString(R.string.profile_friendly_name_error_text)
             return
@@ -46,7 +46,7 @@ class NewConversationDialog: BaseBottomSheetDialogFragment() {
             override fun onResult(exists: Boolean) {
                 if (exists) {
                     // The conversation exists
-                    binding.newConversationNameInputHolder.error = "Conversation already exists, try different name"
+                    binding.newConversationNameInputHolder.error = getString(R.string.name_exists)
                     binding.newConversationNameInputHolder.enableErrorResettingOnTextChanged()
                 } else {
                     // The conversation does not exist
