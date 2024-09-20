@@ -46,6 +46,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.util.Locale
 import java.util.concurrent.TimeUnit
+import kotlin.math.ceil
 
 class ExternalFragment : Fragment() {
     var binding: FragmentExternalBinding? = null
@@ -58,6 +59,7 @@ class ExternalFragment : Fragment() {
     private lateinit var originalList: List<ContactListViewItem>
     private var listOfContacts = mutableListOf<ContactListViewItem>()
     var currentIndex: Int = 1
+    var maxPageSize: Int = 1
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_contact_list, menu)
@@ -173,7 +175,7 @@ class ExternalFragment : Fragment() {
         }
     }
 
-    fun getAllContactList(){
+    fun getAllContactList(callBack: () -> Unit){
         lifecycleScope.launch {
         val httpClientWithToken = OkHttpClient.Builder()
             .connectTimeout(300, TimeUnit.SECONDS)
@@ -185,7 +187,7 @@ class ExternalFragment : Fragment() {
         val retrofitWithToken =
             RetrofitHelper.getInstance(httpClientWithToken)
                 .create(TwilioApi::class.java)
-        var request = ContactListRequest(currentIndex,20,"","fullName","asc",Constants.TENANT_CODE,Constants.USERNAME,0)
+        var request = ContactListRequest(currentIndex,Constants.PAGE_SIZE.toInt(),"","fullName","asc",Constants.TENANT_CODE,Constants.USERNAME,0)
         var response = retrofitWithToken.getContactList(request)
 
         if (response.isSuccessful) {
@@ -206,7 +208,9 @@ class ExternalFragment : Fragment() {
                 listOfContacts.add(userItem)
             }
             adapter.notifyItemRangeInserted(previousPosition,listOfContacts.size)
+            maxPageSize = ceil((response.body()!!.totalCount/Constants.PAGE_SIZE)).toInt()
         }
+            callBack.invoke()
     }
     }
     private fun formatList(contacts: List<Contact>): List<ContactListViewItem> {
@@ -253,7 +257,7 @@ class ExternalFragment : Fragment() {
             }
         }
         if(Constants.WITH_CONTEXT == "false"){
-            getAllContactList()
+            getAllContactList{}
             setAdapter(listOfContacts)
         }
         else
@@ -270,7 +274,14 @@ class ExternalFragment : Fragment() {
                         if (!recyclerView.canScrollVertically(1)) {
                             Log.d("scroll---up1", newState.toString())
                             currentIndex++
-                            getAllContactList()
+                            Log.d("current", currentIndex.toString())
+                            Log.d("currentmax", maxPageSize.toString())
+                            if(maxPageSize>=currentIndex) {
+                                binding!!.progressBarRecyclerview.visibility = View.VISIBLE
+                            }
+                            getAllContactList {
+                                binding!!.progressBarRecyclerview.visibility = View.GONE
+                            }
                         }
                     }
                 }

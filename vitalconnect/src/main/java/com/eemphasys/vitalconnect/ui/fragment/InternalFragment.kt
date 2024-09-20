@@ -55,6 +55,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.util.Locale
 import java.util.concurrent.TimeUnit
+import kotlin.math.ceil
 
 class InternalFragment : Fragment() {
     var binding: FragmentInternalBinding? = null
@@ -67,6 +68,7 @@ class InternalFragment : Fragment() {
     private lateinit var originalList: List<ContactListViewItem>
     private var listOfUsers = mutableListOf<ContactListViewItem>()
     var currentIndex: Int = 1
+    var maxPageSize: Int = 1
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_contact_list, menu)
@@ -183,7 +185,7 @@ class InternalFragment : Fragment() {
         }
     }
 
-    fun getAllUserList(){
+    fun getAllUserList(callBack: () -> Unit){
         val httpClientWithToken = OkHttpClient.Builder()
             .connectTimeout(300, TimeUnit.SECONDS)
             .readTimeout(300, TimeUnit.SECONDS)
@@ -194,7 +196,7 @@ class InternalFragment : Fragment() {
         val retrofitWithToken =
             RetrofitHelper.getInstance(httpClientWithToken)
                 .create(TwilioApi::class.java)
-        var request = ContactListRequest(currentIndex,20,"","fullName","asc",Constants.TENANT_CODE,Constants.USERNAME,0)
+        var request = ContactListRequest(currentIndex,Constants.PAGE_SIZE.toInt(),"","fullName","asc",Constants.TENANT_CODE,Constants.USERNAME,0)
         var response = retrofitWithToken.getUserList(request)
 
         response.enqueue(object : Callback<List<UserListResponse>>{
@@ -221,6 +223,7 @@ class InternalFragment : Fragment() {
                                 true
                                 )
                             listOfUsers.add(userItem)
+                            maxPageSize = ceil((response.count/Constants.PAGE_SIZE)).toInt()
                         }
                         adapter.notifyItemRangeInserted(previousPosition,listOfUsers.size)
                     }
@@ -232,6 +235,7 @@ class InternalFragment : Fragment() {
             }
 
         })
+        callBack.invoke()
     }
 
     private fun formatList(webUsers: List<WebUser>): List<ContactListViewItem> {
@@ -279,7 +283,7 @@ class InternalFragment : Fragment() {
         }
 
         if(Constants.WITH_CONTEXT == "false"){
-            getAllUserList()
+            getAllUserList{}
             setAdapter(listOfUsers)
         }
         else
@@ -296,7 +300,12 @@ class InternalFragment : Fragment() {
                         if (!recyclerView.canScrollVertically(1)) {
                             Log.d("scroll---up1", newState.toString())
                             currentIndex++
-                            getAllUserList()
+                            if(maxPageSize>=currentIndex) {
+                                binding!!.progressBarRecyclerview.visibility = View.VISIBLE
+                            }
+                            getAllUserList{
+                                binding!!.progressBarRecyclerview.visibility = View.GONE
+                            }
                         }
                     }
                 }

@@ -79,6 +79,7 @@ class Constants   {
         var PINNED_CONVO : ArrayList<String> = arrayListOf()
         var SHOW_INTERNAL_CONTACTS = false
         var SHOW_EXTERNAL_CONTACTS = false
+        var PAGE_SIZE = 10.0 //keep this floating
 
 
         @JvmStatic
