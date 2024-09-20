@@ -223,19 +223,20 @@ class InternalFragment : Fragment() {
                                 true
                                 )
                             listOfUsers.add(userItem)
-                            maxPageSize = ceil((response.count/Constants.PAGE_SIZE)).toInt()
+                            maxPageSize = ceil((response.totalCount/Constants.PAGE_SIZE)).toInt()
+                            Log.d("maxcount",response.totalCount.toString())
                         }
                         adapter.notifyItemRangeInserted(previousPosition,listOfUsers.size)
                     }
                 }
+                callBack.invoke()
             }
 
             override fun onFailure(call: Call<List<UserListResponse>>, t: Throwable) {
-                TODO("Not yet implemented")
+                callBack.invoke()
             }
 
         })
-        callBack.invoke()
     }
 
     private fun formatList(webUsers: List<WebUser>): List<ContactListViewItem> {
@@ -300,6 +301,7 @@ class InternalFragment : Fragment() {
                         if (!recyclerView.canScrollVertically(1)) {
                             Log.d("scroll---up1", newState.toString())
                             currentIndex++
+                            Log.d("maxPagesize",maxPageSize.toString())
                             if(maxPageSize>=currentIndex) {
                                 binding!!.progressBarRecyclerview.visibility = View.VISIBLE
                             }

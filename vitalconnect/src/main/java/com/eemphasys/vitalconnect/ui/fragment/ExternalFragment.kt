@@ -274,8 +274,6 @@ class ExternalFragment : Fragment() {
                         if (!recyclerView.canScrollVertically(1)) {
                             Log.d("scroll---up1", newState.toString())
                             currentIndex++
-                            Log.d("current", currentIndex.toString())
-                            Log.d("currentmax", maxPageSize.toString())
                             if(maxPageSize>=currentIndex) {
                                 binding!!.progressBarRecyclerview.visibility = View.VISIBLE
                             }
