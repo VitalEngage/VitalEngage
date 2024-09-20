@@ -33,7 +33,7 @@ class ConversationListActivity:AppCompatActivity() {
         val binding = ActivityConversationListBinding.inflate(layoutInflater)
         mainViewModel.getUserAlertStatus()
         setContentView(binding.root)
-
+        val fragmentToShow = intent.getIntExtra(EXTRA_FRAGMENT_TO_SHOW, 1)
         setSupportActionBar(binding.toolbar)
         val menubottom : BottomNavigationView = findViewById(R.id.bottom_navigation)
         val menu = menubottom.menu
@@ -51,12 +51,15 @@ class ConversationListActivity:AppCompatActivity() {
         }
 
         if (savedInstanceState == null) {
-//            if (isDataAvailable) {
-                replaceFragment(ContactListFragment())
-//            }
-//            else {
-//                replaceFragment(ConversationListFragment())
-//            }
+            when (fragmentToShow) {
+                1 -> {replaceFragment(ContactListFragment())
+                    menu.findItem(R.id.page_contact_list).setChecked(true)}
+                2 -> {replaceFragment(ConversationListFragment())
+                    menu.findItem(R.id.page_conversation_list).setChecked(true)}
+                3 -> {replaceFragment(ProfileFragment())
+                    menu.findItem(R.id.page_profile).setChecked(true)}
+                else -> replaceFragment(ContactListFragment()) // Default case
+            }
         }
         if(Constants.IS_STANDALONE == "false")
         {
@@ -88,6 +91,14 @@ class ConversationListActivity:AppCompatActivity() {
             .commitNow()
     }
     companion object {
+        private const val EXTRA_FRAGMENT_TO_SHOW = "fragment_to_show"
+        fun start(context: Context, fragmentToShow: Int) {
+            val intent = getStartIntent(context).apply {
+                putExtra(EXTRA_FRAGMENT_TO_SHOW, fragmentToShow)
+            }
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            context.startActivity(intent)
+        }
 
         fun start(context: Context) {
             val intent = getStartIntent(context)

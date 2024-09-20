@@ -167,7 +167,8 @@ class ConversationDetailsActivity : AppCompatActivity() {
         }
 
         conversationDetailsViewModel.onConversationLeft.observe(this) {
-            ConversationListActivity.start(this)
+//            ConversationListActivity.start(this)
+            ConversationListActivity.start(this, 2)
             finish()
         }
 
