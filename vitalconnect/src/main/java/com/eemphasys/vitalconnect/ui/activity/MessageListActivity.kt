@@ -80,6 +80,78 @@ class MessageListActivity: AppCompatActivity() {
             }
 
         }
+
+    override fun onStart() {
+        EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onStart Called")
+        super.onStart()
+        try {
+            if(ConversationsClientWrapper.INSTANCE.isClientCreated){
+
+            }
+            else{
+                Log.d("onStart MessageListActivity","finishing activity")
+                this.finish()
+            }
+        }catch(e: Exception){
+            Log.d("onStart MessageListActivity", e.message.toString())
+            EETLog.error(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    AppContextHelper.appContext!!
+                )!!
+            )
+        }
+    }
+
+    override fun onResume() {
+        EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onResume Called")
+        super.onResume()
+        try {
+            if(ConversationsClientWrapper.INSTANCE.isClientCreated){
+
+            }
+            else{
+                Log.d("onResume MessageListActivity","finishing activity")
+                this.finish()
+            }
+        }catch(e: Exception){
+            Log.d("onResume MessageListActivity", e.message.toString())
+            EETLog.error(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    AppContextHelper.appContext!!
+                )!!
+            )
+        }
+    }
+
+    override fun onStop() {
+        EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onStop Called")
+        super.onStop()
+        try {
+
+        }catch(e: Exception){
+            Log.d("onStop MessageListActivity", e.message.toString())
+            EETLog.error(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    AppContextHelper.appContext!!
+                )!!
+            )
+        }
+    }
         override fun onCreateOptionsMenu(menu: Menu): Boolean {
             super.onCreateOptionsMenu(menu)
             menuInflater.inflate(R.menu.menu_message_list, menu)

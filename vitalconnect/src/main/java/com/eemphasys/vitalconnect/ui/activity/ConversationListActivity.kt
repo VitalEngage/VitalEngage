@@ -7,15 +7,18 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.eemphasys.vitalconnect.R
+import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.extensions.lazyViewModel
 import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
 import com.eemphasys.vitalconnect.databinding.ActivityConversationListBinding
+import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys.vitalconnect.ui.fragment.ContactListFragment
 import com.eemphasys.vitalconnect.ui.fragment.ConversationListFragment
 import com.eemphasys.vitalconnect.ui.fragment.ProfileFragment
 import com.eemphasys_enterprise.commonmobilelib.EETLog
+import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -66,6 +69,78 @@ class ConversationListActivity:AppCompatActivity() {
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
         }
         binding.toolbar.setNavigationOnClickListener { onBackPressed() }
+    }
+
+    override fun onStart() {
+        EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onStart Called")
+        super.onStart()
+        try {
+            if(ConversationsClientWrapper.INSTANCE.isClientCreated){
+
+            }
+            else{
+                Log.d("onStart ConversationListActivity","finishing activity")
+                this.finish()
+            }
+        }catch(e: Exception){
+            Log.d("onStart ConversationListActivity", e.message.toString())
+            EETLog.error(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    AppContextHelper.appContext!!
+                )!!
+            )
+        }
+    }
+
+    override fun onResume() {
+        EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onResume Called")
+        super.onResume()
+        try {
+            if(ConversationsClientWrapper.INSTANCE.isClientCreated){
+
+            }
+            else{
+                Log.d("onResume ConversationListActivity","finishing activity")
+                this.finish()
+            }
+        }catch(e: Exception){
+            Log.d("onResume ConversationListActivity", e.message.toString())
+            EETLog.error(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    AppContextHelper.appContext!!
+                )!!
+            )
+        }
+    }
+
+    override fun onStop() {
+        EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onStop Called")
+        super.onStop()
+        try {
+
+        }catch(e: Exception){
+            Log.d("onStop ConversationListActivity", e.message.toString())
+            EETLog.error(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    AppContextHelper.appContext!!
+                )!!
+            )
+        }
     }
     override fun onBackPressed() {
 
