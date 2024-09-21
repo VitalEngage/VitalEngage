@@ -90,7 +90,7 @@ class MessageListActivity: AppCompatActivity() {
             }
             else{
                 Log.d("onStart MessageListActivity","finishing activity")
-                this.finish()
+//                this.finish()
             }
         }catch(e: Exception){
             Log.d("onStart MessageListActivity", e.message.toString())
@@ -116,7 +116,7 @@ class MessageListActivity: AppCompatActivity() {
             }
             else{
                 Log.d("onResume MessageListActivity","finishing activity")
-                this.finish()
+//                this.finish()
             }
         }catch(e: Exception){
             Log.d("onResume MessageListActivity", e.message.toString())

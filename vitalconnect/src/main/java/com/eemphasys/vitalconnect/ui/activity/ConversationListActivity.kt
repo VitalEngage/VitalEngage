@@ -80,7 +80,7 @@ class ConversationListActivity:AppCompatActivity() {
             }
             else{
                 Log.d("onStart ConversationListActivity","finishing activity")
-                this.finish()
+//                this.finish()
             }
         }catch(e: Exception){
             Log.d("onStart ConversationListActivity", e.message.toString())
@@ -106,7 +106,7 @@ class ConversationListActivity:AppCompatActivity() {
             }
             else{
                 Log.d("onResume ConversationListActivity","finishing activity")
-                this.finish()
+//                this.finish()
             }
         }catch(e: Exception){
             Log.d("onResume ConversationListActivity", e.message.toString())
