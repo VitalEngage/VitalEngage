@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.adapters.MessageListAdapter
 import com.eemphasys.vitalconnect.common.AppContextHelper
+import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.enums.ConversationsError
 import com.eemphasys.vitalconnect.common.enums.MessageType
@@ -91,6 +92,10 @@ class MessageListActivity: AppCompatActivity() {
             else{
                 Log.d("onStart MessageListActivity","finishing activity")
 //                this.finish()
+                lifecycleScope.launch {
+                    Log.d("twiliotokeninonstart",ChatAppModel.twilio_token.toString())
+                    ConversationsClientWrapper.INSTANCE.getclient()
+                }
             }
         }catch(e: Exception){
             Log.d("onStart MessageListActivity", e.message.toString())
