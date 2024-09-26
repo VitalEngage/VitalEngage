@@ -5,6 +5,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.eemphasys.vitalconnect.R
+import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.enums.SendStatus
 import kotlinx.datetime.Clock
@@ -32,7 +33,7 @@ fun Long.asMessageDateString() : String {
     }
 
     val instant = Instant.fromEpochMilliseconds(this)
-    val updatedInstant = instant.plus(Constants.TIME_OFFSET!!.seconds)
+    val updatedInstant = instant.plus( Integer.valueOf(Constants.getStringFromVitalTextSharedPreferences(AppContextHelper.appContext!!,"offset")!!).seconds)
 
     val now = Clock.System.now()
 //    val timeZone = TimeZone.currentSystemDefault()
@@ -60,7 +61,7 @@ fun Long.asMessageDateChangedString(): String {
     val originalInstant = Instant.fromEpochMilliseconds(this)
 
     // Apply the offset (convert seconds to milliseconds for calculation)
-    val offsetMillis = (Constants.TIME_OFFSET ?: 0) * 1000L
+    val offsetMillis = (Integer.valueOf(Constants.getStringFromVitalTextSharedPreferences(AppContextHelper.appContext!!,"offset")!!) ?: 0) * 1000L
     val updatedInstant = originalInstant.plus(offsetMillis.milliseconds)
 
     // Get the current time in UTC as Instant
@@ -106,7 +107,7 @@ fun Long.asLastMessageDateString(context: Context) : String {    if (this == 0L)
     val originalInstant = Instant.fromEpochMilliseconds(this)
 
     // Apply the offset (convert seconds to milliseconds for calculation)
-    val offsetMillis = (Constants.TIME_OFFSET ?: 0) * 1000L
+    val offsetMillis = (Integer.valueOf(Constants.getStringFromVitalTextSharedPreferences(AppContextHelper.appContext!!,"offset")!!) ?: 0) * 1000L
     val updatedInstant = originalInstant.plus(offsetMillis.milliseconds)
 
     // Get the current time in UTC as Instant

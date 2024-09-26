@@ -3,18 +3,28 @@ package com.eemphasys.vitalconnect.ui.activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.eemphasys.vitalconnect.R
+import com.eemphasys.vitalconnect.common.AppContextHelper
+import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.SheetListener
 import com.eemphasys.vitalconnect.common.enums.ConversationsError
 import com.eemphasys.vitalconnect.common.extensions.*
 import com.eemphasys.vitalconnect.common.injector
+import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
 import com.eemphasys.vitalconnect.databinding.ActivityConversationDetailsBinding
+import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys_enterprise.commonmobilelib.EETLog
+import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class ConversationDetailsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityConversationDetailsBinding
@@ -46,6 +56,37 @@ class ConversationDetailsActivity : AppCompatActivity() {
             }
 
         initViews()
+    }
+
+    override fun onStart() {
+        EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onStart Called")
+        super.onStart()
+        try {
+            binding.progressBarID.visibility= View.VISIBLE
+            if(ConversationsClientWrapper.INSTANCE.isClientCreated){
+                binding.progressBarID.visibility= View.GONE
+            }
+            else{
+                Log.d("onStart ConversationDetailsActivity","onStart called")
+                lifecycleScope.launch {
+                    ConversationsClientWrapper.INSTANCE.getclient(applicationContext)
+                    delay(3000)
+                    binding.progressBarID.visibility= View.GONE
+                }
+            }
+        }catch(e: Exception){
+            Log.d("onStart ConversationDetailsActivity", e.message.toString())
+            EETLog.error(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    AppContextHelper.appContext!!
+                )!!
+            )
+        }
     }
 
     override fun onBackPressed() {

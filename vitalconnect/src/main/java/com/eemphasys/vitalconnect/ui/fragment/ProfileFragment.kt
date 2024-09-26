@@ -54,7 +54,7 @@ class ProfileFragment:Fragment() {
         super.onStart()
         binding.switchbtn.setOnCheckedChangeListener{ buttonView,isChecked ->
 
-            profileViewModel.changeUserAlertStatus(isChecked)
+            profileViewModel.changeUserAlertStatus(isChecked,applicationContext)
         }
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -62,10 +62,10 @@ class ProfileFragment:Fragment() {
         super.onViewCreated(view, savedInstanceState)
         requireActivity().title = getString(R.string.title_settings)
 
-        if(Constants.USER_SMS_ALERT.equals("true", ignoreCase = true)){
+        if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"userSMSAlert").equals("true", ignoreCase = true)){
             binding.switchbtn.isChecked = true
         }
-        else if(Constants.USER_SMS_ALERT.equals("false", ignoreCase = true)) {
+        else if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"userSMSAlert").equals("false", ignoreCase = true)) {
             binding.switchbtn.isChecked = false
         }
 
@@ -74,8 +74,8 @@ class ProfileFragment:Fragment() {
             binding.profileName.text = user.friendlyName
             binding.profileIdentity.text = user.identity
             binding.profileImage.text = Constants.getInitials(user.friendlyName.trim { it <= ' '} )
-            binding.emailId.text = Constants.EMAIL
-            binding.phoneNumber.text = Constants.MOBILENUMBER
+            binding.emailId.text = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"email")
+            binding.phoneNumber.text = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"mobileNumber")
         }
 
         profileViewModel.onUserUpdated.observe(viewLifecycleOwner) {
@@ -116,7 +116,7 @@ class ProfileFragment:Fragment() {
                 activity?.finish()
         }
 
-        if(Constants.IS_STANDALONE == "false") {
+        if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"isStandalone")!!.lowercase()== "false") {
             binding.signOut.visibility= View.GONE
         }
 

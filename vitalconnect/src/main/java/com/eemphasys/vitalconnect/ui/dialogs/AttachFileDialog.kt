@@ -128,7 +128,7 @@ class AttachFileDialog : BaseBottomSheetDialogFragment() {
         val picturesDir = requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
         val photoFile = File.createTempFile("JPEG_${timeStamp}_", ".jpg", picturesDir)
         imageCaptureUri =
-            FileProvider.getUriForFile(requireContext(), ChatAppModel.appId + ".provider", photoFile)
+            FileProvider.getUriForFile(requireContext(), Constants.getStringFromVitalTextSharedPreferences(context,"packageName") + ".provider", photoFile)
 
         takePicture.launch(imageCaptureUri)
     }

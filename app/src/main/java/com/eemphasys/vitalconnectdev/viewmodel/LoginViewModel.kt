@@ -1,5 +1,6 @@
 package com.eemphasys.vitalconnectdev.viewmodel
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -42,7 +43,7 @@ class LoginViewModel(
     val isAADEnabled = MutableLiveData(false)
     val isPasswordUpdated = MutableLiveData(false)
 
-    fun signIn(identity: String, password :String) {
+    fun signIn(identity: String, password :String,applicationContext : Context) {
         if (isLoading.value == true) return
 
         if (isNetworkAvailable.value == false) {
@@ -61,9 +62,9 @@ class LoginViewModel(
         viewModelScope.launch {
             try {
                 LoginConstants.TIMESTAMP = getTimeStamp()
-                loginManager.getAuthenticationToken(identity, password, getTimeStamp())
+                loginManager.getAuthenticationToken(identity, password, getTimeStamp(),applicationContext)
                 if(!LoginConstants.AUTH_TOKEN.isNullOrEmpty()) {
-                    loginManager.getTwilioToken()
+                    loginManager.getTwilioToken(applicationContext)
 //                    loginManager.getTwilioclient()
 //                    loginManager.registerForFcm()
                     onSignInSuccess.call()
@@ -118,9 +119,9 @@ class LoginViewModel(
         }
     }
 
-    fun isAzureADEnabled (tenant : String){
+    fun isAzureADEnabled (tenant : String,applicationContext: Context){
         viewModelScope.launch {
-            val tokenApi = RetrofitHelper.getInstance().create(TwilioApi::class.java)
+            val tokenApi = RetrofitHelper.getInstance(applicationContext).create(TwilioApi::class.java)
             val result = tokenApi.validateTenant(tenant)
             if(result.isSuccessful) {
                 Log.d("isAzureAdenabled", result.body()!!.isAADEnabled.toString())
@@ -143,18 +144,18 @@ class LoginViewModel(
 //        }
 //    }
 
-    fun sendOtp(tenantCode: String,userName: String,callback: (Boolean) -> Unit) {
+    fun sendOtp(tenantCode: String,userName: String,applicationContext: Context,callback: (Boolean) -> Unit) {
         viewModelScope.launch {
-            val retrofithelper = RetrofitHelper.getInstance().create(TwilioApi::class.java)
+            val retrofithelper = RetrofitHelper.getInstance(applicationContext).create(TwilioApi::class.java)
             val requestBody = SendOtpReq(userName, tenantCode)
             val response = retrofithelper.sendOTP(requestBody)
             callback(response.isSuccessful)
         }
     }
 
-    fun updatePassword(tenantCode : String, userName:String,password:String,otp:String){
+    fun updatePassword(tenantCode : String, userName:String,password:String,otp:String,applicationContext: Context){
         viewModelScope.launch {
-            val retrofithelper = RetrofitHelper.getInstance().create(TwilioApi::class.java)
+            val retrofithelper = RetrofitHelper.getInstance(applicationContext).create(TwilioApi::class.java)
             val requestBody = UpdatePasswordReq(tenantCode, userName, password, otp)
             val response = retrofithelper.updatePassword(requestBody)
             if(response.isSuccessful) {

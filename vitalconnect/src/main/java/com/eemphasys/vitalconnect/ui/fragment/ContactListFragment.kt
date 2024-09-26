@@ -13,6 +13,7 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.appcompat.widget.SearchView
+import androidx.compose.ui.text.toLowerCase
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -80,23 +81,23 @@ class ContactListFragment : Fragment() {
 
             override fun onQueryTextChange(newText: String?): Boolean {
                 if (newText != null && newText.length >= 3) {
-                if (Constants.SHOW_CONTACTS == "false") {
+                if (Constants.getStringFromVitalTextSharedPreferences(applicationContext,"showContacts")!!.lowercase() == "false") {
                     lifecycleScope.launch {
                         val listOfSearchedContacts = mutableListOf<ContactListViewItem>()
                         val httpClientWithToken = OkHttpClient.Builder()
                             .connectTimeout(300, TimeUnit.SECONDS)
                             .readTimeout(300, TimeUnit.SECONDS)
                             .writeTimeout(300, TimeUnit.SECONDS)
-                            .addInterceptor(AuthInterceptor(Constants.AUTH_TOKEN))
+                            .addInterceptor(AuthInterceptor(Constants.getStringFromVitalTextSharedPreferences(context,"authToken")!!))
                             .addInterceptor(RetryInterceptor())
                             .build()
                         val retrofitWithToken =
-                            RetrofitHelper.getInstance(httpClientWithToken)
+                            RetrofitHelper.getInstance(context!!,httpClientWithToken)
                                 .create(TwilioApi::class.java)
                         var request =
                             SearchContactRequest(
-                                Constants.USERNAME,
-                                Constants.TENANT_CODE,
+                                Constants.getStringFromVitalTextSharedPreferences(context,"currentUser")!!,
+                                Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
                                 newText!!
                             )
                         var response = retrofitWithToken.getSearchedContact(request)
@@ -151,7 +152,7 @@ class ContactListFragment : Fragment() {
                 return true
             }
                 else{
-                    if(Constants.SHOW_CONTACTS=="false") {
+                    if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"showContacts")!!.lowercase() =="false") {
                         setAdapter(emptyList())
                     }
                     else{
@@ -224,13 +225,13 @@ class ContactListFragment : Fragment() {
         }
         contactsList = ArrayList<Contact>()
         webuserList = ArrayList<WebUser>()
-        if(!Constants.CONTACTS.isNullOrEmpty()) {
-            val jsonObjectcontacts = JSONObject(Constants.CONTACTS)
+        if(!Constants.getStringFromVitalTextSharedPreferences(applicationContext,"contacts").isNullOrEmpty()) {
+            val jsonObjectcontacts = JSONObject(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"contacts"))
             val jsonArrayContacts = jsonObjectcontacts.getJSONArray("contacts")
             for (i in 0 until jsonArrayContacts.length()) {
                 val jsonObject = jsonArrayContacts.getJSONObject(i)
                 val name = jsonObject.getString("name")
-                val number = Constants.formatPhoneNumber(jsonObject.getString("number"),jsonObject.getString("countryCode"))
+                val number = Constants.formatPhoneNumber(applicationContext,jsonObject.getString("number"),jsonObject.getString("countryCode"))
                 val customerName = jsonObject.getString("customerName")
                 val initials = Constants.getInitials(name.trim { it <= ' ' })
                 val designation = jsonObject.getString("designation")
@@ -266,36 +267,36 @@ class ContactListFragment : Fragment() {
             .connectTimeout(300, TimeUnit.SECONDS)
             .readTimeout(300, TimeUnit.SECONDS)
             .writeTimeout(300, TimeUnit.SECONDS)
-            .addInterceptor(AuthInterceptor(Constants.AUTH_TOKEN))
+            .addInterceptor(AuthInterceptor(Constants.getStringFromVitalTextSharedPreferences(context,"authToken")!!))
             .addInterceptor(RetryInterceptor())
             .build()
         val retrofitWithToken =
-            RetrofitHelper.getInstance(httpClientWithToken).create(TwilioApi::class.java)
+            RetrofitHelper.getInstance(requireContext(),httpClientWithToken).create(TwilioApi::class.java)
         //Creating the Adapter
-        adapter = ContactListAdapter(list,list,object : OnContactItemClickListener {
+        adapter = ContactListAdapter(list,list,applicationContext,object : OnContactItemClickListener {
             @SuppressLint("SuspiciousIndentation")
             override fun onContactItemClick(contact: ContactListViewItem) {
-                var phone  = Constants.cleanedNumber(Constants.formatPhoneNumber(contact.number,contact.countryCode!!))
+                var phone  = Constants.cleanedNumber(Constants.formatPhoneNumber(applicationContext,contact.number,contact.countryCode!!))
                     if (contact.type == "SMS") {
                         if( isValidPhoneNumber(phone,Locale.getDefault().country)) {
                         binding?.progressBarID?.visibility = VISIBLE
 
                         val existingConversation = retrofitWithToken.fetchExistingConversation(
-                            Constants.TENANT_CODE,
+                            Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
                             Constants.cleanedNumber(
-                                Constants.formatPhoneNumber(
+                                Constants.formatPhoneNumber(applicationContext,
                                     contact.number,
                                     contact.countryCode!!
                                 )
                             ),
                             false,
                             1,
-                            Constants.PROXY_NUMBER
+                            Constants.getStringFromVitalTextSharedPreferences(applicationContext,"proxyNumber")!!
                         )
                         Log.d(
                             "contactNumberClicked",
                             Constants.cleanedNumber(
-                                Constants.formatPhoneNumber(
+                                Constants.formatPhoneNumber(applicationContext,
                                     contact.number,
                                     contact.countryCode!!
                                 )
@@ -323,9 +324,9 @@ class ContactListFragment : Fragment() {
                                                 try {
                                                     val participantSid =
                                                         retrofitWithToken.addParticipantToConversation(
-                                                            Constants.TENANT_CODE,
+                                                            Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
                                                             conversation.conversationSid,
-                                                            Constants.USERNAME
+                                                            Constants.getStringFromVitalTextSharedPreferences(context,"currentUser")!!
                                                         )
 
                                                     participantSid.enqueue(object :
@@ -422,14 +423,14 @@ class ContactListFragment : Fragment() {
                                                 val jsonObject = JSONObject(attributes)
                                                 contactListViewModel.createConversation(
                                                     contact.name + " " +
-                                                            Constants.formatPhoneNumber(
+                                                            Constants.formatPhoneNumber(applicationContext,
                                                             contact.number!!,
                                                             contact.countryCode
                                                         ),
                                                     " ",
                                                     "${
                                                         Constants.cleanedNumber(
-                                                            Constants.formatPhoneNumber(
+                                                            Constants.formatPhoneNumber(applicationContext,
                                                                 contact.number!!,
                                                                 contact.countryCode
                                                             )
@@ -455,13 +456,13 @@ class ContactListFragment : Fragment() {
                                             )
                                             val jsonObject = JSONObject(attributes)
                                             contactListViewModel.createConversation(
-                                                contact.name + " " + Constants.formatPhoneNumber(
+                                                contact.name + " " + Constants.formatPhoneNumber(applicationContext,
                                                     contact.number!!,
                                                     contact.countryCode
                                                 ),
                                                 contact.email,
                                                 Constants.cleanedNumber(
-                                                    Constants.formatPhoneNumber(
+                                                    Constants.formatPhoneNumber(applicationContext,
                                                         contact.number!!,
                                                         contact.countryCode
                                                     )

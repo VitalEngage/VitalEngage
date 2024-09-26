@@ -76,7 +76,7 @@ class ContactListViewModel(
             {
                 val conversationSid = conversationListManager.createConversation(friendlyName,attributes)
                 conversationListManager.joinConversation(conversationSid)
-                addNonChatParticipant(phoneNumber, Constants.PROXY_NUMBER,friendlyName,conversationSid)
+                addNonChatParticipant(phoneNumber, Constants.getStringFromVitalTextSharedPreferences(applicationContext,"proxyNumber")!!,friendlyName,conversationSid)
                 MessageListActivity.startfromFragment(applicationContext,conversationSid)
                 Log.d("nonchat participant","participant added")
             }

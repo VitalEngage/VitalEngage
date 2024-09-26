@@ -1,7 +1,10 @@
 package com.eemphasys.vitalconnect.common
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Build
+import android.preference.PreferenceManager
 import android.util.Log
 import android.widget.EditText
 import androidx.appcompat.widget.SearchView
@@ -23,7 +26,7 @@ import java.util.concurrent.TimeUnit
 class Constants   {
     companion object{
 
-        var BASE_URL : String = ""
+//        var BASE_URL : String = ""
         var TENANT_CODE : String = ""
         var TWILIO_TOKEN : String = ""
         var CLIENT_ID : String = ""
@@ -61,6 +64,29 @@ class Constants   {
         var TIME_OFFSET : Int? = 0
 
 
+        const val MyPREFERENCES = "MyVitaltextPrefs"
+        var sharedpreferences: SharedPreferences? = null
+        @JvmStatic
+        fun getStringFromVitalTextSharedPreferences(context: Context?, key: String): String? {
+            context?.let {
+                sharedpreferences = context.getSharedPreferences(MyPREFERENCES,Context.MODE_PRIVATE)
+                val value = sharedpreferences?.getString(key, null) // Use null as default value to check if key exists
+                Log.d("SharedPreferencesUtil", "Retrieved value: $value for key: $key")
+                return value
+            } ?: Log.e("SharedPreferencesUtil", "Context is null")
+            return null
+        }
+
+        @JvmStatic
+        fun saveStringToVitalTextSharedPreferences(context: Context?, key: String, value: String) {
+            context?.let {
+                sharedpreferences = context.getSharedPreferences(MyPREFERENCES,Context.MODE_PRIVATE)
+                val editor = sharedpreferences?.edit()
+                editor?.putString(key, value)
+                editor?.apply()
+                Log.d("SharedPreferencesUtil", "Saved value: $value with key: $key")
+            } ?: Log.e("SharedPreferencesUtil", "Context is null")
+        }
         @JvmStatic
         fun getInitials(name: String): String {
             val nameInitials = StringBuilder()
@@ -118,14 +144,14 @@ class Constants   {
             }
 
         @JvmStatic
-        fun formatPhoneNumber(phoneNumber: String,countryCode: String): String {
+        fun formatPhoneNumber(applicationContext: Context,phoneNumber: String,countryCode: String): String {
              if (phoneNumber.startsWith("+")) {
                return phoneNumber // If the string starts with '+', keep it as it is
             }else if(!countryCode.isNullOrEmpty()) {
                 return countryCode + phoneNumber
             }
             else {
-                 return DEFAULT_COUNTRYCODE + phoneNumber // Prepend Default countrycode if the string doesn't start with '+'
+                 return getStringFromVitalTextSharedPreferences(applicationContext,"defaultCountryCode") + phoneNumber // Prepend Default countrycode if the string doesn't start with '+'
             }
         }
 

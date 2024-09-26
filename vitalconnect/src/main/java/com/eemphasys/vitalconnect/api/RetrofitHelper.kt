@@ -1,5 +1,6 @@
 package com.eemphasys.vitalconnect.api
 
+import android.content.Context
 import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.Constants
 import okhttp3.OkHttpClient
@@ -8,9 +9,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitHelper {
 
-        fun getInstance(httpClient: OkHttpClient? = null): Retrofit {
+        fun getInstance(applicationContext: Context, httpClient: OkHttpClient? = null): Retrofit {
 
-            val builder = Retrofit.Builder().baseUrl(ChatAppModel.base_url)
+            val builder = Retrofit.Builder().baseUrl(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"baseUrl"))
                 .addConverterFactory(GsonConverterFactory.create())
 
             if (httpClient != null) {

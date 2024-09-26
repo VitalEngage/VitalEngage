@@ -37,7 +37,7 @@ import java.lang.reflect.Field
 class ConversationListFragment:Fragment(), OnConversationEvent {
     lateinit var binding: FragmentConversationListBinding
 
-    private val adapter by lazy { ConversationListAdapter(this) }
+    private val adapter by lazy { ConversationListAdapter(this,applicationContext) }
 
     private val noInternetSnackBar by lazy {
         Snackbar.make(binding.conversationsListLayout, R.string.no_internet_connection, Snackbar.LENGTH_INDEFINITE)

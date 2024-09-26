@@ -39,16 +39,16 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
 
     suspend fun getConversationsClient() = deferredClient.await()
 
-    suspend fun getclient(){
+    suspend fun getclient(applicationContext: Context){
         ConversationsClient.setLogLevel(ConversationsClient.LogLevel.VERBOSE);
-        val client = createAndSyncConversationsClient(applicationContext, ChatAppModel.twilio_token!!)
+        val client = createAndSyncConversationsClient(applicationContext, Constants.getStringFromVitalTextSharedPreferences(applicationContext,"twilioToken")!!)
         this.deferredClient.complete(client)
         Log.d("client", client.myIdentity)
         client.addListener(
             onTokenAboutToExpire = { Log.d("OntokenAboutToExpire","OnTokenAboutToExpire")
-                updateToken(client.myIdentity, notifyOnFailure = false) },
+                updateToken(applicationContext,client.myIdentity, notifyOnFailure = false) },
             onTokenExpired = { Log.d("onTokenExpired","onTokenExpired")
-                updateToken(client.myIdentity, notifyOnFailure = true) },
+                updateToken(applicationContext,client.myIdentity, notifyOnFailure = true) },
         )
     }
 
@@ -66,10 +66,10 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
      * Fetch Twilio access token and return it, if token is non-null, otherwise return error
      */
 
-    private fun updateToken(identity: String,notifyOnFailure: Boolean) = coroutineScope.launch {
+    private fun updateToken(applicationContext: Context,identity: String,notifyOnFailure: Boolean) = coroutineScope.launch {
 
         val result = runCatching {
-            val twilioToken = getToken(identity)
+            val twilioToken = getToken(identity,applicationContext)
             getConversationsClient().updateToken(twilioToken)
         }
 
@@ -78,45 +78,45 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
         }
     }
 
-    private suspend fun getToken(username: String) = withContext(Dispatchers.IO) {
+    private suspend fun getToken(username: String,applicationContext: Context) = withContext(Dispatchers.IO) {
         try {
-            if(Constants.AUTH_TOKEN.isNullOrEmpty()) {
+            if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"authToken")!!.isNullOrEmpty()) {
                 val requestData = RequestToken(
-                    Constants.TENANT_CODE,
-                    Constants.CLIENT_ID,
-                    Constants.CLIENT_SECRET,
+                    Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
+                    Constants.getStringFromVitalTextSharedPreferences(applicationContext,"clientId")!!,
+                    Constants.getStringFromVitalTextSharedPreferences(applicationContext,"clientSecret")!!,
                     username,
-                    Constants.PRODUCT,
+                    Constants.getStringFromVitalTextSharedPreferences(applicationContext,"product")!!,
                     "",
                     true,
-                    Constants.FULL_NAME,
-                    Constants.PROXY_NUMBER
+                    Constants.getStringFromVitalTextSharedPreferences(applicationContext,"friendlyName")!!,
+                    Constants.getStringFromVitalTextSharedPreferences(applicationContext,"proxyNumber")!!
                 )
 
-                val tokenApi = RetrofitHelper.getInstance().create(TwilioApi::class.java)
+                val tokenApi = RetrofitHelper.getInstance(applicationContext).create(TwilioApi::class.java)
                 val result = tokenApi.getAuthToken(requestData)
                 Log.d("Authtoken in clientwrapper: ", result.body()!!.jwtToken)
 
-                Constants.AUTH_TOKEN = result.body()!!.jwtToken
+                Constants.saveStringToVitalTextSharedPreferences(applicationContext,"authToken",result.body()!!.jwtToken)
             }
 
             val httpClientWithToken = OkHttpClient.Builder()
                 .connectTimeout(300, TimeUnit.SECONDS)
                 .readTimeout(300, TimeUnit.SECONDS)
                 .writeTimeout(300, TimeUnit.SECONDS)
-                .addInterceptor(AuthInterceptor(Constants.AUTH_TOKEN))
+                .addInterceptor(AuthInterceptor(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"authToken")!!))
                 .addInterceptor(RetryInterceptor())
                 .build()
             val retrofitWithToken =
-                RetrofitHelper.getInstance(httpClientWithToken).create(TwilioApi::class.java)
+                RetrofitHelper.getInstance(applicationContext,httpClientWithToken).create(TwilioApi::class.java)
 
 
             val TwilioToken = retrofitWithToken.getTwilioToken(
-                Constants.TENANT_CODE,
+                Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
                 username,
-                Constants.FRIENDLY_NAME
+                Constants.getStringFromVitalTextSharedPreferences(applicationContext,"friendlyName")!!
             )
-            Constants.TWILIO_TOKEN = TwilioToken.body()!!.token
+//            Constants.TWILIO_TOKEN = TwilioToken.body()!!.token
             return@withContext TwilioToken.body()!!.token
         } catch (e: FileNotFoundException) {
             throw createTwilioException(ConversationsError.TOKEN_ACCESS_DENIED)

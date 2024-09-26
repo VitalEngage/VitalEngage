@@ -81,7 +81,7 @@ class LoginActivity : AppCompatActivity() {
 
             override fun afterTextChanged(s: Editable?) {
                 binding.progressBarID.visibility = VISIBLE
-                loginViewModel.isAzureADEnabled(s?.toString()!!)
+                loginViewModel.isAzureADEnabled(s?.toString()!!,applicationContext)
             }
 
         })
@@ -242,12 +242,14 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun initializeChatAppModel(){
-        ChatAppModel.init(
-            LoginConstants.BASE_URL,
-            LoginConstants.TWILIO_TOKEN,
-            packageName.toString()
-
-        )
+//        ChatAppModel.init(
+//            LoginConstants.BASE_URL,
+//            LoginConstants.TWILIO_TOKEN,
+//            packageName.toString()
+//
+//        )
+        LoginConstants.saveStringToVitalTextSharedPreferences(this,"baseUrl",LoginConstants.BASE_URL)
+        LoginConstants.saveStringToVitalTextSharedPreferences(this,"packageName",packageName.toString())
     }
 
     private fun comparePasswords(){
@@ -339,7 +341,7 @@ class LoginActivity : AppCompatActivity() {
         val valid = validateInputs()
         if(valid) {
             binding.progressBarID.visibility = VISIBLE
-            loginViewModel.sendOtp(tenantCode,username) { success ->
+            loginViewModel.sendOtp(tenantCode,username,applicationContext) { success ->
                 if (success) {
                     binding.progressBarID.visibility = GONE
                     binding.enterotp.visibility = VISIBLE
@@ -362,7 +364,7 @@ class LoginActivity : AppCompatActivity() {
         val username = binding.usernameTvRP.text.toString()
         val password = binding.confirmpasswordTvRP.text.toString()
         val otp = binding.pinview.text.toString()
-        loginViewModel.updatePassword(tenantCode,username,password,otp)
+        loginViewModel.updatePassword(tenantCode,username,password,otp,applicationContext)
     }
 
     fun goToLogin(view:View){
@@ -378,7 +380,7 @@ class LoginActivity : AppCompatActivity() {
 //        credentialStorage.identity = identity
 //        credentialStorage.password= password
 
-        loginViewModel.signIn(identity,password)
+        loginViewModel.signIn(identity,password,this)
     }
 
     private fun showProgress(show: Boolean) {

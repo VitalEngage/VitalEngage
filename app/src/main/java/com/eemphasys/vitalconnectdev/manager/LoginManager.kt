@@ -1,5 +1,6 @@
 package com.eemphasys.vitalconnectdev.manager
 
+import android.content.Context
 import android.util.Log
 import com.eemphasys.vitalconnect.api.AuthInterceptor
 import com.eemphasys.vitalconnect.api.RetrofitHelper
@@ -26,15 +27,15 @@ import java.util.concurrent.TimeUnit
 
 
 interface LoginManager {
-    suspend fun getAuthenticationToken(identity: String, password: String, timeStamp:String)
+    suspend fun getAuthenticationToken(identity: String, password: String, timeStamp:String,applicationContext: Context)
 
-    suspend fun getTwilioToken()
+    suspend fun getTwilioToken(applicationContext : Context)
     suspend fun signInUsingStoredCredentials()
     suspend fun signOut()
     fun clearCredentials()
     fun isLoggedIn(): Boolean
 
-    suspend fun getTwilioclient()
+    suspend fun getTwilioclient(applicationContext: Context)
     suspend fun registerForFcm()
 
 //    suspend fun isAzureAdEnabled()
@@ -45,7 +46,7 @@ class LoginManagerImpl(
     private val firebaseTokenManager: FirebaseTokenManager,
     private val conversationsClient: ConversationsClientWrapper,
 ): LoginManager {
-    override suspend fun getAuthenticationToken(identity: String, password: String, timeStamp: String) {
+    override suspend fun getAuthenticationToken(identity: String, password: String, timeStamp: String,applicationContext: Context) {
         val requestData = ValidateUserReq(
             identity,
             password,
@@ -56,7 +57,7 @@ class LoginManagerImpl(
             ""
         )
 
-        val tokenApi = RetrofitHelper.getInstance().create(TwilioApi::class.java)
+        val tokenApi = RetrofitHelper.getInstance(applicationContext).create(TwilioApi::class.java)
         val result = tokenApi.validateUser(requestData)
         if(result.isSuccessful) {
             Log.d("Authtoken: ", result.body()!!.jwtToken)
@@ -71,7 +72,7 @@ class LoginManagerImpl(
         }
     }
 
-    override suspend fun getTwilioToken() {
+    override suspend fun getTwilioToken(applicationContext : Context) {
             val httpClientWithToken = OkHttpClient.Builder()
                 .connectTimeout(300, TimeUnit.SECONDS)
                 .readTimeout(300, TimeUnit.SECONDS)
@@ -80,7 +81,7 @@ class LoginManagerImpl(
                 .addInterceptor(RetryInterceptor())
                 .build()
             val retrofitWithToken =
-                RetrofitHelper.getInstance(httpClientWithToken).create(TwilioApi::class.java)
+                RetrofitHelper.getInstance(applicationContext,httpClientWithToken).create(TwilioApi::class.java)
 
         Log.d("username", LoginConstants.CURRENT_USER)
             val twilioToken = retrofitWithToken.getTwilioToken(
@@ -91,10 +92,11 @@ class LoginManagerImpl(
             if(twilioToken.isSuccessful) {
                 Log.d("twiliotoken", twilioToken.body()!!.token)
                 LoginConstants.TWILIO_TOKEN = twilioToken.body()!!.token
-                ChatAppModel.twilio_token = LoginConstants.TWILIO_TOKEN
+//                ChatAppModel.twilio_token = LoginConstants.TWILIO_TOKEN
+                LoginConstants.saveStringToVitalTextSharedPreferences(applicationContext,"twilioToken",twilioToken.body()!!.token)
             }
 //        }
-        getTwilioclient()
+        getTwilioclient(applicationContext)
 
     }
 
@@ -120,8 +122,8 @@ class LoginManagerImpl(
         }
     }
 
-    override suspend fun getTwilioclient() {
-        conversationsClient.getclient()
+    override suspend fun getTwilioclient(applicationContext: Context) {
+        conversationsClient.getclient(applicationContext)
         ConversationsRepositoryImpl.INSTANCE.subscribeToConversationsClientEvents()
         registerForFcm()
         conversationsClient.shutdown()

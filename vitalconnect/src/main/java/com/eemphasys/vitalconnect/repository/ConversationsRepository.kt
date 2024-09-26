@@ -107,7 +107,6 @@ class ConversationsRepositoryImpl(
     private val localCache: LocalCacheProvider,
     private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()
 ) : ConversationsRepository {
-
     private val repositoryScope = CoroutineScope(dispatchers.io() + SupervisorJob())
     val unreadMessageCount: MutableLiveData<Long> = MutableLiveData(0)
     override fun getUnreadMessageCount(): LiveData<Long> = unreadMessageCount

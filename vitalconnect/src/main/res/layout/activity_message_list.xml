@@ -32,6 +32,19 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+        <ProgressBar
+            android:id="@+id/progressBar_ID"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:elevation="5dp"
+            app:layout_constraintStart_toStartOf="@id/messageList"
+            app:layout_constraintEnd_toEndOf="@id/messageList"
+            app:layout_constraintTop_toTopOf="@id/messageList"
+            app:layout_constraintBottom_toBottomOf="@id/messageList"
+            />
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/messageList"
             android:layout_width="0dp"

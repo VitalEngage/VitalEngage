@@ -1,5 +1,6 @@
 package com.eemphasys.vitalconnect.adapters
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +11,7 @@ import com.eemphasys.vitalconnect.data.models.ConversationListViewItem
 import com.eemphasys.vitalconnect.databinding.RowConversationItemBinding
 import kotlin.properties.Delegates
 
-class ConversationListAdapter(private val callback: OnConversationEvent) : RecyclerView.Adapter<ConversationListAdapter.ViewHolder>() {
+class ConversationListAdapter(private val callback: OnConversationEvent, private val applicationContext: Context) : RecyclerView.Adapter<ConversationListAdapter.ViewHolder>() {
     var conversations: List<ConversationListViewItem> by Delegates.observable(emptyList()) { _, old, new ->
         DiffUtil.calculateDiff(ConversationDiff(old, new)).dispatchUpdatesTo(this)
     }
@@ -26,10 +27,10 @@ class ConversationListAdapter(private val callback: OnConversationEvent) : Recyc
             holder.binding.conversation?.sid?.let { callback.onConversationClicked(it) }
         }
 
-        if(Constants.SHOW_DEPARTMENT == "false" ) {
+        if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"showDepartment") == "false" ) {
             holder.binding.department.visibility = View.GONE
         }
-        if(Constants.SHOW_DESIGNATION == "false") {
+        if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"showDesignation") == "false") {
             holder.binding.designation.visibility = View.GONE
         }
 //        if(holder.binding.customer.text.isNullOrBlank()){

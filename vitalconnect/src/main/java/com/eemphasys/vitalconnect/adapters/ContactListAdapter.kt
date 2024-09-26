@@ -1,5 +1,6 @@
 package com.eemphasys.vitalconnect.adapters
 
+import android.content.Context
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.ShapeDrawable
@@ -21,6 +22,7 @@ import com.eemphasys_enterprise.commonmobilelib.LogConstants
 class ContactListAdapter(
     private var itemList: List<ContactListViewItem>,
     private val originalList: List<ContactListViewItem>,
+    private val applicationContext: Context,
     private val itemClickListener: OnContactItemClickListener
 ) : RecyclerView.Adapter<ContactListAdapter.ViewHolder>() {
 
@@ -48,10 +50,10 @@ class ContactListAdapter(
             itemBinding.department.text = "(" + item.department + ")"
             itemBinding.customerName.text = item.customerName
 
-            if (item.department.isNullOrBlank() || Constants.SHOW_DEPARTMENT == "false") {
+            if (item.department.isNullOrBlank() || Constants.getStringFromVitalTextSharedPreferences(applicationContext,"showDepartment") == "false") {
                 itemBinding.department.visibility = View.GONE
             }
-            if (item.designation.isNullOrBlank() || Constants.SHOW_DESIGNATION == "false") {
+            if (item.designation.isNullOrBlank() || Constants.getStringFromVitalTextSharedPreferences(applicationContext,"showDesignation") == "false") {
                 itemBinding.designation.visibility = View.GONE
             }
             if (itemBinding.contactNumber.text.isNullOrBlank()) {

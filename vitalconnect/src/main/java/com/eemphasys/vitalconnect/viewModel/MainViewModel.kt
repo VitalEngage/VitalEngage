@@ -1,5 +1,6 @@
 package com.eemphasys.vitalconnect.viewModel
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,6 +11,7 @@ import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.GetUserAlertStatusRequest
 import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.Constants
+import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.manager.MainManager
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys_enterprise.commonmobilelib.EETLog
@@ -21,11 +23,11 @@ import java.util.concurrent.TimeUnit
 
 class MainViewModel(private val mainManager: MainManager) : ViewModel() {
 
-        fun create(){
+        fun create(applicationContext: Context){
             EETLog.saveUserJourney("vitaltext:  MainViewModel create Called")
             viewModelScope.launch {
                 try {
-                    mainManager.getTwilioclient()
+                    mainManager.getTwilioclient(applicationContext)
                 } catch (e: TwilioException) {
                     e.printStackTrace()
 
@@ -57,21 +59,21 @@ class MainViewModel(private val mainManager: MainManager) : ViewModel() {
             }
         }
 
-    fun getUserAlertStatus() = viewModelScope.launch {
+    fun getUserAlertStatus(applicationContext: Context) = viewModelScope.launch {
         EETLog.saveUserJourney("vitaltext:  Mainviewmodel getUserAlertStatus Called")
         val httpClientWithToken = OkHttpClient.Builder()
             .connectTimeout(300, TimeUnit.SECONDS)
             .readTimeout(300, TimeUnit.SECONDS)
             .writeTimeout(300, TimeUnit.SECONDS)
-            .addInterceptor(AuthInterceptor(Constants.AUTH_TOKEN))
+            .addInterceptor(AuthInterceptor(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"authToken")!!))
             .addInterceptor(RetryInterceptor())
             .build()
         val retrofitWithToken =
-            RetrofitHelper.getInstance(httpClientWithToken).create(TwilioApi::class.java)
-        val request = GetUserAlertStatusRequest(Constants.TENANT_CODE,Constants.USERNAME)
+            RetrofitHelper.getInstance(applicationContext,httpClientWithToken).create(TwilioApi::class.java)
+        val request = GetUserAlertStatusRequest(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!)
         val response =retrofitWithToken.getUserAlertStatus(request)
         if(response.isSuccessful) {
-            Constants.USER_SMS_ALERT = response.body()!!.status.lowercase()
+            Constants.saveStringToVitalTextSharedPreferences(applicationContext,"userSMSAlert", response.body()!!.status.lowercase())
         }
         else{
             Log.d("useralertstatus", response.code().toString() + " " + response.message())

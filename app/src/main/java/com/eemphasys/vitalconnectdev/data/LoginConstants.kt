@@ -1,5 +1,10 @@
 package com.eemphasys.vitalconnectdev.data
 
+import android.content.Context
+import android.content.SharedPreferences
+import android.preference.PreferenceManager
+import android.util.Log
+
 class LoginConstants   {
     companion object{
         //Himanshu account
@@ -84,5 +89,28 @@ class LoginConstants   {
         val CONTACTS = ""
         val WEBUSERS = ""
 
+        const val MyPREFERENCES = "MyVitaltextPrefs"
+        var sharedpreferences: SharedPreferences? = null
+        @JvmStatic
+        fun getStringFromVitalTextSharedPreferences(context: Context?, key: String): String? {
+            context?.let {
+                sharedpreferences = context.getSharedPreferences(MyPREFERENCES,Context.MODE_PRIVATE)
+                val value = sharedpreferences?.getString(key, null) // Use null as default value to check if key exists
+                Log.d("SharedPreferencesUtil", "Retrieved value: $value for key: $key")
+                return value
+            } ?: Log.e("SharedPreferencesUtil", "Context is null")
+            return null
+        }
+
+        @JvmStatic
+        fun saveStringToVitalTextSharedPreferences(context: Context?, key: String, value: String) {
+            context?.let {
+                sharedpreferences = context.getSharedPreferences(MyPREFERENCES,Context.MODE_PRIVATE)
+                val editor = sharedpreferences?.edit()
+                editor?.putString(key, value)
+                editor?.apply()
+                Log.d("SharedPreferencesUtil", "Saved value: $value with key: $key")
+            } ?: Log.e("SharedPreferencesUtil", "Context is null")
+        }
     }
 }

@@ -12,6 +12,7 @@ import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.ParticipantExistingConversation
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.AppContextHelper
+import com.eemphasys.vitalconnect.common.Constants.Companion.saveStringToVitalTextSharedPreferences
 import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.common.extensions.lazyViewModel
 import com.eemphasys.vitalconnect.databinding.ActivityMainBinding
@@ -63,57 +64,89 @@ class MainActivity : AppCompatActivity() {
         val defaultcountryCode = intent.getStringExtra("defaultcountryCode")
         val timeoffset = intent.getStringExtra("timeoffset")
 
-        Constants.AUTH_TOKEN = authToken!!
-        Constants.CONTACTS = contacts!!
-        Constants.WEBUSERS = webusers!!
-        Constants.BASE_URL = baseurl!!
-        Constants.TENANT_CODE = tenantcode!!
-        Constants.CLIENT_ID = clientID!!
-        Constants.CLIENT_SECRET = clientSecret!!
-        Constants.FRIENDLY_NAME = friendlyName!!
-        Constants.PRODUCT = parentApp!!
-        Constants.USERNAME = username!!
-        Constants.TWILIO_TOKEN = twilioToken!!
-        Constants.PROXY_NUMBER = proxyNumber!!
-        Constants.FULL_NAME = fullName!!
-        Constants.SHOW_CONTACTS = showContacts!!
-        Constants.IS_STANDALONE = isStandalone!!
-        Constants.CUSTOMER_NUMBER = Constants.formatPhoneNumber(customerNumber!!,countryCode!!)
-        Constants.CUSTOMER_NAME = customerName!!
-        Constants.SHOW_CONVERSATIONS = showConversations!!
-        Constants.USER_SMS_ALERT = userSMSAlert!!
-        Constants.SHOW_DEPARTMENT = showDepartment!!
-        Constants.SHOW_DESIGNATION =showDesignation!!
-        Constants.DEPARTMENT= department!!
-        Constants.DESIGNATION=designation!!
-        Constants.CUSTOMER=customer!!
-        Constants.COUNTRYCODE=countryCode
-        Constants.EMAIL = email!!
-        Constants.MOBILENUMBER = mobileNumber!!
-        Constants.DEFAULT_COUNTRYCODE = defaultcountryCode!!
-        Constants.TIME_OFFSET = Integer.valueOf( timeoffset)
+//        Constants.AUTH_TOKEN = authToken!!
+//        Constants.CONTACTS = contacts!!
+//        Constants.WEBUSERS = webusers!!
+//        Constants.BASE_URL = baseurl!!
+//        Constants.TENANT_CODE = tenantcode!!
+//        Constants.CLIENT_ID = clientID!!
+//        Constants.CLIENT_SECRET = clientSecret!!
+//        Constants.FRIENDLY_NAME = friendlyName!!
+//        Constants.PRODUCT = parentApp!!
+//        Constants.USERNAME = username!!
+//        Constants.TWILIO_TOKEN = twilioToken!!
+//        Constants.PROXY_NUMBER = proxyNumber!!
+//        Constants.FULL_NAME = fullName!!
+//        Constants.SHOW_CONTACTS = showContacts!!
+//        Constants.IS_STANDALONE = isStandalone!!
+//        Constants.CUSTOMER_NUMBER = Constants.formatPhoneNumber(applicationContext,customerNumber!!,countryCode!!)
+//        Constants.CUSTOMER_NAME = customerName!!
+//        Constants.SHOW_CONVERSATIONS = showConversations!!
+//        Constants.USER_SMS_ALERT = userSMSAlert!!
+//        Constants.SHOW_DEPARTMENT = showDepartment!!
+//        Constants.SHOW_DESIGNATION =showDesignation!!
+//        Constants.DEPARTMENT= department!!
+//        Constants.DESIGNATION=designation!!
+//        Constants.CUSTOMER=customer!!
+//        Constants.COUNTRYCODE=countryCode
+//        Constants.EMAIL = email!!
+//        Constants.MOBILENUMBER = mobileNumber!!
+//        Constants.DEFAULT_COUNTRYCODE = defaultcountryCode!!
+//        Constants.TIME_OFFSET = Integer.valueOf( timeoffset)
 
-        Log.d("timezoneoffset", timeoffset!!)
+        saveStringToVitalTextSharedPreferences(this,"baseUrl",baseurl!!)
+//        saveStringToVitalTextSharedPreferences(this,"packageName",packageName.toString())
+        saveStringToVitalTextSharedPreferences(this,"currentUser",username!!)
+        saveStringToVitalTextSharedPreferences(this,"friendlyName",fullName!!)
+        saveStringToVitalTextSharedPreferences(this,"clientId",clientID!!)
+        saveStringToVitalTextSharedPreferences(this,"clientSecret",clientSecret!!)
+        saveStringToVitalTextSharedPreferences(this,"authToken",authToken!!)
+        saveStringToVitalTextSharedPreferences(this,"proxyNumber",proxyNumber!!)
+        saveStringToVitalTextSharedPreferences(this,"showDepartment",showDepartment!!)
+        saveStringToVitalTextSharedPreferences(this,"showDesignation",showDesignation!!)
+        saveStringToVitalTextSharedPreferences(this,"email",email!!)
+        saveStringToVitalTextSharedPreferences(this,"mobileNumber",mobileNumber!!)
+        saveStringToVitalTextSharedPreferences(this,"defaultCountryCode",defaultcountryCode!!)
+        saveStringToVitalTextSharedPreferences(this,"userSMSAlert",userSMSAlert!!)
+        saveStringToVitalTextSharedPreferences(this,"twilioToken",twilioToken!!)
+//        saveStringToVitalTextSharedPreferences(this,"customerContactList",list)
+        saveStringToVitalTextSharedPreferences(this,"contacts",contacts!!)
+//        saveStringToVitalTextSharedPreferences(this,"phoneNumberList",listOfPhoneNumbers)
+//        saveStringToVitalTextSharedPreferences(this,"unreadCountResponse",unreadCountResponse)
+        saveStringToVitalTextSharedPreferences(this,"department",department!!)
+        saveStringToVitalTextSharedPreferences(this,"designation",designation!!)
+        saveStringToVitalTextSharedPreferences(this,"countryCode",countryCode!!)
+        saveStringToVitalTextSharedPreferences(this,"offset",timeoffset!!)
+        saveStringToVitalTextSharedPreferences(this,"customerName",customerName!!)
+        saveStringToVitalTextSharedPreferences(this,"customerNumber",Constants.formatPhoneNumber(applicationContext,customerNumber!!,countryCode!!))
+        saveStringToVitalTextSharedPreferences(this,"isStandalone",isStandalone!!)
+        saveStringToVitalTextSharedPreferences(this,"customer",customer!!)
+        saveStringToVitalTextSharedPreferences(this, "showConversations", showConversations!!)
+        saveStringToVitalTextSharedPreferences(this, "showContacts", showContacts!!)
+        saveStringToVitalTextSharedPreferences(this,"product",parentApp!!)
+        saveStringToVitalTextSharedPreferences(this,"tenantCode", tenantcode!!)
+
+//        Log.d("timezoneoffset", timeoffset!!)
 
 //        mainViewModel.create()
         super.onCreate(savedInstanceState)
-        if(Constants.SHOW_CONTACTS.lowercase() == "true" && Constants.IS_STANDALONE.lowercase() == "false" && Constants.SHOW_CONVERSATIONS.lowercase() == "false") {
+        if(Constants.getStringFromVitalTextSharedPreferences(this,"showContacts")!!.lowercase() == "true" && Constants.getStringFromVitalTextSharedPreferences(this,"isStandalone")!!.lowercase() == "false" && Constants.getStringFromVitalTextSharedPreferences(this,"showConversations")!!.lowercase() == "false") {
             val httpClientWithToken = OkHttpClient.Builder()
                 .connectTimeout(300, TimeUnit.SECONDS)
                 .readTimeout(300, TimeUnit.SECONDS)
                 .writeTimeout(300, TimeUnit.SECONDS)
-                .addInterceptor(AuthInterceptor(Constants.AUTH_TOKEN))
+                .addInterceptor(AuthInterceptor(Constants.getStringFromVitalTextSharedPreferences(this,"authToken")!!))
                 .addInterceptor(RetryInterceptor())
                 .build()
             val retrofitWithToken =
-                RetrofitHelper.getInstance(httpClientWithToken).create(TwilioApi::class.java)
+                RetrofitHelper.getInstance(applicationContext,httpClientWithToken).create(TwilioApi::class.java)
 
             val existingConversation = retrofitWithToken.fetchExistingConversation(
-                Constants.TENANT_CODE,
-                Constants.cleanedNumber(Constants.formatPhoneNumber(customerNumber!!,countryCode)),
+                Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
+                Constants.cleanedNumber(Constants.formatPhoneNumber(applicationContext,customerNumber!!,countryCode!!)),
                 false,
                 1,
-                Constants.PROXY_NUMBER
+                Constants.getStringFromVitalTextSharedPreferences(this,"proxyNumber")!!
             )
             existingConversation.enqueue(object : Callback<List<ParticipantExistingConversation>> {
                 @SuppressLint("SuspiciousIndentation")
@@ -136,9 +169,9 @@ class MainActivity : AppCompatActivity() {
                                     try {
                                         val participantSid =
                                             retrofitWithToken.addParticipantToConversation(
-                                                Constants.TENANT_CODE,
+                                                Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
                                                 conversation.conversationSid,
-                                                Constants.USERNAME
+                                                Constants.getStringFromVitalTextSharedPreferences(this@MainActivity,"currentUser")!!
                                             )
 
                                         participantSid.enqueue(object : Callback<String> {
@@ -180,9 +213,9 @@ class MainActivity : AppCompatActivity() {
                                         conversation.attributes.Designation.isNullOrEmpty() &&
                                         conversation.attributes.CustomerName.isNullOrEmpty()){
                                         //add attributes from parent
-                                        var customer = Constants.CUSTOMER
-                                        var department = Constants.DEPARTMENT
-                                        var designation = Constants.DESIGNATION
+                                        var customer = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"customer")
+                                        var department = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"department")
+                                        var designation = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"designation")
 
                                         val attributes = mapOf(
                                             "Designation" to designation,
@@ -206,9 +239,9 @@ class MainActivity : AppCompatActivity() {
                                         conversation.attributes.Designation.isNullOrEmpty() &&
                                         conversation.attributes.CustomerName.isNullOrEmpty()
                                     ) {
-                                         customer = Constants.CUSTOMER
-                                         department = Constants.DEPARTMENT
-                                         designation = Constants.DESIGNATION
+                                         customer = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"customer")!!
+                                         department = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"department")!!
+                                         designation = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"designation")!!
                                     }
                                     else{
                                         customer = conversation.attributes.CustomerName
@@ -223,7 +256,7 @@ class MainActivity : AppCompatActivity() {
                                     val jsonObject = JSONObject(attributes)
                                     contactListViewModel.createConversation(
                                         "$customerName ${
-                                            Constants.formatPhoneNumber(
+                                            Constants.formatPhoneNumber(applicationContext,
                                                 customerNumber!!,
                                                 countryCode
                                             )
@@ -231,7 +264,7 @@ class MainActivity : AppCompatActivity() {
                                         " ",
                                         "${
                                             Constants.cleanedNumber(
-                                                Constants.formatPhoneNumber(
+                                                Constants.formatPhoneNumber(applicationContext,
                                                     customerNumber!!,
                                                     countryCode
                                                 )
@@ -247,9 +280,9 @@ class MainActivity : AppCompatActivity() {
 
                                 //If there is no existing conversation with SMS user, create new
                                 //set attributes fetched from parent
-                                var customer = Constants.CUSTOMER
-                                var department = Constants.DEPARTMENT
-                                var designation = Constants.DESIGNATION
+                                var customer = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"customer")
+                                var department = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"department")
+                                var designation = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"designation")
 
                                 val attributes = mapOf(
                                     "Designation" to designation,
@@ -259,9 +292,9 @@ class MainActivity : AppCompatActivity() {
 
                                 val jsonObject = JSONObject(attributes)
                                 contactListViewModel.createConversation(
-                                    "$customerName ${Constants.formatPhoneNumber(customerNumber!!,countryCode)}",
+                                    "$customerName ${Constants.formatPhoneNumber(applicationContext,customerNumber!!,countryCode)}",
                                     " ",
-                                    "${Constants.cleanedNumber(Constants.formatPhoneNumber(customerNumber!!,countryCode))}",
+                                    "${Constants.cleanedNumber(Constants.formatPhoneNumber(applicationContext,customerNumber!!,countryCode))}",
                                     Attributes(jsonObject)
                                 )
 

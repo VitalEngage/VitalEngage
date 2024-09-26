@@ -1,5 +1,6 @@
 package com.eemphasys.vitalconnect.manager
 
+import android.content.Context
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.FirebaseTokenManager
 import com.eemphasys.vitalconnect.common.AppContextHelper
@@ -13,7 +14,7 @@ import com.twilio.conversations.ConversationsClient
 import com.twilio.conversations.extensions.registerFCMToken
 
 interface MainManager {
-    suspend fun getTwilioclient()
+    suspend fun getTwilioclient(applicationContext: Context)
     suspend fun registerForFcm()
 
     suspend fun unregisterFromFcm()
@@ -25,8 +26,8 @@ class MainManagerImpl(
     private val credentialStorage: CredentialStorage,
     private val conversationsRepository: ConversationsRepository,
 ) : MainManager {
-    override suspend fun getTwilioclient() {
-        conversationsClient.getclient()
+    override suspend fun getTwilioclient(applicationContext: Context) {
+        conversationsClient.getclient(applicationContext)
         conversationsRepository.subscribeToConversationsClientEvents()
     }
 

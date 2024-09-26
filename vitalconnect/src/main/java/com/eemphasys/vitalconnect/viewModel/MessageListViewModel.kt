@@ -576,7 +576,7 @@ class MessageListViewModel(
             DownloadManager.STATUS_SUCCESSFUL -> {
                 val downloadedFile = cursor.getString(DownloadManager.COLUMN_LOCAL_URI).toUri().toFile()
                 val downloadedLocation =
-                    FileProvider.getUriForFile(appContext, ChatAppModel.appId + ".provider", downloadedFile)
+                    FileProvider.getUriForFile(appContext, Constants.getStringFromVitalTextSharedPreferences(appContext,"packageName") + ".provider", downloadedFile)
                         .toString()
                 updateMessageMediaDownloadStatus(
                     messageIndex,
@@ -598,7 +598,7 @@ class MessageListViewModel(
     fun initParticipant(channelSid : String) = viewModelScope.launch {
         EETLog.saveUserJourney("vitaltext:  MessagelistViewModel initParticipant Called")
         conversationsRepository.getConversationParticipants(channelSid).collect{(list)->
-            Constants.PARTICIPANTS = list.asParticipantListViewItems()
+//            Constants.PARTICIPANTS = list.asParticipantListViewItems()
             conversationsRepository.updateFriendlyName()
                 }
         }

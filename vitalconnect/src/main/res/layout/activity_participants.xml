@@ -29,7 +29,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
+        <ProgressBar
+            android:id="@+id/progressBar_ID"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="visible"
+            android:elevation="5dp"
+            app:layout_constraintStart_toStartOf="@id/participantRefresh"
+            app:layout_constraintEnd_toEndOf="@id/participantRefresh"
+            app:layout_constraintTop_toTopOf="@id/participantRefresh"
+            app:layout_constraintBottom_toBottomOf="@id/participantRefresh"
+            />
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/participantRefresh"
             android:layout_width="match_parent"

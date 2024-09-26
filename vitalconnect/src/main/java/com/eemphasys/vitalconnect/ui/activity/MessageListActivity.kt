@@ -1,9 +1,14 @@
 package com.eemphasys.vitalconnect.ui.activity
 
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
@@ -43,6 +48,7 @@ import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.ByteArrayInputStream
 
@@ -64,7 +70,6 @@ class MessageListActivity: AppCompatActivity() {
 
                 initViews()
                 messageListViewModel.initParticipant(intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
-
             }
             catch(e : Exception){
                 println("${e.message}")
@@ -86,15 +91,16 @@ class MessageListActivity: AppCompatActivity() {
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onStart Called")
         super.onStart()
         try {
+            binding.progressBarID.visibility= View.VISIBLE
             if(ConversationsClientWrapper.INSTANCE.isClientCreated){
-
+                binding.progressBarID.visibility= View.GONE
             }
             else{
-                Log.d("onStart MessageListActivity","finishing activity")
-//                this.finish()
+                Log.d("onStart MessageListActivity","onStart called")
                 lifecycleScope.launch {
-                    Log.d("twiliotokeninonstart",ChatAppModel.twilio_token.toString())
-                    ConversationsClientWrapper.INSTANCE.getclient()
+                    ConversationsClientWrapper.INSTANCE.getclient(applicationContext)
+                    delay(3000)
+                    binding.progressBarID.visibility= View.GONE
                 }
             }
         }catch(e: Exception){
@@ -112,37 +118,11 @@ class MessageListActivity: AppCompatActivity() {
         }
     }
 
-    override fun onResume() {
-        EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onResume Called")
-        super.onResume()
-        try {
-            if(ConversationsClientWrapper.INSTANCE.isClientCreated){
-
-            }
-            else{
-                Log.d("onResume MessageListActivity","finishing activity")
-//                this.finish()
-            }
-        }catch(e: Exception){
-            Log.d("onResume MessageListActivity", e.message.toString())
-            EETLog.error(
-                AppContextHelper.appContext!!, LogConstants.logDetails(
-                    e,
-                    LogConstants.LOG_LEVEL.ERROR.toString(),
-                    LogConstants.LOG_SEVERITY.HIGH.toString()
-                ),
-                Constants.EX, LogTraceConstants.getUtilityData(
-                    AppContextHelper.appContext!!
-                )!!
-            )
-        }
-    }
-
     override fun onStop() {
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onStop Called")
         super.onStop()
         try {
-
+            Log.d("onStop MessageListActivity", "onStop called")
         }catch(e: Exception){
             Log.d("onStop MessageListActivity", e.message.toString())
             EETLog.error(

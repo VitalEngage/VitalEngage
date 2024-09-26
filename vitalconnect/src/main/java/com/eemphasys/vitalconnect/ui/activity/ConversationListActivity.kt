@@ -3,8 +3,11 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.lifecycleScope
 import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.common.AppContextHelper
@@ -22,6 +25,7 @@ import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -32,9 +36,9 @@ class ConversationListActivity:AppCompatActivity() {
         super.onCreate(savedInstanceState)
         EETLog.saveUserJourney("vitaltext: " +this::class.java.simpleName + " onCreate Called")
 
-        mainViewModel.create()
+//        mainViewModel.create(applicationContext)
         val binding = ActivityConversationListBinding.inflate(layoutInflater)
-        mainViewModel.getUserAlertStatus()
+        mainViewModel.getUserAlertStatus(applicationContext)
         setContentView(binding.root)
         val fragmentToShow = intent.getIntExtra(EXTRA_FRAGMENT_TO_SHOW, 1)
         setSupportActionBar(binding.toolbar)
@@ -64,7 +68,7 @@ class ConversationListActivity:AppCompatActivity() {
                 else -> replaceFragment(ContactListFragment()) // Default case
             }
         }
-        if(Constants.IS_STANDALONE == "false")
+        if(Constants.getStringFromVitalTextSharedPreferences(this,"isStandalone")!!.lowercase() == "false")
         {
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
         }
@@ -74,42 +78,27 @@ class ConversationListActivity:AppCompatActivity() {
     override fun onStart() {
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onStart Called")
         super.onStart()
+        val fragmentContainer = findViewById<FrameLayout>(R.id.frame_Fragment)
+        val progressBar = findViewById<FrameLayout>(R.id.frame_Progress)
         try {
+//            binding.progressBarID.visibility= View.VISIBLE
+            fragmentContainer.visibility = View.GONE
+            progressBar.visibility = View.VISIBLE
             if(ConversationsClientWrapper.INSTANCE.isClientCreated){
-
+                fragmentContainer.visibility = View.VISIBLE
+                progressBar.visibility = View.GONE
             }
             else{
-                Log.d("onStart ConversationListActivity","finishing activity")
-//                this.finish()
+                Log.d("onStart ConversationListActivity","onStart called")
+                lifecycleScope.launch {
+                    ConversationsClientWrapper.INSTANCE.getclient(applicationContext)
+                    delay(2000)
+                    fragmentContainer.visibility = View.VISIBLE
+                    progressBar.visibility = View.GONE
+                }
             }
         }catch(e: Exception){
             Log.d("onStart ConversationListActivity", e.message.toString())
-            EETLog.error(
-                AppContextHelper.appContext!!, LogConstants.logDetails(
-                    e,
-                    LogConstants.LOG_LEVEL.ERROR.toString(),
-                    LogConstants.LOG_SEVERITY.HIGH.toString()
-                ),
-                Constants.EX, LogTraceConstants.getUtilityData(
-                    AppContextHelper.appContext!!
-                )!!
-            )
-        }
-    }
-
-    override fun onResume() {
-        EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onResume Called")
-        super.onResume()
-        try {
-            if(ConversationsClientWrapper.INSTANCE.isClientCreated){
-
-            }
-            else{
-                Log.d("onResume ConversationListActivity","finishing activity")
-//                this.finish()
-            }
-        }catch(e: Exception){
-            Log.d("onResume ConversationListActivity", e.message.toString())
             EETLog.error(
                 AppContextHelper.appContext!!, LogConstants.logDetails(
                     e,
@@ -127,7 +116,7 @@ class ConversationListActivity:AppCompatActivity() {
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onStop Called")
         super.onStop()
         try {
-
+            Log.d("onStop ConversationListActivity","onStop called")
         }catch(e: Exception){
             Log.d("onStop ConversationListActivity", e.message.toString())
             EETLog.error(
@@ -144,7 +133,7 @@ class ConversationListActivity:AppCompatActivity() {
     }
     override fun onBackPressed() {
 
-        if(Constants.IS_STANDALONE == "true") {
+        if(Constants.getStringFromVitalTextSharedPreferences(this,"isStandalone")!!.lowercase() == "true") {
 //            this.moveTaskToBack(true)
         }
         else
