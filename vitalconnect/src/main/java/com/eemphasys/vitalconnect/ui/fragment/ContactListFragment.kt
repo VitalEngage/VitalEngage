@@ -80,86 +80,110 @@ class ContactListFragment : Fragment() {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
+            if(isAdded){
                 if (newText != null && newText.length >= 3) {
-                if (Constants.getStringFromVitalTextSharedPreferences(applicationContext,"showContacts")!!.lowercase() == "false") {
-                    lifecycleScope.launch {
-                        val listOfSearchedContacts = mutableListOf<ContactListViewItem>()
-                        val httpClientWithToken = OkHttpClient.Builder()
-                            .connectTimeout(300, TimeUnit.SECONDS)
-                            .readTimeout(300, TimeUnit.SECONDS)
-                            .writeTimeout(300, TimeUnit.SECONDS)
-                            .addInterceptor(AuthInterceptor(Constants.getStringFromVitalTextSharedPreferences(context,"authToken")!!))
-                            .addInterceptor(RetryInterceptor())
-                            .build()
-                        val retrofitWithToken =
-                            RetrofitHelper.getInstance(context!!,httpClientWithToken)
-                                .create(TwilioApi::class.java)
-                        var request =
-                            SearchContactRequest(
-                                Constants.getStringFromVitalTextSharedPreferences(context,"currentUser")!!,
-                                Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
-                                newText!!
-                            )
-                        var response = retrofitWithToken.getSearchedContact(request)
+                    if (Constants.getStringFromVitalTextSharedPreferences(
+                            applicationContext,
+                            "showContacts"
+                        )!!.lowercase() == "false"
+                    ) {
+                        lifecycleScope.launch {
+                            val listOfSearchedContacts = mutableListOf<ContactListViewItem>()
+                            val httpClientWithToken = OkHttpClient.Builder()
+                                .connectTimeout(300, TimeUnit.SECONDS)
+                                .readTimeout(300, TimeUnit.SECONDS)
+                                .writeTimeout(300, TimeUnit.SECONDS)
+                                .addInterceptor(
+                                    AuthInterceptor(
+                                        Constants.getStringFromVitalTextSharedPreferences(
+                                            context,
+                                            "authToken"
+                                        )!!
+                                    )
+                                )
+                                .addInterceptor(RetryInterceptor())
+                                .build()
+                            val retrofitWithToken =
+                                RetrofitHelper.getInstance(context!!, httpClientWithToken)
+                                    .create(TwilioApi::class.java)
+                            var request =
+                                SearchContactRequest(
+                                    Constants.getStringFromVitalTextSharedPreferences(
+                                        context,
+                                        "currentUser"
+                                    )!!,
+                                    Constants.getStringFromVitalTextSharedPreferences(
+                                        applicationContext,
+                                        "tenantCode"
+                                    )!!,
+                                    newText!!
+                                )
+                            var response = retrofitWithToken.getSearchedContact(request)
 
-                        response.enqueue(object : Callback<List<SearchContactResponse>> {
-                            override fun onResponse(
-                                call: Call<List<SearchContactResponse>>,
-                                response: Response<List<SearchContactResponse>>
-                            ) {
-                                if (response.isSuccessful) {
-                                    var contactsResponse: List<SearchContactResponse>? =
-                                        response.body()
-                                    Log.d("listresponse", response.body().toString())
-                                    if (!contactsResponse.isNullOrEmpty()) {
+                            response.enqueue(object : Callback<List<SearchContactResponse>> {
+                                override fun onResponse(
+                                    call: Call<List<SearchContactResponse>>,
+                                    response: Response<List<SearchContactResponse>>
+                                ) {
+                                    if (response.isSuccessful) {
+                                        var contactsResponse: List<SearchContactResponse>? =
+                                            response.body()
+                                        Log.d("listresponse", response.body().toString())
+                                        if (!contactsResponse.isNullOrEmpty()) {
 
-                                        for (response in contactsResponse) {
-                                            Log.d("listfor", response.mobileNumber)
-                                            var contactItem =
-                                                ContactListViewItem(
-                                                    response.fullName,
-                                                    "",
-                                                    response.mobileNumber,
-                                                    "SMS",
-                                                    Constants.getInitials(response.fullName.trim { it <= ' ' }),
-                                                    response.designation,
-                                                    response.department,
-                                                    response.customerName,
-                                                    "",
-                                                    true
-                                                )
+                                            for (response in contactsResponse) {
+                                                Log.d("listfor", response.mobileNumber)
+                                                var contactItem =
+                                                    ContactListViewItem(
+                                                        response.fullName,
+                                                        "",
+                                                        response.mobileNumber,
+                                                        "SMS",
+                                                        Constants.getInitials(response.fullName.trim { it <= ' ' }),
+                                                        response.designation,
+                                                        response.department,
+                                                        response.customerName,
+                                                        "",
+                                                        true
+                                                    )
 
-                                            listOfSearchedContacts.add(contactItem)
-                                            Log.d("list1", listOfSearchedContacts.toString())
+                                                listOfSearchedContacts.add(contactItem)
+                                                Log.d("list1", listOfSearchedContacts.toString())
+                                            }
+                                            setAdapter(listOfSearchedContacts)
                                         }
-                                        setAdapter(listOfSearchedContacts)
                                     }
                                 }
-                            }
 
-                            override fun onFailure(
-                                call: Call<List<SearchContactResponse>>,
-                                t: Throwable
-                            ) {
+                                override fun onFailure(
+                                    call: Call<List<SearchContactResponse>>,
+                                    t: Throwable
+                                ) {
 
-                            }
+                                }
 
-                        })
+                            })
 
+                        }
                     }
-                }
-                adapter.filter(newText.orEmpty())
-                return true
-            }
-                else{
-                    if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"showContacts")!!.lowercase() =="false") {
+                    adapter.filter(newText.orEmpty())
+                    return true
+                } else {
+                    if (Constants.getStringFromVitalTextSharedPreferences(
+                            applicationContext,
+                            "showContacts"
+                        )!!.lowercase() == "false"
+                    ) {
                         setAdapter(emptyList())
-                    }
-                    else{
+                    } else {
                         setAdapter(combinedList)
                     }
-                    return false}
+                    return false
+                }
+            }else {
+                return false
             }
+        }
         })
 
         super.onCreateOptionsMenu(menu, inflater)

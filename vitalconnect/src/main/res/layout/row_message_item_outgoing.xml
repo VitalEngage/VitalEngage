@@ -304,7 +304,7 @@
 <!--            app:layout_constraintTop_toBottomOf="@+id/message_item"-->
 <!--            app:layout_constraintEnd_toStartOf="@id/message_send_status"-->
 <!--            tools:text="15:58" />-->
-        <androidx.appcompat.widget.AppCompatImageView
+        <ImageView
             android:id="@+id/message_send_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -312,8 +312,10 @@
             app:layout_constraintTop_toBottomOf="@+id/message_item"
             app:layout_constraintRight_toRightOf="parent"
             android:visibility="visible"
-            android:src="@drawable/ic_sent_message"
-            android:tint="@{message.sendStatus == SendStatus.ERROR ? @color/message_failed_icon_tint : @color/sent_tick}"/>
+            android:src="@{message.sendStatusIcon}"
+            tools:src="@drawable/ic_sent_message"
+            app:tint="@{message.sendStatus == SendStatus.ERROR ? @color/message_failed_icon_tint : @color/sent_tick}"
+            ></ImageView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
 

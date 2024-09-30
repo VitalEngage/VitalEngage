@@ -73,19 +73,19 @@
         tools:text="1000 participants"
         android:visibility="gone"/>
 
-    <!--<ImageView
+    <ImageView
         android:id="@+id/messageStateIcon"
         android:layout_width="14dp"
         android:layout_height="14dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginTop="4dp"
         android:src="@{conversation.lastMessageStateIcon}"
         android:visibility="@{conversation.lastMessageStateIcon != 0 ? View.VISIBLE : View.GONE}"
-        app:layout_constraintBottom_toBottomOf="@+id/messageText"
-        app:layout_constraintEnd_toStartOf="@+id/messageText"
         app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@id/conversationName"
         app:layout_constraintTop_toTopOf="@+id/messageText"
-        tools:src="@drawable/ic_waiting_message" />-->
+        app:layout_constraintEnd_toStartOf="@id/messageText"
+        tools:src="@drawable/ic_waiting_message" />
 
     <TextView
         android:id="@+id/messageText"
@@ -96,7 +96,7 @@
         android:ellipsize="end"
         android:text="@{conversation.messageCount > 0 ? conversation.lastMessageText : `No messages`}"
         android:textColor="@{conversation.lastMessageColor}"
-        app:layout_constraintStart_toStartOf="@+id/conversationName"
+        app:layout_constraintStart_toEndOf="@+id/messageStateIcon"
         app:layout_constraintTop_toBottomOf="@+id/customer"
         app:layout_constraintEnd_toStartOf="@id/messageDate"
         tools:text="This is a waiting message bla bla bla bla bla" />
