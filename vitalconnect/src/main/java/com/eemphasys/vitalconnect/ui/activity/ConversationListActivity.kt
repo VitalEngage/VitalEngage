@@ -115,31 +115,14 @@ class ConversationListActivity:AppCompatActivity() {
     override fun onStop() {
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onStop Called")
         super.onStop()
-        try {
-            Log.d("onStop ConversationListActivity","onStop called")
-        }catch(e: Exception){
-            Log.d("onStop ConversationListActivity", e.message.toString())
-            EETLog.error(
-                AppContextHelper.appContext!!, LogConstants.logDetails(
-                    e,
-                    LogConstants.LOG_LEVEL.ERROR.toString(),
-                    LogConstants.LOG_SEVERITY.HIGH.toString()
-                ),
-                Constants.EX, LogTraceConstants.getUtilityData(
-                    AppContextHelper.appContext!!
-                )!!
-            )
-        }
     }
     override fun onBackPressed() {
 
         if(Constants.getStringFromVitalTextSharedPreferences(this,"isStandalone")!!.lowercase() == "true") {
-//            this.moveTaskToBack(true)
         }
         else
         {
             super.onBackPressed()
-//            profileViewModel.signOut()
         }
     }
     private fun replaceFragment(fragment: Fragment) {

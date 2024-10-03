@@ -121,21 +121,6 @@ class MessageListActivity: AppCompatActivity() {
     override fun onStop() {
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onStop Called")
         super.onStop()
-        try {
-            Log.d("onStop MessageListActivity", "onStop called")
-        }catch(e: Exception){
-            Log.d("onStop MessageListActivity", e.message.toString())
-            EETLog.error(
-                AppContextHelper.appContext!!, LogConstants.logDetails(
-                    e,
-                    LogConstants.LOG_LEVEL.ERROR.toString(),
-                    LogConstants.LOG_SEVERITY.HIGH.toString()
-                ),
-                Constants.EX, LogTraceConstants.getUtilityData(
-                    AppContextHelper.appContext!!
-                )!!
-            )
-        }
     }
         override fun onCreateOptionsMenu(menu: Menu): Boolean {
             super.onCreateOptionsMenu(menu)
