@@ -17,6 +17,7 @@ import com.eemphasys.vitalconnect.common.extensions.lazyViewModel
 import com.eemphasys.vitalconnect.databinding.ActivityMainBinding
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys.vitalconnect.ui.activity.ConversationListActivity
+import com.eemphasys.vitalconnect.ui.activity.MessageListActivity
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.twilio.conversations.Attributes
@@ -195,11 +196,16 @@ class MainActivity : AppCompatActivity() {
                                         var customer = Constants.CUSTOMER
                                         var department = Constants.DEPARTMENT
                                         var designation = Constants.DESIGNATION
+                                        var role = contact.role ?: ""
+                                        var bpId = contact.bpId ?: ""
 
                                         val attributes = mapOf(
                                             "Designation" to designation,
                                             "Department" to department,
-                                            "CustomerName" to customer
+                                            "CustomerName" to customer,
+                                            "Role" to role,
+                                            "BpId" to bpId,
+                                            "isWebChat" to "false"
                                         )
 
                                         val jsonObject = JSONObject(attributes)
@@ -213,6 +219,8 @@ class MainActivity : AppCompatActivity() {
                                     var customer = ""
                                     var department =""
                                     var designation = ""
+                                    var role = ""
+                                    var bpId = ""
 
                                     if (conversation.attributes.Department.isNullOrEmpty() &&
                                         conversation.attributes.Designation.isNullOrEmpty() &&
@@ -221,6 +229,8 @@ class MainActivity : AppCompatActivity() {
                                          customer = Constants.CUSTOMER
                                          department = Constants.DEPARTMENT
                                          designation = Constants.DESIGNATION
+                                        role = contact.role ?: ""
+                                        bpId = contact.bpId ?: ""
                                     }
                                     else{
                                         customer = conversation.attributes.CustomerName
@@ -231,6 +241,9 @@ class MainActivity : AppCompatActivity() {
                                         "Designation" to designation,
                                         "Department" to department,
                                         "CustomerName" to customer
+                                        "Role" to role,
+                                        "BpId" to bpId,
+                                        "isWebChat" to "false"
                                     )
                                     val jsonObject = JSONObject(attributes)
                                     contactListViewModel.createConversation(
@@ -262,11 +275,16 @@ class MainActivity : AppCompatActivity() {
                                 var customer = Constants.CUSTOMER
                                 var department = Constants.DEPARTMENT
                                 var designation = Constants.DESIGNATION
+                                var role = contact.role ?: ""
+                                var bpId = contact.bpId ?: ""
 
                                 val attributes = mapOf(
                                     "Designation" to designation,
                                     "Department" to department,
-                                    "CustomerName" to customer
+                                    "CustomerName" to customer,
+                                    "Role" to role,
+                                    "BpId" to bpId,
+                                    "isWebChat" to "false"
                                 )
 
                                 val jsonObject = JSONObject(attributes)

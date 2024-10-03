@@ -13,5 +13,7 @@ data class SearchContactResponse(
     val totalCount : Int,
     val designation : String,
     val customerName : String,
-    val department : String
+    val department : String,
+    val role : String,
+    val bpId: String
 )

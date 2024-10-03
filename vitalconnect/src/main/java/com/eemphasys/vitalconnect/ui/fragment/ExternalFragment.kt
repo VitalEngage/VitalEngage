@@ -118,7 +118,9 @@ class ExternalFragment : Fragment() {
                                                         response.department,
                                                         response.customerName,
                                                         "",
-                                                        true
+                                                        true,
+                                                        response.bpId,
+                                                        response.role
                                                     )
 
                                                 listOfSearchedContacts.add(contactItem)
@@ -203,7 +205,9 @@ class ExternalFragment : Fragment() {
                     contact.department,
                     contact.customerName,
                     "",
-                    true
+                    true,
+                    contact.bpId,
+                    contact.role
                 )
                 listOfContacts.add(userItem)
             }
@@ -219,7 +223,7 @@ class ExternalFragment : Fragment() {
 
         // Convert Contact objects to ContactListViewItem
         val contactItems = contacts.map {
-            ContactListViewItem(it.name, "", it.number, "SMS",it.initials,it.designation,it.department,it.customer,it.countryCode,false)
+            ContactListViewItem(it.name, "", it.number, "SMS",it.initials,it.designation,it.department,it.customer,it.countryCode,false,it.bpId,it.role)
         }
 
         // Add all ContactListViewItem objects to the combined list
@@ -253,7 +257,9 @@ class ExternalFragment : Fragment() {
                 val department = jsonObject.getString("department")
                 val customer = jsonObject.getString("customer")
                 val countryCode = jsonObject.getString("countryCode")
-                contactsList.add(Contact(name, number, customerName, initials, designation, department, customer,countryCode))
+                val role = jsonObject.getString("role")
+                val bpId = jsonObject.getString("bpId")
+                contactsList.add(Contact(name, number, customerName, initials, designation, department, customer,countryCode,bpId,role))
             }
         }
         if(Constants.WITH_CONTEXT == "false"){
@@ -402,11 +408,16 @@ class ExternalFragment : Fragment() {
                                                     var customer = contact.customerName ?: ""
                                                     var department = contact.department ?: ""
                                                     var designation = contact.designation ?: ""
+                                                    var role = contact.role ?: ""
+                                                    var bpId = contact.bpId ?: ""
 
                                                     val attributes = mapOf(
                                                         "Designation" to designation,
                                                         "Department" to department,
-                                                        "CustomerName" to customer
+                                                        "CustomerName" to customer,
+                                                        "Role" to role,
+                                                        "BpId" to bpId,
+                                                        "isWebChat" to "false"
                                                     )
                                                     val jsonObject = JSONObject(attributes)
 
@@ -424,6 +435,8 @@ class ExternalFragment : Fragment() {
                                                 var customer = ""
                                                 var department = ""
                                                 var designation = ""
+                                                var role = ""
+                                                var bpId = ""
 
                                                 if (conversation.attributes.Department.isNullOrEmpty() &&
                                                     conversation.attributes.Designation.isNullOrEmpty() &&
@@ -433,6 +446,9 @@ class ExternalFragment : Fragment() {
                                                     customer = contact.customerName ?: ""
                                                     department = contact.department ?: ""
                                                     designation = contact.designation ?: ""
+                                                    role = contact.role ?: ""
+                                                    bpId = contact.bpId ?: ""
+
                                                 } else {
                                                     customer = conversation.attributes.CustomerName
                                                     department = conversation.attributes.Department
@@ -442,7 +458,10 @@ class ExternalFragment : Fragment() {
                                                 val attributes = mapOf(
                                                     "Designation" to designation,
                                                     "Department" to department,
-                                                    "CustomerName" to customer
+                                                    "CustomerName" to customer,
+                                                    "Role" to role,
+                                                    "BpId" to bpId,
+                                                    "isWebChat" to "false"
                                                 )
                                                 val jsonObject = JSONObject(attributes)
                                                 contactListViewModel.createConversation(
@@ -472,11 +491,16 @@ class ExternalFragment : Fragment() {
                                             var customer = contact.customerName ?: ""
                                             var department = contact.department ?: ""
                                             var designation = contact.designation ?: ""
+                                            var role = contact.role ?: ""
+                                            var bpId = contact.bpId ?: ""
 
                                             val attributes = mapOf(
                                                 "Designation" to designation,
                                                 "Department" to department,
-                                                "CustomerName" to customer
+                                                "CustomerName" to customer,
+                                                "Role" to role,
+                                                "BpId" to bpId,
+                                                "isWebChat" to "false"
                                             )
                                             val jsonObject = JSONObject(attributes)
                                             contactListViewModel.createConversation(

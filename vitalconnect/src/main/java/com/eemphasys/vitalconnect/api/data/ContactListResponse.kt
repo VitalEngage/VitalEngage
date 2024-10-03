@@ -20,26 +20,8 @@ data class Contacts(
      val designation :   String ,
      val customerName :   String ,
      val department :   String ,
-     val contactCode :   String
+     val contactCode :   String,
+     val role : String,
+     val bpId : String
 )
 
-//data class ContactListResponse(
-//     @SerializedName("totalCount") val totalCount: Int,
-//     @SerializedName("contacts") val contacts: List<Contact>
-//)
-//
-//data class Contact(
-//     @SerializedName("contactId") val contactId: Int,
-//     @SerializedName("fullName") val fullName: String,
-//     @SerializedName("mobileNumber") val mobileNumber: String,
-//     @SerializedName("createdBy") val createdBy: String,
-//     @SerializedName("createdOn") val createdOn: String,
-//     @SerializedName("modifiedBy") val modifiedBy: String,
-//     @SerializedName("modifiedOn") val modifiedOn: String,
-//     @SerializedName("tenantCode") val tenantCode: String,
-//     @SerializedName("isDeleted") val isDeleted: Boolean,
-//     @SerializedName("designation") val designation: String,
-//     @SerializedName("customerName") val customerName: String,
-//     @SerializedName("department") val department: String,
-//     @SerializedName("contactCode") val contactCode: String
-//)

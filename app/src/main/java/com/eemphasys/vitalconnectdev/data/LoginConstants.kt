@@ -49,7 +49,9 @@ class LoginConstants   {
                      "designation":"Technician",
                      "department":"Service",
                      "customer":"Customer",
-                     "countryCode":""
+                     "countryCode":"",
+                     "role":""
+                     "bpId":""
                   },
                   {
                      "name":"Himanshu Mahajan",
@@ -60,6 +62,8 @@ class LoginConstants   {
                      "department":"Service",
                      "customer":"Customer",
                      "countryCode":""
+                     "role":""
+                     "bpId":""
                   }
             ]
        } """.trimIndent()
