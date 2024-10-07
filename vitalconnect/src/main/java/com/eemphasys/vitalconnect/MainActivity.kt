@@ -200,8 +200,8 @@ class MainActivity : AppCompatActivity() {
                                         var customer = Constants.CUSTOMER
                                         var department = Constants.DEPARTMENT
                                         var designation = Constants.DESIGNATION
-                                        var role = contact.role ?: ""
-                                        var bpId = contact.bpId ?: ""
+                                        var role = Constants.ROLE
+                                        var bpId = Constants.BPID
 
                                         val attributes = mapOf(
                                             "Designation" to designation,
@@ -233,8 +233,8 @@ class MainActivity : AppCompatActivity() {
                                          customer = Constants.CUSTOMER
                                          department = Constants.DEPARTMENT
                                          designation = Constants.DESIGNATION
-                                        role = contact.role ?: ""
-                                        bpId = contact.bpId ?: ""
+                                        role = Constants.ROLE
+                                        bpId = Constants.BPID
                                     }
                                     else{
                                         customer = conversation.attributes.CustomerName
@@ -244,7 +244,7 @@ class MainActivity : AppCompatActivity() {
                                     val attributes = mapOf(
                                         "Designation" to designation,
                                         "Department" to department,
-                                        "CustomerName" to customer
+                                        "CustomerName" to customer,
                                         "Role" to role,
                                         "BpId" to bpId,
                                         "isWebChat" to "false"
@@ -279,8 +279,8 @@ class MainActivity : AppCompatActivity() {
                                 var customer = Constants.CUSTOMER
                                 var department = Constants.DEPARTMENT
                                 var designation = Constants.DESIGNATION
-                                var role = contact.role ?: ""
-                                var bpId = contact.bpId ?: ""
+                                var role = Constants.ROLE
+                                var bpId = Constants.BPID
 
                                 val attributes = mapOf(
                                     "Designation" to designation,
