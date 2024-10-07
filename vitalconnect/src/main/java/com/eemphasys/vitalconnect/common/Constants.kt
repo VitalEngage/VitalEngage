@@ -80,6 +80,8 @@ class Constants   {
         var SHOW_INTERNAL_CONTACTS = false
         var SHOW_EXTERNAL_CONTACTS = false
         var PAGE_SIZE = 10.0 //keep this floating
+        var ROLE = ""
+        var BPID = ""
 
 
         @JvmStatic

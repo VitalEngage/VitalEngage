@@ -70,6 +70,8 @@ class MainActivity : AppCompatActivity() {
         val pinnedConvo = intent.getStringArrayListExtra("pinnedConvo")
         val showInternalContacts = intent.getBooleanExtra("showInternalContacts",false)
         val showExternalContacts = intent.getBooleanExtra("showExternalContacts",false)
+        val role = intent.getStringExtra("role")
+        val bpId = intent.getStringExtra("bpId")
 
         Constants.AUTH_TOKEN = authToken!!
         Constants.CONTACTS = contacts!!
@@ -107,6 +109,8 @@ class MainActivity : AppCompatActivity() {
         Constants.PINNED_CONVO = pinnedConvo!!
         Constants.SHOW_INTERNAL_CONTACTS = showInternalContacts!!
         Constants.SHOW_EXTERNAL_CONTACTS = showExternalContacts!!
+        Constants.ROLE = role!!
+        Constants.BPID = bpId!!
 
 //        mainViewModel.create()
         super.onCreate(savedInstanceState)

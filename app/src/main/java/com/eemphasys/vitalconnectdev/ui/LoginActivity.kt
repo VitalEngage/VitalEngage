@@ -476,6 +476,8 @@ class LoginActivity : AppCompatActivity() {
             intent.putStringArrayListExtra("pinnedConvo",LoginConstants.PINNED_CONVO)
             intent.putExtra("showInternalContacts",LoginConstants.SHOW_INTERNAL_CONTACTS)
             intent.putExtra("showExternalContacts",LoginConstants.SHOW_EXTERNAL_CONTACTS)
+            intent.putExtra("role","")
+            intent.putExtra("bpId","")
             context.startActivity(intent)
         }
     }
