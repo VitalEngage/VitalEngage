@@ -145,7 +145,7 @@ class ConversationDetailsViewModel(
     }
 
     fun leaveConversation() = viewModelScope.launch {
-        EETLog.saveUserJourney("vitaltext:  ConversationDetailsViewModel levaeConversation Called")
+        EETLog.saveUserJourney("vitaltext:  ConversationDetailsViewModel Leave Conversation Called")
         if (isShowProgress.value == true) {
             return@launch
         }

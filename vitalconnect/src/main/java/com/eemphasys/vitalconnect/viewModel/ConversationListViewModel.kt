@@ -79,16 +79,17 @@ class ConversationListViewModel(
         }
         catch(e:Exception)
         {
-            EETLog.error(
-                AppContextHelper.appContext!!, LogConstants.logDetails(
-                    e,
-                    LogConstants.LOG_LEVEL.ERROR.toString(),
-                    LogConstants.LOG_SEVERITY.HIGH.toString()
-                ),
-                Constants.EX, LogTraceConstants.getUtilityData(
-                    AppContextHelper.appContext!!
-                )!!
-            )
+            Log.d("ExceptionAtgetUserConversations",e.message.toString())
+//            EETLog.error(
+//                AppContextHelper.appContext!!, LogConstants.logDetails(
+//                    e,
+//                    LogConstants.LOG_LEVEL.ERROR.toString(),
+//                    LogConstants.LOG_SEVERITY.HIGH.toString()
+//                ),
+//                Constants.EX, LogTraceConstants.getUtilityData(
+//                    AppContextHelper.appContext!!
+//                )!!
+//            )
         }
     }
 

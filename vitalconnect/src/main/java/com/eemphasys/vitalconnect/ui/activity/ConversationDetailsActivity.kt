@@ -115,6 +115,11 @@ class ConversationDetailsActivity : AppCompatActivity() {
         addNonChatParticipantSheetBehavior.addBottomSheetCallback(sheetListener)
         title = getString(R.string.details_title)
 
+        if(Constants.getStringFromVitalTextSharedPreferences(this,"showContacts")!!.lowercase() == "true" && Constants.getStringFromVitalTextSharedPreferences(this,"isStandalone")!!.lowercase() == "false" && Constants.getStringFromVitalTextSharedPreferences(this,"showConversations")!!.lowercase() == "false") {
+            binding.conversationLeaveButton.visibility = View.GONE
+        }
+
+
         binding.addChatParticipantButton.setOnClickListener {
             binding.addChatParticipantSheet.addChatParticipantIdInput.text?.clear()
             addChatParticipantSheetBehavior.show()

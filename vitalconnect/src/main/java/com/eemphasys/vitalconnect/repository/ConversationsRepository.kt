@@ -581,14 +581,33 @@ class ConversationsRepositoryImpl(
             localCache.conversationsDao().updateMessagesCount(conversationSid, conversation.getMessageCount())
         }
         launch {
-            localCache.conversationsDao().updateUnreadMessagesCount(conversationSid, conversation.getUnreadMessageCount() ?: return@launch)
-            val listOfConversations = conversationsClientWrapper.getConversationsClient().myConversations
-            var unreadCount:Long = 0
-            for (i in listOfConversations){
-                var count = i.getUnreadMessageCount() ?: 0
-                unreadCount+= count
+            try {
+                localCache.conversationsDao().updateUnreadMessagesCount(
+                    conversationSid,
+                    conversation.getUnreadMessageCount() ?: return@launch
+                )
+                val listOfConversations =
+                    conversationsClientWrapper.getConversationsClient().myConversations
+                var unreadCount: Long = 0
+                for (i in listOfConversations) {
+                    var count = i.getUnreadMessageCount() ?: 0
+                    unreadCount += count
+                }
+                unreadMessageCount.postValue(unreadCount)
+            }catch (e:Exception){
+                Log.d("ExceptioninRepo",e.message.toString())
+                e.printStackTrace()
+                EETLog.error(
+                    AppContextHelper.appContext, LogConstants.logDetails(
+                        e,
+                        LogConstants.LOG_LEVEL.ERROR.toString(),
+                        LogConstants.LOG_SEVERITY.HIGH.toString()
+                    ),
+                    Constants.EX, LogTraceConstants.getUtilityData(
+                        AppContextHelper.appContext!!
+                    )!!
+                );
             }
-            unreadMessageCount.postValue(unreadCount)
         }
         launch {
             updateConversationLastMessage(conversationSid)
