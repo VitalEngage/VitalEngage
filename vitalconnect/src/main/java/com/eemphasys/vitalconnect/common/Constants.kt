@@ -64,7 +64,9 @@ class Constants   {
             department = null,
             customerName = null,
             countryCode = null,
-            isGlobal = false
+            isGlobal = false,
+            "",
+            ""
         )
 
         var URI : String = ""
