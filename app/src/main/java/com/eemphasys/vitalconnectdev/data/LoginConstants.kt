@@ -34,8 +34,15 @@ class LoginConstants   {
         var SHOW_DEPARTMENT = ""
         var EMAIL = ""
         var MOBILENUMBER = ""
+        var WITH_CONTEXT = "false"
+        var OPEN_CHAT = "false"
+        var CONTEXT = ""
+        var DEALER_NAME = ""
+        var PINNED_CONVO : ArrayList<String> = arrayListOf()
+        var SHOW_INTERNAL_CONTACTS = true
+        var SHOW_EXTERNAL_CONTACTS = true
 
-        val CONTACTS1 =
+        val CONTACTS =
             """{
             "contacts" : 
             [
@@ -47,7 +54,9 @@ class LoginConstants   {
                      "designation":"Technician",
                      "department":"Service",
                      "customer":"Customer",
-                     "countryCode":""
+                     "countryCode":"",
+                     "role":""
+                     "bpId":""
                   },
                   {
                      "name":"Himanshu Mahajan",
@@ -58,26 +67,28 @@ class LoginConstants   {
                      "department":"Service",
                      "customer":"Customer",
                      "countryCode":""
+                     "role":""
+                     "bpId":""
                   }
             ]
        } """.trimIndent()
 
-        val WEBUSERS1 = """{
+        val WEBUSERS = """{
             "webUser":[
             {
                 "name":"Ankush Belorkar",
                 "userName":"abelorkar@e-emphasys.com",
                 "initials":"",
                 "designation":"Technician",
-                "department":"Xapps",
+                "department":"",
                 "customer":"VitalEdge",
                 "countryCode":""
             },
             {
-                "name":"Hardik Kothari",
-                "userName":"hkothari",
+                "name":"Himanshu Mahajan",
+                "userName":"hmahajan@e-emphasys.com",
                 "initials":"",
-                "designation":"",
+                "designation":"Supervisor",
                 "department":"Xapps",
                 "customer":"VitalEdge",
                 "countryCode":""
@@ -86,8 +97,8 @@ class LoginConstants   {
         }
         """.trimIndent()
 
-        val CONTACTS = ""
-        val WEBUSERS = ""
+        val CONTACTS1 = ""
+        val WEBUSERS1 = ""
 
         const val MyPREFERENCES = "MyVitaltextPrefs"
         var sharedpreferences: SharedPreferences? = null

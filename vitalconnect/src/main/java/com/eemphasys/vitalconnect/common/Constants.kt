@@ -9,11 +9,10 @@ import android.util.Log
 import android.widget.EditText
 import androidx.appcompat.widget.SearchView
 import com.eemphasys.vitalconnect.R
-import com.eemphasys.vitalconnect.api.AuthInterceptor
-import com.eemphasys.vitalconnect.api.RetrofitHelper
-import com.eemphasys.vitalconnect.api.RetryInterceptor
-import com.eemphasys.vitalconnect.api.TwilioApi
+import com.eemphasys.vitalconnect.api.data.ContactListResponse
+import com.eemphasys.vitalconnect.data.models.ContactListViewItem
 import com.eemphasys.vitalconnect.data.models.ParticipantListViewItem
+import com.google.gson.Gson
 import com.google.i18n.phonenumbers.NumberParseException
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import okhttp3.OkHttpClient
@@ -26,7 +25,7 @@ import java.util.concurrent.TimeUnit
 class Constants   {
     companion object{
 
-//        var BASE_URL : String = ""
+        var BASE_URL : String = ""
         var TENANT_CODE : String = ""
         var TWILIO_TOKEN : String = ""
         var CLIENT_ID : String = ""
@@ -56,12 +55,37 @@ class Constants   {
         var EMAIL : String = ""
         var MOBILENUMBER :String = ""
         var DEFAULT_COUNTRYCODE :String = ""
+        var CURRENT_CONVERSATION_ISWEBCHAT : String = ""
+        var CURRENT_CONTACT = ContactListViewItem(
+            name = "",
+            email = "",
+            number = "",
+            type = "",
+            initials = "",
+            designation = null,
+            department = null,
+            customerName = null,
+            countryCode = null,
+            isGlobal = false,
+            "",
+            ""
+        )
 
         var URI : String = ""
         var INPUTSTREAM : InputStream = ByteArrayInputStream(ByteArray(0))
         var MEDIA_NAME : String? = ""
         var MEDIA_TYPE : String? = ""
         var TIME_OFFSET : Int? = 0
+        var WITH_CONTEXT = ""
+        var OPEN_CHAT = ""
+        var CONTEXT = ""
+        var DEALER_NAME =""
+        var PINNED_CONVO : ArrayList<String> = arrayListOf()
+        var SHOW_INTERNAL_CONTACTS = false
+        var SHOW_EXTERNAL_CONTACTS = false
+        var PAGE_SIZE = 10.0 //keep this floating
+        var ROLE = ""
+        var BPID = ""
 
 
         const val MyPREFERENCES = "MyVitaltextPrefs"
@@ -121,7 +145,6 @@ class Constants   {
             }
             return null
         }
-
         @JvmStatic
         val randomColor: Int
             get() {
@@ -161,7 +184,6 @@ class Constants   {
             return  phoneNumber.replace("[\\s()\\-]".toRegex(), "")
 
         }
-
         @JvmStatic
         fun isValidPhoneNumber(phoneNumberStr: String, defaultRegion: String): Boolean {
             // Check for empty or null phone number string

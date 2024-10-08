@@ -23,5 +23,7 @@ data class AuthToken(
     val enableNotification : Boolean,
     val mobileNumber: String ,
     val showDesignation: Boolean,
-    val showDepartment: Boolean
+    val showDepartment: Boolean,
+    val dealerName: String,
+    val pinedConversation: ArrayList<String>
 )

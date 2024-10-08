@@ -3,11 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:padding="16dp">
     <TextView
         android:id="@+id/new_conversation"
-        style="@style/TextViewTitle"
+        style="@style/TextViewChildTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -28,25 +28,39 @@
         app:layout_constraintBottom_toTopOf="@id/cancel_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/new_conversation">
+        app:layout_constraintTop_toBottomOf="@+id/new_conversation"
+        app:layout_goneMarginTop="17dp"
+        app:hintEnabled="false"
+        app:boxBackgroundMode="outline"
+        app:boxStrokeColor="@color/divider"
+        app:boxStrokeWidth="1dp"
+        app:boxCornerRadiusBottomEnd="30dp"
+        app:boxCornerRadiusTopEnd="30dp"
+        app:boxCornerRadiusBottomStart="30dp"
+        app:boxCornerRadiusTopStart="30dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/new_conversation_name_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textCapSentences"
-            android:hint="Enter Conversation Title"/>
+            android:hint="Enter Conversation Title"
+            android:maxLength="25"
+            android:gravity="center_vertical"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/cancel_button"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:text="@string/cancel"
         app:layout_constraintBottom_toBottomOf="parent"
+        android:backgroundTint="@color/alternate_message_text"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toStartOf="@+id/create_conversation"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -55,10 +69,11 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="@string/create_conversation"
-        style="@style/Widget.MaterialComponents.Button"
+        android:text="Confirm"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        android:backgroundTint="@color/colorAccent"
+        android:textColor="@color/white"
         app:layout_constraintStart_toEndOf="@+id/cancel_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

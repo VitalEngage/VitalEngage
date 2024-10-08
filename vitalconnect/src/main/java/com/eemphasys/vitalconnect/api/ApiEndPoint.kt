@@ -1,20 +1,30 @@
 package com.eemphasys.vitalconnect.api
 
 import com.eemphasys.vitalconnect.api.data.AuthToken
+import com.eemphasys.vitalconnect.api.data.ContactListRequest
+import com.eemphasys.vitalconnect.api.data.ContactListResponse
+import com.eemphasys.vitalconnect.api.data.ConversationSidFromFriendlyNameRequest
+import com.eemphasys.vitalconnect.api.data.ConversationSidFromFriendlyNameResponse
 import com.eemphasys.vitalconnect.api.data.EncryptionRequest
 import com.eemphasys.vitalconnect.api.data.GetUserAlertStatusRequest
 import com.eemphasys.vitalconnect.api.data.GetUserAlertStatusResponse
 import com.eemphasys.vitalconnect.api.data.ParticipantExistingConversation
 import com.eemphasys.vitalconnect.api.data.RequestToken
+import com.eemphasys.vitalconnect.api.data.SavePinnedConversationRequest
+import com.eemphasys.vitalconnect.api.data.SavePinnedConversationResponse
 import com.eemphasys.vitalconnect.api.data.SearchContactRequest
 import com.eemphasys.vitalconnect.api.data.SearchContactResponse
+import com.eemphasys.vitalconnect.api.data.SearchUsersResponse
 import com.eemphasys.vitalconnect.api.data.SendOtpReq
 import com.eemphasys.vitalconnect.api.data.TenantDetails
 import com.eemphasys.vitalconnect.api.data.Token
 import com.eemphasys.vitalconnect.api.data.UpdatePasswordReq
 import com.eemphasys.vitalconnect.api.data.UpdatePasswordResp
 import com.eemphasys.vitalconnect.api.data.UserAlertRequest
+import com.eemphasys.vitalconnect.api.data.UserListResponse
 import com.eemphasys.vitalconnect.api.data.ValidateUserReq
+import com.eemphasys.vitalconnect.api.data.addParticipantToWebConversationRequest
+import com.eemphasys.vitalconnect.api.data.webParticipant
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
@@ -65,4 +75,22 @@ interface TwilioApi {
 
     @POST("User/GetUserAlertStatus")
     suspend fun getUserAlertStatus(@Body requestData : GetUserAlertStatusRequest ) : Response<GetUserAlertStatusResponse>
+
+    @POST("User/GetSearchedUsers")
+    fun getSearchedUsers(@Body requestData : SearchContactRequest) : Call<List<SearchUsersResponse>>
+
+    @POST("Contact/GetContactList")
+    suspend fun getContactList(@Body requestData: ContactListRequest) : Response<ContactListResponse>
+
+    @POST("User/GetUserList")
+    fun getUserList(@Body requestData: ContactListRequest) : Call<List<UserListResponse>>
+
+    @POST("Conversation/GetTwilioConversationSidFromFriendlyName")
+    fun getTwilioConversationSidFromFriendlyName(@Body requestData : ConversationSidFromFriendlyNameRequest) : Call<List<ConversationSidFromFriendlyNameResponse>>
+
+    @POST("User/AddParticipantToWebToWebConversation")
+    fun addParticipantToWebToWebConversation(@Body requestData : addParticipantToWebConversationRequest ) : Call<List<webParticipant>>
+
+    @POST("Conversation/SavePinnedConversation")
+    suspend fun savePinnedConversation(@Body requestData: SavePinnedConversationRequest) : Response<SavePinnedConversationResponse>
 }

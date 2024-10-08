@@ -197,7 +197,13 @@ fun ConversationDataItem.asConversationListViewItem(
     } catch (e: Exception) {
         ""
     },
-    this.messagesCount
+    this.messagesCount,
+    try {
+        JSONObject(this.attributes).optString("isWebChat", " ")
+    } catch (e: Exception) {
+        " "
+    },
+    Constants.PINNED_CONVO.contains(this.sid)
 )
 
 fun ConversationDataItem.asConversationDetailsViewItem() = ConversationDetailsViewItem(
@@ -206,7 +212,8 @@ fun ConversationDataItem.asConversationDetailsViewItem() = ConversationDetailsVi
     this.createdBy,
     this.dateCreated.asDateString(),
     this.notificationLevel == NotificationLevel.MUTED.value,
-    ConversationsRepositoryImpl.INSTANCE.getFriendlyName(this.createdBy)
+    ConversationsRepositoryImpl.INSTANCE.getFriendlyName(this.createdBy),
+    Constants.PINNED_CONVO.contains(this.sid)
 )
 
 fun ParticipantDataItem.toParticipantListViewItem() = ParticipantListViewItem(

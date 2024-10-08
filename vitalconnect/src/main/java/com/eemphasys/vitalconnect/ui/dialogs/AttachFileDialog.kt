@@ -46,8 +46,11 @@ class AttachFileDialog : BaseBottomSheetDialogFragment() {
             val inputStream = contentResolver.openInputStream(imageCaptureUri)
             val sizeInBytes: Long = getAttachmentSize(inputStream)
             val sizeInMB: Double = DecimalFormat("#.##").format(sizeInBytes / (1024.0 * 1024.0)).toDouble() // Convert bytes to MB
-            if(sizeInMB < 5){
+            if(Constants.CURRENT_CONVERSATION_ISWEBCHAT == "false" && sizeInMB < 5){
             sendMediaMessage(imageCaptureUri,sizeInMB)
+            }
+            else if(Constants.CURRENT_CONVERSATION_ISWEBCHAT == "true" && sizeInMB < 20){
+                sendMediaMessage(imageCaptureUri,sizeInMB)
             }
             else{
                 messageListViewModel.onMessageError.value = ConversationsError.FILE_TOO_LARGE
@@ -65,23 +68,27 @@ class AttachFileDialog : BaseBottomSheetDialogFragment() {
             val sizeInMB: Double = DecimalFormat("#.##").format(sizeInBytes / (1024.0 * 1024.0)).toDouble() // Convert bytes to MB
             when (type) {
                 "application/pdf" -> {
-                    if (sizeInKB > 600) {
+                    if (Constants.CURRENT_CONVERSATION_ISWEBCHAT == "false" && sizeInKB < 600) {
+                        uri?.let { sendMediaMessage(it,sizeInMB) }
+                    } else if (Constants.CURRENT_CONVERSATION_ISWEBCHAT == "true" && sizeInMB < 20) {
+                        uri?.let { sendMediaMessage(it,sizeInMB) }
+                    } else {
                         messageListViewModel.onMessageError.value =
                             ConversationsError.FILE_TOO_LARGE
-                    } else {
-                        uri?.let { sendMediaMessage(it,sizeInMB) }
                     }
                 }
 
                 "image/jpeg", "image/png", "image/jpg" -> {
-                    if (sizeInMB > 5) {
-                        messageListViewModel.onMessageError.value =
-                            ConversationsError.FILE_TOO_LARGE
-                    } else {
+                    if(Constants.CURRENT_CONVERSATION_ISWEBCHAT == "false" && sizeInMB < 5){
                         uri?.let { sendMediaMessage(it,sizeInMB) }
                     }
+                    else if(Constants.CURRENT_CONVERSATION_ISWEBCHAT == "true" && sizeInMB < 20){
+                        uri?.let { sendMediaMessage(it,sizeInMB) }
+                    }
+                    else{
+                        messageListViewModel.onMessageError.value = ConversationsError.FILE_TOO_LARGE
+                    }
                 }
-
                 else -> {
                     messageListViewModel.onMessageError.value =
                         ConversationsError.INVALID_CONTENT_TYPE

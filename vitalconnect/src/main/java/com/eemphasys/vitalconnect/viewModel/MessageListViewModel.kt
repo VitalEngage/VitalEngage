@@ -26,6 +26,7 @@ import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.repository.ConversationsRepository
 import com.eemphasys.vitalconnect.common.SingleLiveEvent
+import com.eemphasys.vitalconnect.common.asConversationListViewItem
 import com.eemphasys.vitalconnect.common.asParticipantListViewItems
 import com.eemphasys.vitalconnect.common.call
 import com.eemphasys.vitalconnect.common.enums.ConversationsError
@@ -51,6 +52,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import java.io.InputStream
 import java.util.*
 
@@ -65,6 +67,8 @@ class MessageListViewModel(
 ) : ViewModel() {
 
     val conversationName = MutableLiveData<String>()
+
+    var isWebChat = MutableLiveData<String>()
 
     val selfUser = conversationsRepository.getSelfUser().asLiveData(viewModelScope.coroutineContext)
 
@@ -127,6 +131,7 @@ class MessageListViewModel(
                 onMessageError.value = ConversationsError.CONVERSATION_GET_FAILED
                 return@collect
             }
+            isWebChat.value = try{JSONObject(result.data?.attributes).optString("isWebChat", "")}catch(e: Exception){""}
             conversationName.value = result.data?.friendlyName?.takeIf { it.isNotEmpty() } ?: result.data?.sid
         }
     }

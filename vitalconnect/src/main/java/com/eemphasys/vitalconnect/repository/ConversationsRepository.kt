@@ -573,7 +573,7 @@ class ConversationsRepositoryImpl(
         conversation.addListener(conversationListener)
         localCache.conversationsDao().insert(conversation.toConversationDataItem())
         localCache.conversationsDao().update(conversation.sid,
-            conversation.status.value, conversation.notificationLevel.value, conversation.friendlyName)
+            conversation.status.value, conversation.notificationLevel.value, conversation.friendlyName,conversation.attributes.toString())
         launch {
             localCache.conversationsDao().updateParticipantCount(conversationSid, conversation.getParticipantCount())
         }

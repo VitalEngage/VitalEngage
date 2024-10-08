@@ -1,5 +1,7 @@
 package com.eemphasys.vitalconnect.data.models
 
+import org.json.JSONArray
+
 data class Contact(
     val name: String,
     val number: String,
@@ -8,5 +10,7 @@ data class Contact(
     val designation: String,
     val department: String,
     val customer: String,
-    val countryCode: String
+    val countryCode: String,
+    val bpId: String,
+    val role : String
 )

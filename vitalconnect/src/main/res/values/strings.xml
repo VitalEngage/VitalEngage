@@ -68,12 +68,14 @@
     <string name="conversation_left">You have left the Conversation</string>
     <string name="conversation_muted">Notifications off</string>
     <string name="conversation_unmuted">Notifications on</string>
-
+    <string name="conversation_pinned">Conversation Pinned</string>
+    <string name="conversation_unpinned">Conversation Unpinned</string>
     <string name="no_results_found">No results found</string>
     <string name="try_different_search">Try a different search term</string>
     <string name="search_contact">Search Contacts</string>
     <string name="try_name_or_number">Try name or mobile number.</string>
     <string name="size_note">Select a single file: either a JPEG or PNG up to 5MB, or a PDF up to 600KB</string>
+    <string name="webSize_note">Select a single file:PDF, JPEG or PNG up to 20MB</string>
 
     <string name="no_conversations">No Conversations </string>
     <string name="no_conversations_description">Conversations you create or are involved in will appear here</string>
@@ -98,6 +100,8 @@
 
     <string name="search_conversations">Search Conversations</string>
     <string name="search_contacts">Search Contacts</string>
+    <string name="name_exists">A Conversation exists with same name, please change the name.</string>
+    <string name="history_disclaimer">All Conversation history will be available to participant.</string>
 
     <!-- Profile fragment -->
     <string name="email">Email</string>
@@ -129,8 +133,11 @@
     <string name="remove_conversation">Remove Conversation</string>
     <string name="leave_conversation">Leave Conversation</string>
     <string name="cancel">Cancel</string>
+    <string name="yes">Yes</string>
     <string name="remove_conversation_title">Are you sure you wish to remove this conversation?</string>
-    <string name="conversation_filter_hint">Filter Conversations</string>
+    <string name="conversation_filter_hint">Search Conversations</string>
+    <string name="pinConversation">Do you want to pin conversation?</string>
+    <string name="unpinConversation">Do you want to unpin conversation?</string>
 
     <!-- Message list -->
     <string name="new_message">Enter your message here</string>
@@ -169,7 +176,8 @@
     <string name="details_mute_conversation">Mute Conversation</string>
     <string name="details_unmute_conversation">Unmute Conversation</string>
     <string name="details_leave_conversation">Leave Conversation</string>
-
+    <string name="details_pin_conversation">Pin Conversation</string>
+    <string name="details_unpin_conversation">Unpin Conversation</string>
     <!-- Add participant dialog -->
     <string name="hint_add_chat_participant">Participant identity</string>
     <string name="hint_add_non_chat_participant_phone">Phone number</string>

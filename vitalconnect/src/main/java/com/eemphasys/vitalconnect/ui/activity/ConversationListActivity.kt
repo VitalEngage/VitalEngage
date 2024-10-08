@@ -53,7 +53,6 @@ class ConversationListActivity:AppCompatActivity() {
                 R.id.page_contact_list -> replaceFragment(ContactListFragment())
                 R.id.page_conversation_list -> replaceFragment(ConversationListFragment())
                 R.id.page_profile -> replaceFragment(ProfileFragment())
-
             }
             return@setOnItemSelectedListener true
         }
@@ -119,7 +118,6 @@ class ConversationListActivity:AppCompatActivity() {
         super.onStop()
     }
     override fun onBackPressed() {
-
         if(Constants.getStringFromVitalTextSharedPreferences(this,"isStandalone")!!.lowercase() == "true") {
         }
         else

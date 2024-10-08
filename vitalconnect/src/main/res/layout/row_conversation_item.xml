@@ -13,65 +13,76 @@
 
     </data>
 
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/conversationItem"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackground"
-    android:focusableInTouchMode="false"
-    android:padding="16dp"
-    >
-    <ImageView
-        android:id="@+id/participant_icon"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:src="@drawable/icon_multi_user_conversation"
-        android:layout_marginRight="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/conversationStateIcon" />
-    <ImageView
-        android:id="@+id/conversationStateIcon"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_marginEnd="8dp"
-        android:src="@drawable/ic_muted_conversation"
-        android:visibility="@{conversation.isMuted ? View.VISIBLE : View.GONE}"
-        app:layout_constraintBottom_toBottomOf="@+id/conversationName"
-        app:layout_constraintEnd_toStartOf="@+id/conversationName"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toEndOf="@id/participant_icon"
-        app:layout_constraintTop_toTopOf="@+id/conversationName" />
-
-    <TextView
-        android:id="@+id/conversationName"
-        style="@style/TextViewChildTitle"
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/conversationItem"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:text="@{conversation.name}"
-        android:textColor="@{conversation.isMuted ? @color/text_title_weak : @color/text_title}"
-        app:layout_constraintStart_toEndOf="@+id/conversationStateIcon"
-        app:layout_constraintTop_toTopOf="@id/participant_icon"
-        app:layout_constraintEnd_toStartOf="@id/unreadCount"
+        android:background="?attr/selectableItemBackground"
+        android:focusableInTouchMode="false"
+        android:padding="16dp"
+        >
+        <ImageView
+            android:id="@+id/participant_icon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/icon_multi_user_conversation"
+            android:layout_marginRight="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/conversationStateIcon" />
+        <ImageView
+            android:id="@+id/conversationStateIcon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_muted_conversation"
+            android:visibility="@{conversation.isMuted ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="@+id/conversationName"
+            app:layout_constraintEnd_toStartOf="@+id/conversationName"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toEndOf="@id/participant_icon"
+            app:layout_constraintTop_toTopOf="@+id/conversationName" />
 
-        tools:text="Conversation friendly name bla bla bla bla" />
-<!--    app:layout_constraintEnd_toStartOf="@+id/participantsCount"-->
-    <TextView
-        android:id="@+id/participantsCount"
-        style="@style/TextViewSubtitle"
-        android:layout_width="120dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:gravity="end"
-        android:text="@{@plurals/participants_count(conversation.participantCount, conversation.participantCount)}"
-        app:layout_constraintBottom_toBottomOf="@+id/conversationName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/conversationName"
-        app:layout_constraintTop_toTopOf="@+id/conversationName"
-        tools:text="1000 participants"
-        android:visibility="gone"/>
+        <TextView
+            android:id="@+id/conversationName"
+            style="@style/TextViewChildTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@{conversation.name}"
+            android:textColor="@{conversation.isMuted ? @color/text_title_weak : @color/text_title}"
+            app:layout_constraintStart_toEndOf="@+id/conversationStateIcon"
+            app:layout_constraintTop_toTopOf="@id/participant_icon"
+            app:layout_constraintEnd_toStartOf="@id/pinned"
+
+            tools:text="Conversation friendly name bla bla bla bla" />
+        <!--    app:layout_constraintEnd_toStartOf="@+id/participantsCount"-->
+        <ImageView
+            android:id="@+id/pinned"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="4dp"
+            android:src="@drawable/icon_pin"
+            android:visibility="@{conversation.isPinned ? View.VISIBLE : View.GONE}"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toEndOf="@+id/conversationName"
+            app:layout_constraintTop_toTopOf="@+id/conversationName"
+            app:layout_constraintEnd_toStartOf="@id/unreadCount" />
+        <TextView
+            android:id="@+id/participantsCount"
+            style="@style/TextViewSubtitle"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:gravity="end"
+            android:text="@{@plurals/participants_count(conversation.participantCount, conversation.participantCount)}"
+            app:layout_constraintBottom_toBottomOf="@+id/conversationName"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/conversationName"
+            app:layout_constraintTop_toTopOf="@+id/conversationName"
+            tools:text="1000 participants"
+            android:visibility="gone"/>
 
     <ImageView
         android:id="@+id/messageStateIcon"
@@ -97,27 +108,27 @@
         android:text="@{conversation.messageCount > 0 ? conversation.lastMessageText : `No messages`}"
         android:textColor="@{conversation.lastMessageColor}"
         app:layout_constraintStart_toEndOf="@+id/messageStateIcon"
-        app:layout_constraintTop_toBottomOf="@+id/customer"
+        app:layout_constraintTop_toBottomOf="@+id/barrier2"
         app:layout_constraintEnd_toStartOf="@id/messageDate"
         tools:text="This is a waiting message bla bla bla bla bla" />
 
-    <TextView
-        android:id="@+id/messageDate"
-        style="@style/TextViewChildTime"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:gravity="end"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:text="@{conversation.lastMessageDate}"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintTop_toTopOf="@+id/messageText"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_goneMarginEnd="0dp"
-        app:layout_constraintWidth_default="wrap"
-        tools:text="Yesterday" />
-    <!--        app:layout_constraintTop_toTopOf="@+id/messageText"-->
+        <TextView
+            android:id="@+id/messageDate"
+            style="@style/TextViewChildTime"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:gravity="end"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@{conversation.lastMessageDate}"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintTop_toTopOf="@+id/messageText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_goneMarginEnd="0dp"
+            app:layout_constraintWidth_default="wrap"
+            tools:text="Yesterday" />
+        <!--        app:layout_constraintTop_toTopOf="@+id/messageText"-->
 
     <TextView
         android:id="@+id/unreadCount"
@@ -161,16 +172,33 @@
         tools:text="Department"
         android:visibility="@{conversation.department.isEmpty() ? View.GONE : View.VISIBLE}"/>
     <TextView
+        android:id="@+id/conversation_type"
+        style="@style/TextViewChildSubTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:textStyle="bold"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
+        app:layout_constraintStart_toStartOf="@+id/conversationName"
+        app:layout_constraintTop_toBottomOf="@+id/barrier"
+        tools:text="type" />
+    <TextView
         android:id="@+id/customer"
         style="@style/TextViewChildSubTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:ellipsize="end"
+        android:layout_marginLeft="5dp"
         android:text="@{conversation.customer}"
         android:textColor="@{conversation.lastMessageColor}"
-        app:layout_constraintStart_toStartOf="@+id/conversationName"
+        app:layout_constraintStart_toEndOf="@+id/conversation_type"
         app:layout_constraintTop_toBottomOf="@+id/barrier"
+        app:layout_constraintEnd_toEndOf="parent"
         tools:text="Customer"
         android:visibility="@{conversation.customer.isEmpty() ? View.GONE : View.VISIBLE}"/>
     <!-- Barrier to group designation and department -->
@@ -180,6 +208,14 @@
         android:id="@+id/barrier"
         app:barrierDirection="bottom"
         app:constraint_referenced_ids="department,designation"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+    <androidx.constraintlayout.widget.Barrier
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/barrier2"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="conversation_type,customer"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

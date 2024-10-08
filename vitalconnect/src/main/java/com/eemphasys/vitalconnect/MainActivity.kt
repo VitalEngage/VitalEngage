@@ -18,6 +18,7 @@ import com.eemphasys.vitalconnect.common.extensions.lazyViewModel
 import com.eemphasys.vitalconnect.databinding.ActivityMainBinding
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys.vitalconnect.ui.activity.ConversationListActivity
+import com.eemphasys.vitalconnect.ui.activity.MessageListActivity
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.twilio.conversations.Attributes
@@ -63,7 +64,54 @@ class MainActivity : AppCompatActivity() {
         val mobileNumber = intent.getStringExtra("mobileNumber")
         val defaultcountryCode = intent.getStringExtra("defaultcountryCode")
         val timeoffset = intent.getStringExtra("timeoffset")
+        val withContext = intent.getStringExtra("withContext")
+        val openChat = intent.getStringExtra("openChat")
+        val context = intent.getStringExtra("context")
+        val dealerName = intent.getStringExtra("dealerName")
+        val pinnedConvo = intent.getStringArrayListExtra("pinnedConvo")
+        val showInternalContacts = intent.getBooleanExtra("showInternalContacts",false)
+        val showExternalContacts = intent.getBooleanExtra("showExternalContacts",false)
+        val role = intent.getStringExtra("role")
+        val bpId = intent.getStringExtra("bpId")
 
+        Constants.AUTH_TOKEN = authToken!!
+        Constants.CONTACTS = contacts!!
+        Constants.WEBUSERS = webusers!!
+        Constants.BASE_URL = baseurl!!
+        Constants.TENANT_CODE = tenantcode!!
+        Constants.CLIENT_ID = clientID!!
+        Constants.CLIENT_SECRET = clientSecret!!
+        Constants.FRIENDLY_NAME = friendlyName!!
+        Constants.PRODUCT = parentApp!!
+        Constants.USERNAME = username!!
+        Constants.TWILIO_TOKEN = twilioToken!!
+        Constants.PROXY_NUMBER = proxyNumber!!
+        Constants.FULL_NAME = fullName!!
+        Constants.SHOW_CONTACTS = showContacts!!
+        Constants.IS_STANDALONE = isStandalone!!
+        Constants.CUSTOMER_NUMBER = Constants.formatPhoneNumber(customerNumber!!,countryCode!!)
+        Constants.CUSTOMER_NAME = customerName!!
+        Constants.SHOW_CONVERSATIONS = showConversations!!
+        Constants.USER_SMS_ALERT = userSMSAlert!!
+        Constants.SHOW_DEPARTMENT = showDepartment!!
+        Constants.SHOW_DESIGNATION =showDesignation!!
+        Constants.DEPARTMENT= department!!
+        Constants.DESIGNATION=designation!!
+        Constants.CUSTOMER=customer!!
+        Constants.COUNTRYCODE=countryCode
+        Constants.EMAIL = email!!
+        Constants.MOBILENUMBER = mobileNumber!!
+        Constants.DEFAULT_COUNTRYCODE = defaultcountryCode!!
+        Constants.TIME_OFFSET = Integer.valueOf( timeoffset)
+        Constants.WITH_CONTEXT = withContext!!
+        Constants.OPEN_CHAT = openChat!!
+        Constants.CONTEXT = context!!
+        Constants.DEALER_NAME = dealerName!!
+        Constants.PINNED_CONVO = pinnedConvo!!
+        Constants.SHOW_INTERNAL_CONTACTS = showInternalContacts!!
+        Constants.SHOW_EXTERNAL_CONTACTS = showExternalContacts!!
+        Constants.ROLE = role!!
+        Constants.BPID = bpId!!
 //        Constants.AUTH_TOKEN = authToken!!
 //        Constants.CONTACTS = contacts!!
 //        Constants.WEBUSERS = webusers!!
@@ -130,7 +178,7 @@ class MainActivity : AppCompatActivity() {
 
 //        mainViewModel.create()
         super.onCreate(savedInstanceState)
-        if(Constants.getStringFromVitalTextSharedPreferences(this,"showContacts")!!.lowercase() == "true" && Constants.getStringFromVitalTextSharedPreferences(this,"isStandalone")!!.lowercase() == "false" && Constants.getStringFromVitalTextSharedPreferences(this,"showConversations")!!.lowercase() == "false") {
+        if(Constants.OPEN_CHAT.lowercase() == "true") {
             val httpClientWithToken = OkHttpClient.Builder()
                 .connectTimeout(300, TimeUnit.SECONDS)
                 .readTimeout(300, TimeUnit.SECONDS)
@@ -216,11 +264,16 @@ class MainActivity : AppCompatActivity() {
                                         var customer = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"customer")
                                         var department = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"department")
                                         var designation = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"designation")
+                                        var role = Constants.ROLE
+                                        var bpId = Constants.BPID
 
                                         val attributes = mapOf(
                                             "Designation" to designation,
                                             "Department" to department,
-                                            "CustomerName" to customer
+                                            "CustomerName" to customer,
+                                            "Role" to role,
+                                            "BpId" to bpId,
+                                            "isWebChat" to "false"
                                         )
 
                                         val jsonObject = JSONObject(attributes)
@@ -234,6 +287,8 @@ class MainActivity : AppCompatActivity() {
                                     var customer = ""
                                     var department =""
                                     var designation = ""
+                                    var role = ""
+                                    var bpId = ""
 
                                     if (conversation.attributes.Department.isNullOrEmpty() &&
                                         conversation.attributes.Designation.isNullOrEmpty() &&
@@ -242,6 +297,8 @@ class MainActivity : AppCompatActivity() {
                                          customer = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"customer")!!
                                          department = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"department")!!
                                          designation = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"designation")!!
+                                        role = Constants.ROLE
+                                        bpId = Constants.BPID
                                     }
                                     else{
                                         customer = conversation.attributes.CustomerName
@@ -251,7 +308,10 @@ class MainActivity : AppCompatActivity() {
                                     val attributes = mapOf(
                                         "Designation" to designation,
                                         "Department" to department,
-                                        "CustomerName" to customer
+                                        "CustomerName" to customer,
+                                        "Role" to role,
+                                        "BpId" to bpId,
+                                        "isWebChat" to "false"
                                     )
                                     val jsonObject = JSONObject(attributes)
                                     contactListViewModel.createConversation(
@@ -283,11 +343,16 @@ class MainActivity : AppCompatActivity() {
                                 var customer = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"customer")
                                 var department = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"department")
                                 var designation = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"designation")
+                                var role = Constants.ROLE
+                                var bpId = Constants.BPID
 
                                 val attributes = mapOf(
                                     "Designation" to designation,
                                     "Department" to department,
-                                    "CustomerName" to customer
+                                    "CustomerName" to customer,
+                                    "Role" to role,
+                                    "BpId" to bpId,
+                                    "isWebChat" to "false"
                                 )
 
                                 val jsonObject = JSONObject(attributes)
