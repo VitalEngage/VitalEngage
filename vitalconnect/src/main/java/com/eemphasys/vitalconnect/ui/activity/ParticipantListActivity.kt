@@ -24,6 +24,7 @@ import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
 import com.eemphasys.vitalconnect.databinding.ActivityParticipantsBinding
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
+import com.eemphasys.vitalconnect.repository.ConversationsRepositoryImpl
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.google.android.material.snackbar.Snackbar
@@ -61,6 +62,7 @@ class ParticipantListActivity : AppCompatActivity() {
                 Log.d("onStart ParticipantListActivity","onStart called")
                 lifecycleScope.launch {
                     ConversationsClientWrapper.INSTANCE.getclient(applicationContext)
+                    ConversationsRepositoryImpl.INSTANCE.subscribeToConversationsClientEvents()
                     delay(3000)
                     binding.progressBarID.visibility= View.GONE
                 }

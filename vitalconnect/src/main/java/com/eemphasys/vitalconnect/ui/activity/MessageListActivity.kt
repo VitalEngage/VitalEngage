@@ -41,6 +41,7 @@ import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
 import com.eemphasys.vitalconnect.data.models.MessageListViewItem
 import com.eemphasys.vitalconnect.databinding.ActivityMessageListBinding
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
+import com.eemphasys.vitalconnect.repository.ConversationsRepositoryImpl
 import com.eemphasys.vitalconnect.ui.dialogs.AttachFileDialog
 import com.eemphasys.vitalconnect.ui.dialogs.MessageActionsDialog
 import com.eemphasys.vitalconnect.ui.dialogs.ReactionDetailsDialog
@@ -99,6 +100,7 @@ class MessageListActivity: AppCompatActivity() {
                 Log.d("onStart MessageListActivity","onStart called")
                 lifecycleScope.launch {
                     ConversationsClientWrapper.INSTANCE.getclient(applicationContext)
+                    ConversationsRepositoryImpl.INSTANCE.subscribeToConversationsClientEvents()
                     delay(3000)
                     binding.progressBarID.visibility= View.GONE
                 }

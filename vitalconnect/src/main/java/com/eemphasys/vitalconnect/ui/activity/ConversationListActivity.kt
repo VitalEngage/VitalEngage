@@ -17,6 +17,7 @@ import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
 import com.eemphasys.vitalconnect.databinding.ActivityConversationListBinding
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
+import com.eemphasys.vitalconnect.repository.ConversationsRepositoryImpl
 import com.eemphasys.vitalconnect.ui.fragment.ContactListFragment
 import com.eemphasys.vitalconnect.ui.fragment.ConversationListFragment
 import com.eemphasys.vitalconnect.ui.fragment.ProfileFragment
@@ -92,6 +93,7 @@ class ConversationListActivity:AppCompatActivity() {
                 Log.d("onStart ConversationListActivity","onStart called")
                 lifecycleScope.launch {
                     ConversationsClientWrapper.INSTANCE.getclient(applicationContext)
+                    ConversationsRepositoryImpl.INSTANCE.subscribeToConversationsClientEvents()
                     delay(2000)
                     fragmentContainer.visibility = View.VISIBLE
                     progressBar.visibility = View.GONE
