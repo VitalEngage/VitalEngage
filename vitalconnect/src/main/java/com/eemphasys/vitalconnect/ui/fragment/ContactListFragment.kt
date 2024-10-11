@@ -11,6 +11,7 @@ import android.widget.EditText
 import androidx.appcompat.widget.SearchView
 import androidx.compose.ui.text.toLowerCase
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.viewpager2.widget.ViewPager2
 import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.adapters.PagerAdapter
@@ -67,8 +68,8 @@ class ContactListFragment : Fragment() {
         val tabLayout = view.findViewById<TabLayout>(R.id.tab_layout)
         val viewPager = view.findViewById<ViewPager2>(R.id.view_pager)
         // Determine flags based on your conditions
-        val showInternal = Constants.SHOW_INTERNAL_CONTACTS
-        val showExternal = Constants.SHOW_EXTERNAL_CONTACTS
+        val showInternal = (Constants.getStringFromVitalTextSharedPreferences(applicationContext,"showInternalContacts")!! == "true")
+        val showExternal = (Constants.getStringFromVitalTextSharedPreferences(applicationContext,"showExternalContacts")!! == "true")
 
         val pagerAdapter = PagerAdapter(this, showInternal, showExternal)
         viewPager.adapter = pagerAdapter
@@ -76,8 +77,8 @@ class ContactListFragment : Fragment() {
         // Bind TabLayout with ViewPager2
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             when (position) {
-                0 -> tab.text = if (showInternal) Constants.DEALER_NAME else "Customer"
-                1 -> tab.text = if (showExternal) "Customer" else Constants.DEALER_NAME
+                0 -> tab.text = if (showInternal) Constants.getStringFromVitalTextSharedPreferences(applicationContext,"dealerName")!! else "Customer"
+                1 -> tab.text = if (showExternal) "Customer" else Constants.getStringFromVitalTextSharedPreferences(applicationContext,"dealerName")!!
             }
         }.attach()
 

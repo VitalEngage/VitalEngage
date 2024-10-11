@@ -84,7 +84,8 @@ open class Injector {
             ConversationsRepositoryImpl.INSTANCE,
             conversationListManager,
             participantListManager,
-            connectivityMonitor
+            connectivityMonitor,
+            applicationContext
 
         )
     }

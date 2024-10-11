@@ -33,6 +33,7 @@ import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys.vitalconnect.repository.ConversationsRepositoryImpl
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
+import com.google.gson.reflect.TypeToken
 import com.twilio.conversations.Conversation
 import com.twilio.conversations.Message
 import com.twilio.conversations.Participant
@@ -203,17 +204,40 @@ fun ConversationDataItem.asConversationListViewItem(
     } catch (e: Exception) {
         " "
     },
-    Constants.PINNED_CONVO.contains(this.sid)
+    run {
+        val type = object : TypeToken<ArrayList<String>>() {}.type
+        var jsonString = Constants.getStringFromVitalTextSharedPreferences(context,"pinnedConvo")!!
+        var pinnedConvo : ArrayList<String> = Gson().fromJson(jsonString, type)
+
+        pinnedConvo.contains(this.sid)
+    },
+    try {
+        JSONObject(this.attributes).optString("Role", "")
+    } catch (e: Exception) {
+        ""
+    },
+    try {
+        JSONObject(this.attributes).optString("BpId", "")
+    } catch (e: Exception) {
+        ""
+    }
+
 )
 
-fun ConversationDataItem.asConversationDetailsViewItem() = ConversationDetailsViewItem(
+fun ConversationDataItem.asConversationDetailsViewItem(applicationContext: Context) = ConversationDetailsViewItem(
     this.sid,
     this.friendlyName,
     this.createdBy,
     this.dateCreated.asDateString(),
     this.notificationLevel == NotificationLevel.MUTED.value,
     ConversationsRepositoryImpl.INSTANCE.getFriendlyName(this.createdBy),
-    Constants.PINNED_CONVO.contains(this.sid)
+    run {
+        val type = object : TypeToken<ArrayList<String>>() {}.type
+        var jsonString = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"pinnedConvo")!!
+        var pinnedConvo : ArrayList<String> = Gson().fromJson(jsonString, type)
+
+        pinnedConvo.contains(this.sid)
+    }
 )
 
 fun ParticipantDataItem.toParticipantListViewItem() = ParticipantListViewItem(

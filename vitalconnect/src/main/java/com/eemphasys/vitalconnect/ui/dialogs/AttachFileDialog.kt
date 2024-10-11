@@ -46,10 +46,10 @@ class AttachFileDialog : BaseBottomSheetDialogFragment() {
             val inputStream = contentResolver.openInputStream(imageCaptureUri)
             val sizeInBytes: Long = getAttachmentSize(inputStream)
             val sizeInMB: Double = DecimalFormat("#.##").format(sizeInBytes / (1024.0 * 1024.0)).toDouble() // Convert bytes to MB
-            if(Constants.CURRENT_CONVERSATION_ISWEBCHAT == "false" && sizeInMB < 5){
+            if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"isWebChat")!! == "false" && sizeInMB < 5){
             sendMediaMessage(imageCaptureUri,sizeInMB)
             }
-            else if(Constants.CURRENT_CONVERSATION_ISWEBCHAT == "true" && sizeInMB < 20){
+            else if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"isWebChat")!! == "true" && sizeInMB < 20){
                 sendMediaMessage(imageCaptureUri,sizeInMB)
             }
             else{
@@ -68,9 +68,9 @@ class AttachFileDialog : BaseBottomSheetDialogFragment() {
             val sizeInMB: Double = DecimalFormat("#.##").format(sizeInBytes / (1024.0 * 1024.0)).toDouble() // Convert bytes to MB
             when (type) {
                 "application/pdf" -> {
-                    if (Constants.CURRENT_CONVERSATION_ISWEBCHAT == "false" && sizeInKB < 600) {
+                    if (Constants.getStringFromVitalTextSharedPreferences(applicationContext,"isWebChat")!! == "false" && sizeInKB < 600) {
                         uri?.let { sendMediaMessage(it,sizeInMB) }
-                    } else if (Constants.CURRENT_CONVERSATION_ISWEBCHAT == "true" && sizeInMB < 20) {
+                    } else if (Constants.getStringFromVitalTextSharedPreferences(applicationContext,"isWebChat")!! == "true" && sizeInMB < 20) {
                         uri?.let { sendMediaMessage(it,sizeInMB) }
                     } else {
                         messageListViewModel.onMessageError.value =
@@ -79,10 +79,10 @@ class AttachFileDialog : BaseBottomSheetDialogFragment() {
                 }
 
                 "image/jpeg", "image/png", "image/jpg" -> {
-                    if(Constants.CURRENT_CONVERSATION_ISWEBCHAT == "false" && sizeInMB < 5){
+                    if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"isWebChat")!! == "false" && sizeInMB < 5){
                         uri?.let { sendMediaMessage(it,sizeInMB) }
                     }
-                    else if(Constants.CURRENT_CONVERSATION_ISWEBCHAT == "true" && sizeInMB < 20){
+                    else if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"isWebChat")!! == "true" && sizeInMB < 20){
                         uri?.let { sendMediaMessage(it,sizeInMB) }
                     }
                     else{

@@ -18,6 +18,7 @@ import com.eemphasys.vitalconnect.common.SingleLiveEvent
 import com.eemphasys.vitalconnect.common.asConversationListViewItems
 import com.eemphasys.vitalconnect.common.call
 import com.eemphasys.vitalconnect.common.enums.ConversationsError
+import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.common.merge
 import com.eemphasys.vitalconnect.data.models.ConversationListViewItem
 import com.eemphasys.vitalconnect.manager.ConnectivityMonitor
@@ -31,6 +32,8 @@ import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceHelper
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 
@@ -54,6 +57,10 @@ class ConversationListViewModel(
     val onConversationMuted = SingleLiveEvent<Boolean>()
     val onConversationError = SingleLiveEvent<ConversationsError>()
     val pinConversation = SingleLiveEvent<Boolean>()
+
+    val type = object : TypeToken<ArrayList<String>>() {}.type
+    var jsonString = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"pinnedConvo")!!
+    var pinnedConvo : ArrayList<String> = Gson().fromJson(jsonString, type)
 
     var conversationFilter by Delegates.observable("") { _, _, _ -> updateUserConversationItems() }
 
@@ -292,7 +299,7 @@ class ConversationListViewModel(
     fun savePinnedConversation(conversation: ConversationListViewItem,add:Boolean,adapter: ConversationListAdapter) = viewModelScope.launch{
         EETLog.saveUserJourney("vitaltext:  ConversationListViewModel savePinnedConversation Called")
         if(add){
-            Constants.PINNED_CONVO.add(conversation.sid)
+            pinnedConvo.add(conversation.sid)
             conversation.isPinned= add
             pinConversation.value = true
             adapter.notifyDataSetChanged()
@@ -300,13 +307,13 @@ class ConversationListViewModel(
 
         }
         else{
-            Constants.PINNED_CONVO.remove(conversation.sid)
+            pinnedConvo.remove(conversation.sid)
             conversation.isPinned= !add
             pinConversation.value = false
             adapter.notifyDataSetChanged()
             getUserConversations()
         }
-
+        Constants.saveStringToVitalTextSharedPreferences(applicationContext,"pinnedConvo",Gson().toJson(pinnedConvo!!))
             savePinnedConversationToDB()
     }
 
@@ -316,15 +323,15 @@ class ConversationListViewModel(
                 .connectTimeout(300, TimeUnit.SECONDS)
                 .readTimeout(300, TimeUnit.SECONDS)
                 .writeTimeout(300, TimeUnit.SECONDS)
-                .addInterceptor(AuthInterceptor(Constants.AUTH_TOKEN))
+                .addInterceptor(AuthInterceptor(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"authToken")!!))
                 .addInterceptor(RetryInterceptor())
                 .build()
             val retrofitWithToken =
-                RetrofitHelper.getInstance(httpClientWithToken).create(TwilioApi::class.java)
+                RetrofitHelper.getInstance(applicationContext,httpClientWithToken).create(TwilioApi::class.java)
             val request = SavePinnedConversationRequest(
-                Constants.USERNAME,
-                Constants.PINNED_CONVO,
-                Constants.TENANT_CODE
+                Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,
+                pinnedConvo,
+                Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!
             )
 
             var response = retrofitWithToken.savePinnedConversation(request)

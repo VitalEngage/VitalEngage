@@ -28,7 +28,6 @@ import com.eemphasys.vitalconnect.api.RetryInterceptor
 import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.SearchContactRequest
 import com.eemphasys.vitalconnect.api.data.SearchUsersResponse
-import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.SheetListener
 import com.eemphasys.vitalconnect.common.enums.ConversationsError
 import com.eemphasys.vitalconnect.common.extensions.*
@@ -41,6 +40,8 @@ import com.eemphasys.vitalconnect.repository.ConversationsRepositoryImpl
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.launch
@@ -49,6 +50,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
 
 class ConversationDetailsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityConversationDetailsBinding
@@ -105,16 +107,16 @@ class ConversationDetailsActivity : AppCompatActivity() {
                         .connectTimeout(300, TimeUnit.SECONDS)
                         .readTimeout(300, TimeUnit.SECONDS)
                         .writeTimeout(300, TimeUnit.SECONDS)
-                        .addInterceptor(AuthInterceptor(Constants.AUTH_TOKEN))
+                        .addInterceptor(AuthInterceptor(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"authToken")!!))
                         .addInterceptor(RetryInterceptor())
                         .build()
                     val retrofitWithToken =
-                        RetrofitHelper.getInstance(httpClientWithToken)
+                        RetrofitHelper.getInstance(applicationContext,httpClientWithToken)
                             .create(TwilioApi::class.java)
                     var request =
                         SearchContactRequest(
-                            Constants.USERNAME,
-                            Constants.TENANT_CODE,
+                            Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,
+                            Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
                             s.toString()
                         )
                     var response = retrofitWithToken.getSearchedUsers(request)
@@ -141,7 +143,9 @@ class ConversationDetailsActivity : AppCompatActivity() {
                                                 response.department,
                                                 "",
                                                 "",
-                                                true
+                                                true,
+                                                "",
+                                                ""
                                             )
 
                                         listOfSearchedUsers.add(contactItem)
@@ -175,14 +179,14 @@ class ConversationDetailsActivity : AppCompatActivity() {
         editText.setText(suggestion.name)
         binding.addChatParticipantSheet.identity.text = suggestion.email
 //        editText.setSelection(suggestion.name.length)
-        adapter= SuggestionAdapter(emptyList()){}
+        adapter= SuggestionAdapter(applicationContext,emptyList()){}
         adapter.notifyDataSetChanged()
     }
 
     fun setAdapter(list : List<ContactListViewItem>){
         Log.d("setadapter",list.toString()
         )
-        adapter = SuggestionAdapter(list) { suggestion ->
+        adapter = SuggestionAdapter(applicationContext,list) { suggestion ->
             onSuggestionClick(suggestion)
         }
         recyclerView.adapter = adapter
@@ -279,21 +283,25 @@ class ConversationDetailsActivity : AppCompatActivity() {
         }
 
         binding.conversationPinButton.setOnClickListener {
+            val type = object : TypeToken<ArrayList<String>>() {}.type
+            var jsonString = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"pinnedConvo")!!
+            var pinnedConvo : ArrayList<String> = Gson().fromJson(jsonString, type)
 
             if(binding.conversationPinButton.text == getString(R.string.details_pin_conversation)){
-                Constants.PINNED_CONVO.add(intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
+                pinnedConvo.add(intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
                 conversationListViewModel.savePinnedConversationToDB()
 //                binding.conversationPinButton.text == getString(R.string.details_unpin_conversation)
 //                binding.conversationPinButton.setCompoundDrawables(resources.getDrawable(R.drawable.icon_unpin),null,null,null)
 //                binding.details!!.isPinned = false
             }
             else {
-                Constants.PINNED_CONVO.remove(intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
+                pinnedConvo.remove(intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
                 conversationListViewModel.savePinnedConversationToDB()
 //                binding.conversationPinButton.text == getString(R.string.details_pin_conversation)
 //                binding.conversationPinButton.setCompoundDrawables(resources.getDrawable(R.drawable.ic_pin),null,null,null)
 //                binding.details!!.isPinned = true
             }
+            Constants.saveStringToVitalTextSharedPreferences(applicationContext,"pinnedConvo",Gson().toJson(pinnedConvo!!))
 //            binding.details!!.isPinned = binding.details!!.isPinned
         }
 

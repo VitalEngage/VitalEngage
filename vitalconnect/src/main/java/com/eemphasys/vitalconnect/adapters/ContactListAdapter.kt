@@ -30,10 +30,20 @@ class ContactListAdapter(
 
     val sizeChange = SingleLiveEvent<Int>()
     inner class ViewHolder(private val itemBinding: RowContactItemBinding) :
-        RecyclerView.ViewHolder(itemBinding.root), View.OnClickListener {
+        RecyclerView.ViewHolder(itemBinding.root), View.OnClickListener, View.OnLongClickListener {
 
         init {
             itemView.setOnClickListener(this)
+            itemView.setOnLongClickListener(this)
+
+
+            itemBinding.moreInformation .setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    val contact = itemList[position]
+                    itemClickListener.onParticipantIconClick(contact)
+                }
+            }
         }
 
         override fun onClick(view: View?) {
@@ -42,6 +52,16 @@ class ContactListAdapter(
                 val contact = itemList[position]
                 itemClickListener.onContactItemClick(contact)
             }
+        }
+
+        override fun onLongClick(v: View?): Boolean {
+            val position = adapterPosition
+            if (position != RecyclerView.NO_POSITION) {
+                val contact = itemList[position]
+                itemClickListener.onContactItemLongClick(contact) // Notify long click
+                return true // Return true to indicate the event was handled
+            }
+            return false
         }
 
         fun bind(item: ContactListViewItem, isFirst: Boolean) {
@@ -150,4 +170,7 @@ class ContactListAdapter(
 
 interface OnContactItemClickListener {
      fun onContactItemClick(contact: ContactListViewItem)
+    fun onContactItemLongClick(contact: ContactListViewItem)
+
+    fun onParticipantIconClick(contact: ContactListViewItem)
 }

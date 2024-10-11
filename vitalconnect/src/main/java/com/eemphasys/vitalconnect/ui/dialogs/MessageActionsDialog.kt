@@ -46,7 +46,7 @@ class MessageActionsDialog : BaseBottomSheetDialogFragment() {
 
         messageListViewModel.isWebChat.observe(this){ isWebChat ->
             if(isWebChat.toLowerCase() == "true") {
-                if(message.author == Constants.USERNAME) {
+                if(message.author == Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!) {
                     binding.delete.visibility = View.VISIBLE
                 }
             }

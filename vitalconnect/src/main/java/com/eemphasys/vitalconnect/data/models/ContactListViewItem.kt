@@ -13,6 +13,6 @@ data class ContactListViewItem(
     val customerName : String?,
     val countryCode: String?,
     val isGlobal : Boolean,
-    val bpId : String,
-    val role : String
+    val bpId : String?,
+    val role : String?
 )

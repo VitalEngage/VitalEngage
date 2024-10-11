@@ -1,5 +1,6 @@
 package com.eemphasys.vitalconnect.viewModel
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
@@ -27,7 +28,8 @@ class ConversationDetailsViewModel(
     private val conversationsRepository: ConversationsRepository,
     private val conversationListManager: ConversationListManager,
     private val participantListManager: ParticipantListManager,
-    connectivityMonitor : ConnectivityMonitor
+    connectivityMonitor : ConnectivityMonitor,
+    private val applicationContext: Context
 ) : ViewModel() {
 
     val conversationDetails = MutableLiveData<ConversationDetailsViewItem>()
@@ -51,7 +53,7 @@ class ConversationDetailsViewModel(
                 onDetailsError.value = ConversationsError.CONVERSATION_GET_FAILED
                 return@collect
             }
-           try{ result.data?.let { conversationDetails.value = it.asConversationDetailsViewItem() }}catch(e:Exception){}
+           try{ result.data?.let { conversationDetails.value = it.asConversationDetailsViewItem(applicationContext) }}catch(e:Exception){}
         }
     }
 

@@ -1,4 +1,5 @@
 package com.eemphasys.vitalconnect.adapters
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import com.eemphasys.vitalconnect.data.models.ContactListViewItem
 import com.eemphasys.vitalconnect.databinding.RowContactItemBinding
 
 class SuggestionAdapter(
+    private val applicationContext: Context,
     private val suggestions: List<ContactListViewItem>,
     private val itemClickListener: (ContactListViewItem) -> Unit
 ) : RecyclerView.Adapter<SuggestionAdapter.ViewHolder>() {
@@ -27,10 +29,10 @@ class SuggestionAdapter(
             }else {
                 itemBinding.contactNumber.text = item.email
             }
-            if (item.department.isNullOrBlank() || Constants.SHOW_DEPARTMENT == "false") {
+            if (item.department.isNullOrBlank() || Constants.getStringFromVitalTextSharedPreferences(applicationContext,"showDepartment")!! == "false") {
                 itemBinding.department.visibility = View.GONE
             }
-            if (item.designation.isNullOrBlank() || Constants.SHOW_DESIGNATION == "false") {
+            if (item.designation.isNullOrBlank() || Constants.getStringFromVitalTextSharedPreferences(applicationContext,"showDesignation")!! == "false") {
                 itemBinding.designation.visibility = View.GONE
             }
             if (itemBinding.contactNumber.text.isNullOrBlank()) {

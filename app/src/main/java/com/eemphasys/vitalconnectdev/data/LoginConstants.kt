@@ -36,11 +36,11 @@ class LoginConstants   {
         var MOBILENUMBER = ""
         var WITH_CONTEXT = "false"
         var OPEN_CHAT = "false"
-        var CONTEXT = ""
+        var CONTEXT = "QWERTY"
         var DEALER_NAME = ""
         var PINNED_CONVO : ArrayList<String> = arrayListOf()
-        var SHOW_INTERNAL_CONTACTS = true
-        var SHOW_EXTERNAL_CONTACTS = true
+        var SHOW_INTERNAL_CONTACTS = "true"
+        var SHOW_EXTERNAL_CONTACTS = "true"
 
         val CONTACTS =
             """{
@@ -55,7 +55,7 @@ class LoginConstants   {
                      "department":"Service",
                      "customer":"Customer",
                      "countryCode":"",
-                     "role":""
+                     "role":"",
                      "bpId":""
                   },
                   {
@@ -66,8 +66,8 @@ class LoginConstants   {
                      "designation":"Supervisor",
                      "department":"Service",
                      "customer":"Customer",
-                     "countryCode":""
-                     "role":""
+                     "countryCode":"",
+                     "role":"",
                      "bpId":""
                   }
             ]

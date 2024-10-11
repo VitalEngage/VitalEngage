@@ -239,4 +239,15 @@
         <item name="android:textSize">16sp</item>
         <item name="android:fontFamily">Helvetica</item>
     </style>
+    <style name="TextHeadingPopup">
+        <item name="android:textColor">@color/swipe_mute_background</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">Helvetica</item>
+        <item name="fontWeight">500</item>
+    </style>
+    <style name="TextSubtitlePopup">
+        <item name="android:textColor">@color/text_gray</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">Helvetica</item>
+    </style>
 </resources>

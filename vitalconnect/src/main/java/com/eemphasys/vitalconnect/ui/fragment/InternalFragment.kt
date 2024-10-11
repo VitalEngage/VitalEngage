@@ -1,14 +1,23 @@
 package com.eemphasys.vitalconnect.ui.fragment
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.Bundle
+import android.text.TextUtils
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.FrameLayout
+import android.widget.LinearLayout
+import android.widget.PopupWindow
+import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.findFragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -82,8 +91,9 @@ class InternalFragment : Fragment() {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
+                if(isAdded){
                 if (newText != null && newText.length >= 3) {
-                    if (Constants.WITH_CONTEXT == "false") {
+                    if (Constants.getStringFromVitalTextSharedPreferences(applicationContext,"withContext")!! == "false") {
                         //Search using SearchedUsers api
                         lifecycleScope.launch {
                             val listOfSearchedUsers = mutableListOf<ContactListViewItem>()
@@ -91,16 +101,16 @@ class InternalFragment : Fragment() {
                                 .connectTimeout(300, TimeUnit.SECONDS)
                                 .readTimeout(300, TimeUnit.SECONDS)
                                 .writeTimeout(300, TimeUnit.SECONDS)
-                                .addInterceptor(AuthInterceptor(Constants.AUTH_TOKEN))
+                                .addInterceptor(AuthInterceptor(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"authToken")!!))
                                 .addInterceptor(RetryInterceptor())
                                 .build()
                             val retrofitWithToken =
-                                RetrofitHelper.getInstance(httpClientWithToken)
+                                RetrofitHelper.getInstance(context!!,httpClientWithToken)
                                     .create(TwilioApi::class.java)
                             var request =
                                 SearchContactRequest(
-                                    Constants.USERNAME,
-                                    Constants.TENANT_CODE,
+                                    Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,
+                                    Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
                                     newText!!
                                 )
                             var response = retrofitWithToken.getSearchedUsers(request)
@@ -127,7 +137,9 @@ class InternalFragment : Fragment() {
                                                         response.department,
                                                         "",
                                                         "",
-                                                        true
+                                                        true,
+                                                        "",
+                                                        ""
                                                     )
 
                                                 listOfSearchedUsers.add(contactItem)
@@ -155,7 +167,7 @@ class InternalFragment : Fragment() {
                     return true
                 }
                 else{
-                    if(Constants.WITH_CONTEXT == "false"){
+                    if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"withContext")!! == "false"){
                         setAdapter(listOfUsers)
                     }
                     else
@@ -163,6 +175,9 @@ class InternalFragment : Fragment() {
                         setAdapter(originalList)
                     }
                     return false}
+                }else {
+                    return false
+                }
             }
         })
 
@@ -190,13 +205,13 @@ class InternalFragment : Fragment() {
             .connectTimeout(300, TimeUnit.SECONDS)
             .readTimeout(300, TimeUnit.SECONDS)
             .writeTimeout(300, TimeUnit.SECONDS)
-            .addInterceptor(AuthInterceptor(Constants.AUTH_TOKEN))
+            .addInterceptor(AuthInterceptor(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"authToken")!!))
             .addInterceptor(RetryInterceptor())
             .build()
         val retrofitWithToken =
-            RetrofitHelper.getInstance(httpClientWithToken)
+            RetrofitHelper.getInstance(applicationContext,httpClientWithToken)
                 .create(TwilioApi::class.java)
-        var request = ContactListRequest(currentIndex,Constants.PAGE_SIZE.toInt(),"","fullName","asc",Constants.TENANT_CODE,Constants.USERNAME,0)
+        var request = ContactListRequest(currentIndex,Constants.PAGE_SIZE.toInt(),"","fullName","asc",Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,0)
         var response = retrofitWithToken.getUserList(request)
 
         response.enqueue(object : Callback<List<UserListResponse>>{
@@ -220,7 +235,9 @@ class InternalFragment : Fragment() {
                                 response.department,
                                 "",
                                 "",
-                                true
+                                true,
+                                "",
+                                ""
                                 )
                             listOfUsers.add(userItem)
                             maxPageSize = ceil((response.totalCount/Constants.PAGE_SIZE)).toInt()
@@ -245,7 +262,7 @@ class InternalFragment : Fragment() {
 
         // Convert WebUser objects to ContactListViewItem
         val webUserItems = webUsers.map {
-            ContactListViewItem(it.name, it.userName, "", "Chat",it.initials,it.designation,it.department,it.customer,it.countryCode,false)
+            ContactListViewItem(it.name, it.userName, "", "Chat",it.initials,it.designation,it.department,it.customer,it.countryCode,false,"","")
         }
 
         // Add all ContactListViewItem objects to the combined list
@@ -283,7 +300,7 @@ class InternalFragment : Fragment() {
             }
         }
 
-        if(Constants.WITH_CONTEXT == "false"){
+        if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"withContext")!! == "false"){
             getAllUserList{}
             setAdapter(listOfUsers)
         }
@@ -293,7 +310,7 @@ class InternalFragment : Fragment() {
                 setAdapter(originalList)
             }
 
-        if(Constants.WITH_CONTEXT == "false") {
+        if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"withContext")!! == "false") {
             binding?.userList!!.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                     super.onScrollStateChanged(recyclerView, newState)
@@ -320,13 +337,13 @@ class InternalFragment : Fragment() {
             .connectTimeout(300, TimeUnit.SECONDS)
             .readTimeout(300, TimeUnit.SECONDS)
             .writeTimeout(300, TimeUnit.SECONDS)
-            .addInterceptor(AuthInterceptor(Constants.AUTH_TOKEN))
+            .addInterceptor(AuthInterceptor(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"authToken")!!))
             .addInterceptor(RetryInterceptor())
             .build()
         val retrofitWithToken =
-            RetrofitHelper.getInstance(httpClientWithToken).create(TwilioApi::class.java)
+            RetrofitHelper.getInstance(applicationContext,httpClientWithToken).create(TwilioApi::class.java)
         //Creating the Adapter
-        adapter = ContactListAdapter(list,list,object : OnContactItemClickListener {
+        adapter = ContactListAdapter(list,list,applicationContext,object : OnContactItemClickListener {
             @SuppressLint("SuspiciousIndentation")
             override fun onContactItemClick(contact: ContactListViewItem) {
                 Log.d(
@@ -334,7 +351,7 @@ class InternalFragment : Fragment() {
 //                  Web to web chat
                     binding?.progressBarID?.visibility = View.VISIBLE
 
-                if(Constants.WITH_CONTEXT.lowercase() == "true") {
+                if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"withContext")!!.lowercase() == "true") {
 //                  Check if existing coversation exist
                     contactListViewModel.checkExistingconversation(contact)
                     binding?.progressBarID?.visibility = View.GONE
@@ -345,6 +362,125 @@ class InternalFragment : Fragment() {
                     NewConversationDialog().showNow(childFragmentManager, null)
                 }
 
+            }
+            override fun onContactItemLongClick(contact: ContactListViewItem) {
+                showPopup(contact)
+            }
+
+            override fun onParticipantIconClick(contact: ContactListViewItem) {
+                showPopup(contact)
+            }
+
+            private fun showPopup(contact: ContactListViewItem) {
+                // Inflate the popup layout
+                val inflater = layoutInflater
+                val popupView = inflater.inflate(R.layout.popup_layout, null)
+                val linearLayout = popupView.findViewById<LinearLayout>(R.id.rolesLinearLayout)
+                val name = popupView.findViewById<TextView>(R.id.contactName)
+                val department = popupView.findViewById<TextView>(R.id.department)
+                val designation = popupView.findViewById<TextView>(R.id.designation)
+                val customer = popupView.findViewById<TextView>(R.id.customer)
+                val bpId = popupView.findViewById<TextView>(R.id.bpId)
+                val number = popupView.findViewById<TextView>(R.id.number)
+                val roleName = popupView.findViewById<TextView>(R.id.role)
+                val roledividerline = popupView.findViewById<View>(R.id.roledividerline)
+                val customerdividerline = popupView.findViewById<View>(R.id.customerdividerline)
+
+                name.text = contact.name
+                department.text = "(" + contact.department + ")"
+                designation.text = contact.designation
+                customer.text = contact.customerName
+                bpId.text = contact.bpId
+                if(contact.type == "SMS"){
+                    number.text = contact.number
+                }else{
+                    number.text = contact.email
+                }
+
+                if (contact.designation.isNullOrEmpty() || Constants.getStringFromVitalTextSharedPreferences(applicationContext,"showDesignation")!! == "false"){
+                    designation.visibility = View.GONE
+                }
+                if (contact.department.isNullOrEmpty() || Constants.getStringFromVitalTextSharedPreferences(applicationContext,"showDepartment")!! == "false"){
+                    department.visibility = View.GONE
+                }
+                if (contact.customerName.isNullOrEmpty()){
+                    customer.visibility = View.GONE
+                }
+                if (contact.bpId.isNullOrEmpty()){
+                    bpId.visibility = View.GONE
+                }
+//                if (contact.number.isNullOrEmpty()){
+//                    number.visibility = View.GONE
+//                }
+                if (contact.role.isNullOrEmpty()){
+                    roleName.visibility = View.GONE
+                    roledividerline.visibility = View.GONE
+                }
+//                if (contact.number.isNullOrEmpty()){
+//                    number.visibility = View.GONE
+//                }
+                if(contact.customerName.isNullOrEmpty() && contact.bpId.isNullOrEmpty()){
+                    customerdividerline.visibility = View.GONE
+                }
+
+                var itemsArray : Array<String>?
+                if(contact.role.isNullOrEmpty()){
+                    itemsArray = arrayOf()
+                }else {
+                    itemsArray = contact.role!!.split(",").toTypedArray()
+                    for (item in itemsArray!!) {
+                        if (!item.trim().isNullOrBlank()){
+                            val textView = TextView(applicationContext).apply {
+                                text = item.trim()
+                                textSize = 16f
+                                setTextColor(getResources().getColor(R.color.text_gray))
+                                ellipsize = TextUtils.TruncateAt.MARQUEE
+                                // Set additional properties if needed
+                                layoutParams = LinearLayout.LayoutParams(
+                                    LinearLayout.LayoutParams.MATCH_PARENT,
+                                    LinearLayout.LayoutParams.WRAP_CONTENT
+                                )
+                            }
+                            linearLayout.addView(textView)
+                        }
+                    }
+                }
+
+                // Create the PopupWindow
+                val popupWindow = PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                // Create a dimmed background view
+                val dimBackground = View(applicationContext).apply {
+                    setBackgroundColor(Color.parseColor("#80000000")) // Semi-transparent black
+                    layoutParams = FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                    )
+                    visibility = View.VISIBLE
+                }
+
+                // Get the root view
+                val rootView = activity!!.window.decorView.findViewById<View>(android.R.id.content) as ViewGroup
+                rootView.addView(dimBackground)
+                // Close the popup when the button is clicked
+                val closeButton: Button = popupView.findViewById(R.id.close_button)
+                closeButton.setOnClickListener {
+                    popupWindow.dismiss()
+                    rootView.removeView(dimBackground)
+                }
+
+                // Show the popup
+                popupWindow.isFocusable = true
+                popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0)
+
+                // Set OnDismissListener to remove the dim background
+                popupWindow.setOnDismissListener {
+                    rootView.removeView(dimBackground)
+                }
+
+                // Optional: Dismiss popup when clicking on the dim background
+                dimBackground.setOnClickListener {
+                    popupWindow.dismiss()
+                }
             }
         })
 
