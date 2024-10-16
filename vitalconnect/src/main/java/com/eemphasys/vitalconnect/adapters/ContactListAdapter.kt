@@ -37,7 +37,7 @@ class ContactListAdapter(
             itemView.setOnLongClickListener(this)
 
 
-            itemBinding.moreInformation .setOnClickListener {
+            itemBinding.participantIcon.setOnClickListener {
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
                     val contact = itemList[position]
@@ -138,6 +138,14 @@ class ContactListAdapter(
             }
         }
         notifyDataSetChanged()
+    }
+    fun getPositionForLetter(letter: Char): Int {
+        for (i in itemList.indices) {
+            if (itemList[i].name.startsWith(letter, ignoreCase = true)) {
+                return i
+            }
+        }
+        return RecyclerView.NO_POSITION
     }
 
     private fun changeButtonBackgroundColor(textView: TextView?, colorid: Int) {

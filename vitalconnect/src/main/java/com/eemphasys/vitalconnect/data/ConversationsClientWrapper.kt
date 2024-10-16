@@ -70,6 +70,7 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
 
         val result = runCatching {
             val twilioToken = getToken(identity,applicationContext)
+            Constants.saveStringToVitalTextSharedPreferences(applicationContext,"twilioToken",twilioToken)
             getConversationsClient().updateToken(twilioToken)
         }
 

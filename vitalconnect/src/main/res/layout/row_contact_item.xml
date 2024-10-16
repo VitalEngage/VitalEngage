@@ -47,8 +47,9 @@
         tools:text="Contact friendly name"
         app:layout_constraintStart_toEndOf="@id/participant_icon"
         app:layout_constraintTop_toTopOf="@id/participant_icon"
-        app:layout_constraintEnd_toStartOf="@id/moreInformation"
+        app:layout_constraintEnd_toEndOf="parent"
         tools:ignore="MissingConstraints" />
+<!--    app:layout_constraintEnd_toStartOf="@id/moreInformation"-->
 
     <TextView
         android:id="@+id/contactType"
@@ -62,14 +63,14 @@
         tools:text="Type"
         tools:ignore="MissingConstraints"
         android:visibility="gone"/>
-    <ImageView
-        android:id="@+id/moreInformation"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:src="@android:drawable/ic_dialog_info"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/contactName"
-        android:layout_marginStart="8dp"/>
+<!--    <ImageView-->
+<!--        android:id="@+id/moreInformation"-->
+<!--        android:layout_width="30dp"-->
+<!--        android:layout_height="30dp"-->
+<!--        android:src="@android:drawable/ic_dialog_info"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="@id/contactName"-->
+<!--        android:layout_marginStart="8dp"/>-->
     <TextView
         android:id="@+id/contactNumber"
         style="@style/ConversationDetails_Subtext"

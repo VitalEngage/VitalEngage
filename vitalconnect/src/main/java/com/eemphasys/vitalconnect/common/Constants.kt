@@ -83,7 +83,7 @@ class Constants   {
         var PINNED_CONVO : ArrayList<String> = arrayListOf()
         var SHOW_INTERNAL_CONTACTS = ""
         var SHOW_EXTERNAL_CONTACTS = ""
-        var PAGE_SIZE = 10.0 //keep this floating
+        var PAGE_SIZE = 10000.0 //keep this floating
         var ROLE = ""
         var BPID = ""
 

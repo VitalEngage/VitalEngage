@@ -2,12 +2,15 @@ package com.eemphasys.vitalconnect.ui.fragment
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.TextUtils
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -332,6 +335,7 @@ class InternalFragment : Fragment() {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun setAdapter(list : List<ContactListViewItem>){
         val httpClientWithToken = OkHttpClient.Builder()
             .connectTimeout(300, TimeUnit.SECONDS)
@@ -496,6 +500,90 @@ class InternalFragment : Fragment() {
                 binding!!.progressBarID.visibility = View.VISIBLE
             }
         })
+
+        //Generate A-Z scrollbar
+        val alphabet = ('A'..'Z').toList()
+        for (letter in alphabet) {
+            val textView = TextView(applicationContext).apply {
+                text = letter.toString()
+                setPadding(4, 4, 4, 4)
+                isClickable = true
+                isFocusable = true
+                setTextColor(Color.LTGRAY)
+                setBackgroundColor(Color.TRANSPARENT)
+                setOnClickListener {
+                    Log.d("clicked","clicked")
+                    val position = adapter.getPositionForLetter(letter)
+                    if (position != RecyclerView.NO_POSITION) {
+                        binding!!.userList.smoothScrollToPosition(position)
+                        binding!!.userList.post {
+                            val layoutManager =  binding!!.userList.layoutManager as LinearLayoutManager
+                            val viewHolder =  binding!!.userList.findViewHolderForAdapterPosition(position)
+
+                            // If the view holder is not null, adjust the scroll
+                            if (viewHolder != null) {
+                                val itemView = viewHolder.itemView
+                                val topOffset = itemView.top // Get the current top position
+
+                                layoutManager.scrollToPositionWithOffset(
+                                    position,
+                                    0
+                                ) // This scrolls it to the top
+                                binding!!.userList.scrollBy(
+                                    0,
+                                    topOffset
+                                )
+                            }
+                        }
+
+                        setTextColor(Color.RED)
+                        // Reset the highlight after a short delay
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            setTextColor(Color.LTGRAY)
+                        }, 300)
+                    }
+                }
+            }
+            binding!!.azScrollbar.addView(textView)
+        }
+
+        binding!!.azScrollbar.setOnTouchListener { _, event ->
+            Log.d("clicked","touched")
+            if (event.action == MotionEvent.ACTION_MOVE || event.action == MotionEvent.ACTION_DOWN) {
+                val y = event.y
+                val height =  binding!!.azScrollbar.height
+                val letterHeight = height / alphabet.size
+
+                val index = (y / letterHeight).toInt()
+                if (index in alphabet.indices) {
+                    val letter = alphabet[index]
+                    val position = adapter.getPositionForLetter(letter)
+                    if (position != RecyclerView.NO_POSITION) {
+                        binding!!.userList.smoothScrollToPosition(position)
+                        binding!!.userList.post {
+                            val layoutManager =  binding!!.userList.layoutManager as LinearLayoutManager
+                            val viewHolder =  binding!!.userList.findViewHolderForAdapterPosition(position)
+
+                            // If the view holder is not null, adjust the scroll
+                            if (viewHolder != null) {
+                                val itemView = viewHolder.itemView
+                                val topOffset = itemView.top // Get the current top position
+
+                                layoutManager.scrollToPositionWithOffset(
+                                    position,
+                                    0
+                                ) // This scrolls it to the top
+                                binding!!.userList.scrollBy(
+                                    0,
+                                    topOffset
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+            true
+        }
 
     }
 
