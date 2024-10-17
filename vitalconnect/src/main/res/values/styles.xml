@@ -9,7 +9,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorSecondary">@color/colorPrimary</item>
         <item name="colorOnSecondary">@color/white</item>
-        <item name="colorEet">@color/colorEet</item>
+        <item name="colorAccent">@color/colorEet</item>
         <item name="android:windowBackground">@color/colorPrimaryDark</item>
 
         <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox</item>
