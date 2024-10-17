@@ -97,7 +97,7 @@ class MessageListAdapter(
 
         val attachmentInfoColor = when {
             message.sendStatus == SendStatus.ERROR ||
-                    message.mediaDownloadState == ERROR -> ContextCompat.getColor(context, R.color.colorAccent)
+                    message.mediaDownloadState == ERROR -> ContextCompat.getColor(context, R.color.colorEet)
 
             message.mediaUploading -> ContextCompat.getColor(context, R.color.text_subtitle)
 

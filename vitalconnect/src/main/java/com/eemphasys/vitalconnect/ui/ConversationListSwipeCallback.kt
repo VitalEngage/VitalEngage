@@ -26,7 +26,7 @@ class ConversationListSwipeCallback(val context: Context, val adapter: Conversat
 
     private val unMuteIcon = ContextCompat.getDrawable(context, R.drawable.ic_swipe_unmute)!!
 
-    private val leaveBackground = ContextCompat.getDrawable(context, R.color.colorAccent)!!
+    private val leaveBackground = ContextCompat.getDrawable(context, R.color.colorEet)!!
 
     private val muteBackground = ContextCompat.getDrawable(context, R.color.swipe_mute_background)!!
 

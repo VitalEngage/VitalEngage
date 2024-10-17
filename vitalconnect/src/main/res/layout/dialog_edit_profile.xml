@@ -75,7 +75,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/cancel_button"
-        android:backgroundTint="@color/colorAccent"
+        android:backgroundTint="@color/colorEet"
         android:textColor="@color/white"
         android:fontFamily="Helvetica"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -373,7 +373,7 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
                 .setNegativeButton(getText(R.string.yes)) { _, _ -> conversationListViewModel.savePinnedConversation(conversation,false,adapter) }
                 .create()
             dialog.setOnShowListener {
-                val color = ContextCompat.getColor(requireContext(), R.color.colorAccent)
+                val color = ContextCompat.getColor(requireContext(), R.color.colorEet)
                 dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(color)
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE)
                     .setTextColor(ContextCompat.getColor(requireContext(), R.color.alternate_message_text))
@@ -391,7 +391,7 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
         .setNegativeButton(getText(R.string.yes)) { _, _ -> conversationListViewModel.savePinnedConversation(conversation,true,adapter) }
         .create()
     dialog.setOnShowListener {
-        val color = ContextCompat.getColor(requireContext(), R.color.colorAccent)
+        val color = ContextCompat.getColor(requireContext(), R.color.colorEet)
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(color)
         dialog.getButton(AlertDialog.BUTTON_POSITIVE)
             .setTextColor(ContextCompat.getColor(requireContext(), R.color.alternate_message_text))
@@ -412,7 +412,7 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
             .create()
 
         dialog.setOnShowListener {
-            val color = ContextCompat.getColor(requireContext(), R.color.colorAccent)
+            val color = ContextCompat.getColor(requireContext(), R.color.colorEet)
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(color)
 
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE).isAllCaps = false

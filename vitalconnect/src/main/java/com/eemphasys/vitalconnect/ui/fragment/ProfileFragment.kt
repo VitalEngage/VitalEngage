@@ -133,7 +133,7 @@ class ProfileFragment:Fragment() {
             .create()
 
         dialog.setOnShowListener {
-            val color = ContextCompat.getColor(requireContext(), R.color.colorAccent)
+            val color = ContextCompat.getColor(requireContext(), R.color.colorEet)
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(color)
 
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE).isAllCaps = false

@@ -207,7 +207,7 @@ class MessageListActivity: AppCompatActivity() {
                     binding.toolbarSubtitle.visibility = View.VISIBLE
                     binding.toolbarSubtitle.text = "Customer"
                     binding.toolbarSubtitle.setBackgroundResource(R.drawable.bg_customer)
-                    binding.toolbarSubtitle.setTextColor(resources.getColor(R.color.customer_name))
+                    binding.toolbarSubtitle.setTextColor(resources.getColor(R.color.customer_name_text))
                     binding.note.text = getString(R.string.size_note)
                 }
             }
@@ -297,7 +297,7 @@ class MessageListActivity: AppCompatActivity() {
                 .create()
 
             dialog.setOnShowListener {
-                val color = ContextCompat.getColor(this, R.color.colorAccent)
+                val color = ContextCompat.getColor(this, R.color.colorEet)
                 dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(color)
 
                 dialog.getButton(AlertDialog.BUTTON_NEGATIVE).isAllCaps = false

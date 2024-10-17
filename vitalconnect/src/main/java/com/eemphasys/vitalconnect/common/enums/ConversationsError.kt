@@ -34,7 +34,7 @@ enum class ConversationsError(val code: Int, val message: String) {
     MESSAGE_COPY_FAILED(82, "Failed to copy message"),
     NO_INTERNET_CONNECTION(83, "No internet connection"),
     INVALID_CONTENT_TYPE(101, "Invalid media content type."),
-    FILE_TOO_LARGE(102, "Select a single file: either a JPEG or PNG up to 5MB, or a PDF up to 600KB");
+    FILE_TOO_LARGE(102, "File too large.");
 
     override fun toString() = "Error $code : $message"
 

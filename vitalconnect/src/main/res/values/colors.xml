@@ -11,7 +11,8 @@
     <color name="colorPrimary">#0263E0</color>
     <color name="colorPrimaryDark">#001489</color>
     <color name="colorAccent">#d92337</color>
-    <color name="colorAccentOpacity">#57D92337</color>
+    <color name="colorEet">#d92337</color>
+    <color name="colorEetOpacity">#57D92337</color>
     <color name="splashBottom">#06033A</color>
     <color name="white">#fff</color>
     <color name="text_title">#121C2D</color>
@@ -39,6 +40,7 @@
     <color name="conversation_details_background">#EBECEC</color>
     <color name="sent_tick">#4CAF50</color>
     <color name="dealer_name">#0B602D</color>
-    <color name="customer_name">#C72323</color>
+    <color name="customer_name_text">#C72323</color>
     <color name="tabSelected">#d92337</color>
+    <color name="unreadCount">#0263E0</color>
 </resources>

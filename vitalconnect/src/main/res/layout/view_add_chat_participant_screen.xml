@@ -103,7 +103,7 @@
             android:text="@string/add_participant_button"
             android:elevation="5dp"
             android:layout_marginStart="4dp"
-            android:backgroundTint="@color/colorAccent"
+            android:backgroundTint="@color/colorEet"
             android:textColor="@color/white"
             android:layout_marginTop="10dp"
             app:layout_constraintStart_toEndOf="@id/add_chat_participant_id_cancel_button"

@@ -34,7 +34,7 @@ class LoginConstants   {
         var SHOW_DEPARTMENT = ""
         var EMAIL = ""
         var MOBILENUMBER = ""
-        var WITH_CONTEXT = "false"
+        var WITH_CONTEXT = "true"
         var OPEN_CHAT = "false"
         var CONTEXT = "QWERTY"
         var DEALER_NAME = ""

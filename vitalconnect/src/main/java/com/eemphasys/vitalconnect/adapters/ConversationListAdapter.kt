@@ -104,7 +104,7 @@ class ConversationListAdapter(private val callback: OnConversationEvent, private
                 holder.binding.conversationType.setTextColor(
                     ContextCompat.getColor(
                         context,
-                        R.color.customer_name
+                        R.color.customer_name_text
                     )
                 )
             }

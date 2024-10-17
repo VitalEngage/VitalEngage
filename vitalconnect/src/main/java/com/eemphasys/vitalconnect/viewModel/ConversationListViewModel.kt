@@ -59,8 +59,11 @@ class ConversationListViewModel(
     val pinConversation = SingleLiveEvent<Boolean>()
 
     val type = object : TypeToken<ArrayList<String>>() {}.type
-    var jsonString = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"pinnedConvo")!!
-    var pinnedConvo : ArrayList<String> = Gson().fromJson(jsonString, type)
+    var jsonString = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"pinnedConvo") ?: ""
+    var pinnedConvo : ArrayList<String> = if(jsonString.isNullOrEmpty()){
+        arrayListOf()
+    }
+    else Gson().fromJson(jsonString, type)
 
     var conversationFilter by Delegates.observable("") { _, _, _ -> updateUserConversationItems() }
 

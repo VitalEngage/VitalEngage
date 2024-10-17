@@ -151,6 +151,6 @@ fun SendStatus.asLastMesageStatusIcon() = when(this) {
 }
 
 fun SendStatus.asLastMessageTextColor(context: Context) = when (this) {
-    SendStatus.ERROR -> ContextCompat.getColor(context, R.color.colorAccent)
+    SendStatus.ERROR -> ContextCompat.getColor(context, R.color.colorEet)
     else -> ContextCompat.getColor(context, R.color.text_subtitle)
 }
