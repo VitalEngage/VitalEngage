@@ -204,13 +204,14 @@ fun ConversationDataItem.asConversationListViewItem(
     } catch (e: Exception) {
         " "
     },
-    run {
-        val type = object : TypeToken<ArrayList<String>>() {}.type
-        var jsonString = Constants.getStringFromVitalTextSharedPreferences(context,"pinnedConvo")!!
-        var pinnedConvo : ArrayList<String> = Gson().fromJson(jsonString, type)
-
-        pinnedConvo.contains(this.sid)
-    },
+//    run {
+//        val type = object : TypeToken<ArrayList<String>>() {}.type
+//        var jsonString = Constants.getStringFromVitalTextSharedPreferences(context,"pinnedConvo")!!
+//        var pinnedConvo : ArrayList<String> = Gson().fromJson(jsonString, type)
+//
+//        pinnedConvo.contains(this.sid)
+//    },
+    Constants.PINNED_CONVO.contains(this.sid),
     try {
         JSONObject(this.attributes).optString("Role", "")
     } catch (e: Exception) {
@@ -231,13 +232,14 @@ fun ConversationDataItem.asConversationDetailsViewItem(applicationContext: Conte
     this.dateCreated.asDateString(),
     this.notificationLevel == NotificationLevel.MUTED.value,
     ConversationsRepositoryImpl.INSTANCE.getFriendlyName(this.createdBy),
-    run {
-        val type = object : TypeToken<ArrayList<String>>() {}.type
-        var jsonString = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"pinnedConvo")!!
-        var pinnedConvo : ArrayList<String> = Gson().fromJson(jsonString, type)
-
-        pinnedConvo.contains(this.sid)
-    }
+//    run {
+//        val type = object : TypeToken<ArrayList<String>>() {}.type
+//        var jsonString = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"pinnedConvo")!!
+//        var pinnedConvo : ArrayList<String> = Gson().fromJson(jsonString, type)
+//
+//        pinnedConvo.contains(this.sid)
+//    }
+    Constants.PINNED_CONVO.contains(this.sid)
 )
 
 fun ParticipantDataItem.toParticipantListViewItem() = ParticipantListViewItem(

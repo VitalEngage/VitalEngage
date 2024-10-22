@@ -34,7 +34,7 @@ class LoginConstants   {
         var SHOW_DEPARTMENT = ""
         var EMAIL = ""
         var MOBILENUMBER = ""
-        var WITH_CONTEXT = "true"
+        var WITH_CONTEXT = "false"
         var OPEN_CHAT = "false"
         var CONTEXT = "QWERTY"
         var DEALER_NAME = ""
@@ -82,7 +82,8 @@ class LoginConstants   {
                 "designation":"Technician",
                 "department":"",
                 "customer":"VitalEdge",
-                "countryCode":""
+                "countryCode":"",
+                "role":""
             },
             {
                 "name":"Himanshu Mahajan",

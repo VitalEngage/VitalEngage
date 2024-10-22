@@ -22,6 +22,8 @@ import com.eemphasys.vitalconnect.databinding.RowConversationItemBinding
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import java.util.Locale
 import kotlin.properties.Delegates
 
@@ -30,11 +32,17 @@ class ConversationListAdapter(private val callback: OnConversationEvent, private
     init {
         setHasStableIds(true) // Enable stable IDs
     }
+    val type = object : TypeToken<ArrayList<String>>() {}.type
+    var jsonString = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"contextList")
 
+    val contextItems: ArrayList<String> = if(jsonString.isNullOrEmpty()){
+        arrayListOf()
+    }
+    else Gson().fromJson(jsonString, type)
     // The list of all conversations
     var allConversations: List<ConversationListViewItem> by Delegates.observable(emptyList()) { _, old, new ->
         // Apply filter whenever the list is set or filtered
-        conversations = filterConversations(new)
+        conversations = filterConversations(new,contextItems)
         DiffUtil.calculateDiff(ConversationDiff(old, conversations)).dispatchUpdatesTo(this)
     }
 
@@ -164,11 +172,15 @@ class ConversationListAdapter(private val callback: OnConversationEvent, private
                     filterCriteria.add("All")
                 }
             }
-            conversations = filterConversations(allConversations)
+            conversations = filterConversations(allConversations,contextItems)
             notifyDataSetChanged()
         }
 
-        private fun filterConversations(conversations: List<ConversationListViewItem>): List<ConversationListViewItem> {
+        private fun filterConversations(conversations: List<ConversationListViewItem>,contextItems: ArrayList<String>): List<ConversationListViewItem> {
+           if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"withContext") == "true") {
+               filterCriteria.remove("All")
+               filterCriteria.add("CONTEXT")
+           }
             val filteredConversations = conversations.filter { conversation ->
                 if (filterCriteria.contains(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"dealerName")!!) && filterCriteria.contains("Customer") && filterCriteria.size == 2) {
                     filterCriteria.all { criteria ->
@@ -184,6 +196,9 @@ class ConversationListAdapter(private val callback: OnConversationEvent, private
                             "Unread" -> conversation.unreadMessageCount != "0"
                             Constants.getStringFromVitalTextSharedPreferences(applicationContext,"dealerName")!! -> conversation.isWebChat == "true"
                             "Customer" -> conversation.isWebChat != "true"
+                            "CONTEXT" -> contextItems.any { contextItem ->
+                                conversation.name.contains(contextItem, ignoreCase = true)
+                            } // Check for CONTEXT
                             else -> true
                         }
                     }

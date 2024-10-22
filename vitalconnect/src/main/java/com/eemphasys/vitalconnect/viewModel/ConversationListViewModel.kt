@@ -303,6 +303,7 @@ class ConversationListViewModel(
         EETLog.saveUserJourney("vitaltext:  ConversationListViewModel savePinnedConversation Called")
         if(add){
             pinnedConvo.add(conversation.sid)
+            Constants.PINNED_CONVO.add(conversation.sid)
             conversation.isPinned= add
             pinConversation.value = true
             adapter.notifyDataSetChanged()
@@ -311,6 +312,7 @@ class ConversationListViewModel(
         }
         else{
             pinnedConvo.remove(conversation.sid)
+            Constants.PINNED_CONVO.remove(conversation.sid)
             conversation.isPinned= !add
             pinConversation.value = false
             adapter.notifyDataSetChanged()
@@ -333,7 +335,8 @@ class ConversationListViewModel(
                 RetrofitHelper.getInstance(applicationContext,httpClientWithToken).create(TwilioApi::class.java)
             val request = SavePinnedConversationRequest(
                 Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,
-                pinnedConvo,
+//                pinnedConvo,
+                Constants.PINNED_CONVO,
                 Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!
             )
 
