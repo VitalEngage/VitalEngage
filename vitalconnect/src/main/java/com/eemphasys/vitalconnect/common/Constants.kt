@@ -185,6 +185,13 @@ class Constants   {
 
         }
         @JvmStatic
+        fun isExternalContact(name : String):Boolean{
+            val phoneNumberRegex = Regex(
+                """^\+[0-9]{5,16}$""")
+
+            return phoneNumberRegex.matches(name)
+        }
+        @JvmStatic
         fun isValidPhoneNumber(phoneNumberStr: String, defaultRegion: String): Boolean {
             // Check for empty or null phone number string
             if (phoneNumberStr.isBlank()) {

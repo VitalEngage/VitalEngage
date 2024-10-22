@@ -21,15 +21,29 @@
         android:focusableInTouchMode="false"
         android:padding="16dp"
         >
-        <ImageView
+<!--        <ImageView-->
+<!--            android:id="@+id/participant_icon"-->
+<!--            android:layout_width="48dp"-->
+<!--            android:layout_height="48dp"-->
+<!--            android:src="@drawable/icon_multi_user_conversation"-->
+<!--            android:layout_marginRight="8dp"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            app:layout_constraintEnd_toStartOf="@id/conversationStateIcon" />-->
+        <TextView
             android:id="@+id/participant_icon"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@drawable/icon_multi_user_conversation"
+            android:layout_centerVertical="true"
             android:layout_marginRight="8dp"
+            android:gravity="center"
+            android:background="@drawable/icon_multi_user_conversation"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:text=""
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/conversationStateIcon" />
+            app:layout_constraintEnd_toStartOf="@id/conversationStateIcon"/>
         <ImageView
             android:id="@+id/conversationStateIcon"
             android:layout_width="20dp"

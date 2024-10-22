@@ -74,6 +74,8 @@
     <string name="try_different_search">Try a different search term</string>
     <string name="search_contact">Search Contacts</string>
     <string name="try_name_or_number">Try name or mobile number.</string>
+    <string name="no_contacts">No Contacts found.</string>
+    <string name="no_contacts_details">Contacts are not associated with this context.</string>
     <string name="size_note">Select a single file: either a JPEG or PNG up to 5MB, or a PDF up to 600KB</string>
     <string name="webSize_note">Select a single file:PDF, JPEG or PNG up to 20MB</string>
 

@@ -91,7 +91,7 @@ class ContactListAdapter(
             if (itemBinding.customerName.text.isNullOrBlank()) {
                 itemBinding.customerName.visibility = View.GONE
             }
-            if(!item.isGlobal && isFirst){
+            if(!item.isGlobal && isFirst && item.type == "SMS"){
                 Log.d("default", "${item.name} $isFirst")
                 itemBinding.defaultContact.visibility = View.VISIBLE
             }

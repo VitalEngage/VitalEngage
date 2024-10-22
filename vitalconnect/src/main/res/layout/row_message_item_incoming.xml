@@ -55,13 +55,13 @@
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:singleLine="true"
-            android:text='@{message.friendlyName == "" ? message.author : message.friendlyName}'
             android:visibility="@{message.authorChanged ? View.VISIBLE : View.GONE}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/message_background"
             app:layout_constraintTop_toBottomOf="@+id/changed_date"
             tools:text="@tools:sample/full_names"
             tools:visibility="visible" />
+<!--        android:text='@{message.friendlyName == "" ? message.author : message.friendlyName}'-->
 
 <!--        <ImageView-->
 <!--            android:id="@+id/message_avatar"-->

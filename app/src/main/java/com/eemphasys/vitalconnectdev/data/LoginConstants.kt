@@ -42,7 +42,7 @@ class LoginConstants   {
         var SHOW_INTERNAL_CONTACTS = "true"
         var SHOW_EXTERNAL_CONTACTS = "true"
 
-        val CONTACTS =
+        val CONTACTS1 =
             """{
             "contacts" : 
             [
@@ -91,13 +91,14 @@ class LoginConstants   {
                 "designation":"Supervisor",
                 "department":"Xapps",
                 "customer":"VitalEdge",
-                "countryCode":""
+                "countryCode":"",
+                "role":""
             }
             ]
         }
         """.trimIndent()
 
-        val CONTACTS1 = ""
+        val CONTACTS = ""
         val WEBUSERS1 = ""
 
         const val MyPREFERENCES = "MyVitaltextPrefs"

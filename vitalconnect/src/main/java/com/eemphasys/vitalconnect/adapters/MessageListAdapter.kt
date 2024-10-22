@@ -138,7 +138,21 @@ class MessageListAdapter(
                 binding.attachmentInfo.setTextColor(attachmentInfoColor)
                 binding.attachmentBackground.setOnClickListener(attachmentOnClickListener)
                 binding.attachmentBackground.setOnLongClickListener(longClickListener)
-                binding.participantIcon.text = Constants.getInitials(message.friendlyName.trim { it <= ' '} )
+
+                if(Constants.isExternalContact( message.author)){
+                    binding.messageAuthor.text = cleanConversationName()
+                    binding.participantIcon.text = Constants.getInitials(cleanConversationName().trim { it <= ' '} )
+                }else {
+                    if(message.friendlyName == ""){
+                        binding.messageAuthor.text = message.author
+                        binding.participantIcon.text = Constants.getInitials(message.author.trim { it <= ' '} )
+                    }else {
+                        binding.messageAuthor.text = message.friendlyName
+                        binding.participantIcon.text = Constants.getInitials(message.friendlyName.trim { it <= ' '} )
+                    }
+                }
+
+
 
 
                 changeButtonBackgroundColor(
@@ -201,6 +215,11 @@ class MessageListAdapter(
                 )!!
             )
         }
+    }
+
+    fun cleanConversationName(): String {
+        var name = Constants.getStringFromVitalTextSharedPreferences(AppContextHelper.appContext,"currentConversationName")!!
+        return name.replace(Regex("[0-9+]+"), "")
     }
     companion object {
         val MESSAGE_COMPARATOR = object : DiffUtil.ItemCallback<MessageListViewItem>() {

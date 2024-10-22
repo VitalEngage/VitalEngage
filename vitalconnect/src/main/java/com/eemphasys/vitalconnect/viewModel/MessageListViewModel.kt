@@ -55,6 +55,7 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.io.InputStream
 import java.util.*
+import javax.security.auth.callback.Callback
 
 const val MESSAGE_COUNT = 50
 
@@ -67,6 +68,7 @@ class MessageListViewModel(
 ) : ViewModel() {
 
     val conversationName = MutableLiveData<String>()
+    var conversationFriendlyName : String = ""
 
     var isWebChat = MutableLiveData<String>()
 
@@ -133,6 +135,7 @@ class MessageListViewModel(
             }
             isWebChat.value = try{JSONObject(result.data?.attributes).optString("isWebChat", "")}catch(e: Exception){""}
             conversationName.value = result.data?.friendlyName?.takeIf { it.isNotEmpty() } ?: result.data?.sid
+            conversationFriendlyName = result.data?.friendlyName?.takeIf { it.isNotEmpty() }.toString()
         }
     }
 

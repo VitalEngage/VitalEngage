@@ -265,7 +265,7 @@ class InternalFragment : Fragment() {
 
         // Convert WebUser objects to ContactListViewItem
         val webUserItems = webUsers.map {
-            ContactListViewItem(it.name, it.userName, "", "Chat",it.initials,it.designation,it.department,it.customer,it.countryCode,false,"","")
+            ContactListViewItem(it.name, it.userName, "", "Chat",it.initials,it.designation,it.department,it.customer,it.countryCode,false,"",it.role)
         }
 
         // Add all ContactListViewItem objects to the combined list
@@ -299,7 +299,8 @@ class InternalFragment : Fragment() {
                 val department = jsonObject.getString("department")
                 val customer = jsonObject.getString("customer")
                 val countryCode = jsonObject.getString("countryCode")
-                webuserList.add(WebUser(name, userName, initials, designation, department, customer,countryCode))
+                val role = jsonObject.getString("role")
+                webuserList.add(WebUser(name, userName, initials, designation, department, customer,countryCode,role))
             }
         }
 
@@ -498,6 +499,17 @@ class InternalFragment : Fragment() {
                 binding!!.progressBarID.visibility = View.GONE
             } else {
                 binding!!.progressBarID.visibility = View.VISIBLE
+                Handler(Looper.getMainLooper()).postDelayed({
+                    binding!!.progressBarID.visibility = View.GONE
+                    if (isAdded) {
+                        if (Constants.getStringFromVitalTextSharedPreferences(
+                                requireContext(),
+                                "withContext"
+                            ) == "true"
+                        )
+                            binding!!.noResultFound.root.visibility = View.VISIBLE
+                    }
+                }, 5000)
             }
         })
 

@@ -699,6 +699,18 @@ class ExternalFragment : Fragment() {
                 binding!!.progressBarID.visibility = View.GONE
             } else {
                 binding!!.progressBarID.visibility = View.VISIBLE
+                Handler(Looper.getMainLooper()).postDelayed({
+                    binding!!.progressBarID.visibility = View.GONE
+                    if (isAdded){
+                        if (Constants.getStringFromVitalTextSharedPreferences(
+                                requireContext(),
+                                "withContext"
+                            ) == "true"
+                        ) {
+                            binding!!.noResultFound.root.visibility = View.VISIBLE
+                        }
+                }
+                }, 5000)
             }
         })
 

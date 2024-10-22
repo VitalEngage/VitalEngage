@@ -62,8 +62,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
                 style="@style/TextViewChildTitle"
-                android:text="@{participant.friendlyName}"
                 tools:text="Donald Trump" />
+<!--            android:text="@{participant.friendlyName}"-->
             <!--android:textColor="@color/text_title"
             android:fontFamily="sans-serif-medium"-->
             <TextView

@@ -38,7 +38,13 @@ class ParticipantListAdapter(private val onParticipantClicked: (participant: Par
 //        holder.binding.participantItem.setOnClickListener {
 //            chatParticipant?.let { onParticipantClicked(it) }
 //        }
-        holder.binding.participantAvatar.text = Constants.getInitials(chatParticipant?.friendlyName!!.trim { it <= ' '} )
+        if(chatParticipant!!.identity.isNullOrEmpty()) {
+            holder.binding.participantName.text = cleanConversationName()
+            holder.binding.participantAvatar.text = Constants.getInitials(cleanConversationName().trim { it <= ' '} )
+        }else{
+            holder.binding.participantName.text = chatParticipant!!.friendlyName
+            holder.binding.participantAvatar.text = Constants.getInitials(chatParticipant?.friendlyName!!.trim { it <= ' '} )
+        }
 
         changeButtonBackgroundColor(
             holder.binding.participantAvatar,
@@ -87,5 +93,10 @@ class ParticipantListAdapter(private val onParticipantClicked: (participant: Par
                 )!!
             )
         }
+    }
+
+    fun cleanConversationName(): String {
+        var name = Constants.getStringFromVitalTextSharedPreferences(AppContextHelper.appContext,"currentConversationName")!!
+        return name.replace(Regex("[0-9+]+"), "")
     }
 }

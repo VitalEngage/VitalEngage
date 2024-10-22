@@ -9,7 +9,7 @@
         style="@style/TextViewTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/search_contact"
+        android:text="@string/no_contacts"
         android:textSize="20sp" />
 
     <TextView
@@ -17,5 +17,5 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="14dp"
-        android:text="@string/try_name_or_number" />
+        android:text="@string/no_contacts_details" />
 </LinearLayout>

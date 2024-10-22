@@ -7,5 +7,6 @@ data class WebUser(
     val designation: String,
     val department: String,
     val customer: String,
-    val countryCode: String
+    val countryCode: String,
+    val role: String
 )

@@ -1,18 +1,27 @@
 package com.eemphasys.vitalconnect.adapters
 
 import android.content.Context
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.ShapeDrawable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.compose.ui.text.toLowerCase
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.eemphasys.vitalconnect.R
+import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.Constants
+import com.eemphasys.vitalconnect.common.ParticipantColorManager
 import com.eemphasys.vitalconnect.data.models.ConversationListViewItem
 import com.eemphasys.vitalconnect.databinding.RowConversationItemBinding
+import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
+import com.eemphasys_enterprise.commonmobilelib.EETLog
+import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import java.util.Locale
 import kotlin.properties.Delegates
 
@@ -98,6 +107,8 @@ class ConversationListAdapter(private val callback: OnConversationEvent, private
                         R.color.dealer_name
                     )
                 )
+                holder.binding.participantIcon.text = ""
+                holder.binding.participantIcon.setBackgroundResource(R.drawable.icon_multi_user_conversation)
             } else {
                 holder.binding.conversationType.text = "Customer"
                 holder.binding.conversationType.setBackgroundResource(R.drawable.bg_customer)
@@ -107,8 +118,37 @@ class ConversationListAdapter(private val callback: OnConversationEvent, private
                         R.color.customer_name_text
                     )
                 )
+                holder.binding.participantIcon.setBackgroundResource(R.drawable.bg_participant_icon)
+                changeButtonBackgroundColor(holder.binding.participantIcon,ParticipantColorManager.getColorForParticipant(conversationItem.name))
+                holder.binding.participantIcon.text = Constants.getInitials(conversationItem.name.trim { it <= ' '} )
             }
+
+
+
+    }
+    private fun changeButtonBackgroundColor(textView: TextView?, colorid: Int) {
+        try {
+            val background = textView!!.background
+            if (background is ShapeDrawable) {
+                background.paint.color = colorid
+            } else if (background is GradientDrawable) {
+                background.setColor(colorid)
+            } else if (background is ColorDrawable) {
+                background.color = colorid
+            }
+        } catch (e: Exception) {
+            EETLog.error(
+                AppContextHelper.appContext, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    AppContextHelper.appContext!!
+                )!!
+            )
         }
+    }
         fun isMuted(position: Int) = conversations[position].isMuted
 
         fun setFilter(criteria: String, add: Boolean) {
