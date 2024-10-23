@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eemphasys.vitalconnect.api.AuthInterceptor
+import com.eemphasys.vitalconnect.api.RetrofitClient
 import com.eemphasys.vitalconnect.api.RetrofitHelper
 import com.eemphasys.vitalconnect.api.RetryInterceptor
 import com.eemphasys.vitalconnect.api.TwilioApi
@@ -61,17 +62,8 @@ class MainViewModel(private val mainManager: MainManager) : ViewModel() {
 
     fun getUserAlertStatus(applicationContext: Context) = viewModelScope.launch {
         EETLog.saveUserJourney("vitaltext:  Mainviewmodel getUserAlertStatus Called")
-        val httpClientWithToken = OkHttpClient.Builder()
-            .connectTimeout(300, TimeUnit.SECONDS)
-            .readTimeout(300, TimeUnit.SECONDS)
-            .writeTimeout(300, TimeUnit.SECONDS)
-            .addInterceptor(AuthInterceptor(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"authToken")!!))
-            .addInterceptor(RetryInterceptor())
-            .build()
-        val retrofitWithToken =
-            RetrofitHelper.getInstance(applicationContext,httpClientWithToken).create(TwilioApi::class.java)
         val request = GetUserAlertStatusRequest(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!)
-        val response =retrofitWithToken.getUserAlertStatus(request)
+        val response = RetrofitClient.retrofitWithToken.getUserAlertStatus(request)
         if(response.isSuccessful) {
             Constants.saveStringToVitalTextSharedPreferences(applicationContext,"userSMSAlert", response.body()!!.status.lowercase())
         }

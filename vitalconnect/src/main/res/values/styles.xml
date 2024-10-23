@@ -250,4 +250,9 @@
         <item name="android:textSize">16sp</item>
         <item name="android:fontFamily">Helvetica</item>
     </style>
+    <style name="TextInitials">
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">Helvetica</item>
+        <item name="fontWeight">600</item>
+    </style>
 </resources>

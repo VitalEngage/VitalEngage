@@ -8,6 +8,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.eemphasys.vitalconnect.adapters.ConversationListAdapter
 import com.eemphasys.vitalconnect.api.AuthInterceptor
+import com.eemphasys.vitalconnect.api.RetrofitClient
 import com.eemphasys.vitalconnect.api.RetrofitHelper
 import com.eemphasys.vitalconnect.api.RetryInterceptor
 import com.eemphasys.vitalconnect.api.TwilioApi
@@ -324,23 +325,14 @@ class ConversationListViewModel(
 
     fun savePinnedConversationToDB(){
         viewModelScope.launch {
-            val httpClientWithToken = OkHttpClient.Builder()
-                .connectTimeout(300, TimeUnit.SECONDS)
-                .readTimeout(300, TimeUnit.SECONDS)
-                .writeTimeout(300, TimeUnit.SECONDS)
-                .addInterceptor(AuthInterceptor(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"authToken")!!))
-                .addInterceptor(RetryInterceptor())
-                .build()
-            val retrofitWithToken =
-                RetrofitHelper.getInstance(applicationContext,httpClientWithToken).create(TwilioApi::class.java)
-            val request = SavePinnedConversationRequest(
+                val request = SavePinnedConversationRequest(
                 Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,
 //                pinnedConvo,
                 Constants.PINNED_CONVO,
                 Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!
             )
 
-            var response = retrofitWithToken.savePinnedConversation(request)
+            var response = RetrofitClient.retrofitWithToken.savePinnedConversation(request)
         }
     }
 }

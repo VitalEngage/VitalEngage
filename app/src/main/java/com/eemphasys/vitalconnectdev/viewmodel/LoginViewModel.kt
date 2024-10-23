@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.eemphasys.vitalconnect.api.RetrofitClient
 import com.eemphasys.vitalconnect.api.RetrofitHelper
 import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.SendOtpReq
@@ -121,8 +122,7 @@ class LoginViewModel(
 
     fun isAzureADEnabled (tenant : String,applicationContext: Context){
         viewModelScope.launch {
-            val tokenApi = RetrofitHelper.getInstance(applicationContext).create(TwilioApi::class.java)
-            val result = tokenApi.validateTenant(tenant)
+            val result = RetrofitClient.retrofitWithToken.validateTenant(tenant)
             if(result.isSuccessful) {
                 Log.d("isAzureAdenabled", result.body()!!.isAADEnabled.toString())
                 LoginConstants.IS_AADENABLED = result.body()!!.isAADEnabled.toString()
@@ -146,18 +146,16 @@ class LoginViewModel(
 
     fun sendOtp(tenantCode: String,userName: String,applicationContext: Context,callback: (Boolean) -> Unit) {
         viewModelScope.launch {
-            val retrofithelper = RetrofitHelper.getInstance(applicationContext).create(TwilioApi::class.java)
             val requestBody = SendOtpReq(userName, tenantCode)
-            val response = retrofithelper.sendOTP(requestBody)
+            val response = RetrofitClient.retrofitWithToken.sendOTP(requestBody)
             callback(response.isSuccessful)
         }
     }
 
     fun updatePassword(tenantCode : String, userName:String,password:String,otp:String,applicationContext: Context){
         viewModelScope.launch {
-            val retrofithelper = RetrofitHelper.getInstance(applicationContext).create(TwilioApi::class.java)
             val requestBody = UpdatePasswordReq(tenantCode, userName, password, otp)
-            val response = retrofithelper.updatePassword(requestBody)
+            val response = RetrofitClient.retrofitWithToken.updatePassword(requestBody)
             if(response.isSuccessful) {
                 isPasswordUpdated.value = response.isSuccessful
             }

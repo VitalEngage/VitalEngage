@@ -101,7 +101,8 @@ class ContactListAdapter(
 
             changeButtonBackgroundColor(
                 itemBinding.participantIcon,
-                ParticipantColorManager.getColorForParticipant(item.name)
+                ParticipantColorManager.getColorForParticipant(item.name),
+                ParticipantColorManager.getDarkColorForParticipant(item.name)
             )
         }
     }
@@ -148,15 +149,18 @@ class ContactListAdapter(
         return RecyclerView.NO_POSITION
     }
 
-    private fun changeButtonBackgroundColor(textView: TextView?, colorid: Int) {
+    private fun changeButtonBackgroundColor(textView: TextView?, colorid: Int,coloridText: Int) {
         try {
             val background = textView?.background
             if (background is ShapeDrawable) {
                 background.paint.color = colorid
+                textView.setTextColor(coloridText)
             } else if (background is GradientDrawable) {
                 background.setColor(colorid)
+                textView.setTextColor(coloridText)
             } else if (background is ColorDrawable) {
                 background.color = colorid
+                textView.setTextColor(coloridText)
             }
         } catch (e: Exception) {
             e.printStackTrace()

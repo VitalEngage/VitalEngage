@@ -29,6 +29,7 @@ import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.adapters.ContactListAdapter
 import com.eemphasys.vitalconnect.adapters.OnContactItemClickListener
 import com.eemphasys.vitalconnect.api.AuthInterceptor
+import com.eemphasys.vitalconnect.api.RetrofitClient
 import com.eemphasys.vitalconnect.api.RetrofitHelper
 import com.eemphasys.vitalconnect.api.RetryInterceptor
 import com.eemphasys.vitalconnect.api.TwilioApi
@@ -91,26 +92,13 @@ class ExternalFragment : Fragment() {
                             //Search using SearchedUsers api
                             lifecycleScope.launch {
                                 val listOfSearchedContacts = mutableListOf<ContactListViewItem>()
-                                val httpClientWithToken = OkHttpClient.Builder()
-                                    .connectTimeout(300, TimeUnit.SECONDS)
-                                    .readTimeout(300, TimeUnit.SECONDS)
-                                    .writeTimeout(300, TimeUnit.SECONDS)
-                                    .addInterceptor(AuthInterceptor(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"authToken")!!))
-                                    .addInterceptor(RetryInterceptor())
-                                    .build()
-                                val retrofitWithToken =
-                                    RetrofitHelper.getInstance(
-                                        applicationContext,
-                                        httpClientWithToken
-                                    )
-                                        .create(TwilioApi::class.java)
                                 var request =
                                     SearchContactRequest(
                                         Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,
                                         Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
                                         newText!!
                                     )
-                                var response = retrofitWithToken.getSearchedContact(request)
+                                var response = RetrofitClient.retrofitWithToken.getSearchedContact(request)
 
                                 response.enqueue(object : Callback<List<SearchContactResponse>> {
                                     override fun onResponse(
@@ -195,16 +183,8 @@ class ExternalFragment : Fragment() {
 
     fun getAllContactList(callBack: () -> Unit){
         lifecycleScope.launch {
-        val httpClientWithToken = OkHttpClient.Builder()
-            .connectTimeout(300, TimeUnit.SECONDS)
-            .readTimeout(300, TimeUnit.SECONDS)
-            .writeTimeout(300, TimeUnit.SECONDS)
-            .addInterceptor(AuthInterceptor(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"authToken")!!))
-            .addInterceptor(RetryInterceptor())
-            .build()
-        val retrofitWithToken = RetrofitHelper.getInstance(applicationContext,httpClientWithToken).create(TwilioApi::class.java)
         var request = ContactListRequest(currentIndex,Constants.PAGE_SIZE.toInt(),"","fullName","asc",Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,0)
-        var response = retrofitWithToken.getContactList(request)
+        var response = RetrofitClient.retrofitWithToken.getContactList(request)
 
         if (response.isSuccessful) {
             var previousPosition = listOfContacts.size
@@ -309,15 +289,6 @@ class ExternalFragment : Fragment() {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun setAdapter(list : List<ContactListViewItem>){
-        val httpClientWithToken = OkHttpClient.Builder()
-            .connectTimeout(300, TimeUnit.SECONDS)
-            .readTimeout(300, TimeUnit.SECONDS)
-            .writeTimeout(300, TimeUnit.SECONDS)
-            .addInterceptor(AuthInterceptor(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"authToken")!!))
-            .addInterceptor(RetryInterceptor())
-            .build()
-        val retrofitWithToken =
-            RetrofitHelper.getInstance(applicationContext,httpClientWithToken).create(TwilioApi::class.java)
         //Creating the Adapter
         adapter = ContactListAdapter(list,list,applicationContext,object : OnContactItemClickListener {
             @SuppressLint("SuspiciousIndentation")
@@ -326,7 +297,7 @@ class ExternalFragment : Fragment() {
                     if(Constants.isValidPhoneNumber(phone, Locale.getDefault().country)) {
                         binding?.progressBarID?.visibility = View.VISIBLE
 
-                        val existingConversation = retrofitWithToken.fetchExistingConversation(
+                        val existingConversation = RetrofitClient.retrofitWithToken.fetchExistingConversation(
                             Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
                             Constants.cleanedNumber(
                                 Constants.formatPhoneNumber(
@@ -370,7 +341,7 @@ class ExternalFragment : Fragment() {
                                             if (!conversation.conversationSid.isNullOrEmpty()) {
                                                 try {
                                                     val participantSid =
-                                                        retrofitWithToken.addParticipantToConversation(
+                                                        RetrofitClient.retrofitWithToken.addParticipantToConversation(
                                                             Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
                                                             conversation.conversationSid,
                                                             Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!
@@ -667,7 +638,7 @@ class ExternalFragment : Fragment() {
                 val rootView = activity!!.window.decorView.findViewById<View>(android.R.id.content) as ViewGroup
                 rootView.addView(dimBackground)
                 // Close the popup when the button is clicked
-                val closeButton: Button = popupView.findViewById(R.id.close_button)
+                val closeButton: TextView = popupView.findViewById(R.id.close_button)
                 closeButton.setOnClickListener {
                     popupWindow.dismiss()
                     rootView.removeView(dimBackground)
@@ -725,7 +696,6 @@ class ExternalFragment : Fragment() {
                 setTextColor(Color.LTGRAY)
                 setBackgroundColor(Color.TRANSPARENT)
                 setOnClickListener {
-                    Log.d("clicked","clicked")
                     val position = adapter.getPositionForLetter(letter)
                     if (position != RecyclerView.NO_POSITION) {
                         binding!!.contactList.smoothScrollToPosition(position)
@@ -761,7 +731,6 @@ class ExternalFragment : Fragment() {
         }
 
         binding!!.azScrollbar.setOnTouchListener { _, event ->
-            Log.d("clicked","touched")
             if (event.action == MotionEvent.ACTION_MOVE || event.action == MotionEvent.ACTION_DOWN) {
                 val y = event.y
                 val height =  binding!!.azScrollbar.height

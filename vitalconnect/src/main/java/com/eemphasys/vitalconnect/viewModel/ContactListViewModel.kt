@@ -7,11 +7,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.eemphasys.vitalconnect.api.AuthInterceptor
+import com.eemphasys.vitalconnect.api.RetrofitClient
 import com.eemphasys.vitalconnect.api.RetrofitHelper
 import com.eemphasys.vitalconnect.api.RetryInterceptor
 import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.ConversationSidFromFriendlyNameRequest
 import com.eemphasys.vitalconnect.api.data.ConversationSidFromFriendlyNameResponse
+import com.eemphasys.vitalconnect.api.data.SearchContactRequest
+import com.eemphasys.vitalconnect.api.data.SearchUsersResponse
 import com.eemphasys.vitalconnect.api.data.addParticipantToWebConversationRequest
 import com.eemphasys.vitalconnect.api.data.webParticipant
 import com.eemphasys.vitalconnect.common.AppContextHelper
@@ -144,17 +147,8 @@ class ContactListViewModel(
 
     }
     fun checkName(friendlyName: String, callback: CheckNameCallback) {
-    val httpClientWithToken = OkHttpClient.Builder()
-        .connectTimeout(300, TimeUnit.SECONDS)
-        .readTimeout(300, TimeUnit.SECONDS)
-        .writeTimeout(300, TimeUnit.SECONDS)
-        .addInterceptor(AuthInterceptor(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"authToken")!!))
-        .addInterceptor(RetryInterceptor())
-        .build()
-    val retrofitWithToken = RetrofitHelper.getInstance(applicationContext,httpClientWithToken).create(TwilioApi::class.java)
-
     val request = ConversationSidFromFriendlyNameRequest(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!, Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!, friendlyName)
-    val existingWebConversation = retrofitWithToken.getTwilioConversationSidFromFriendlyName(request)
+    val existingWebConversation = RetrofitClient.retrofitWithToken.getTwilioConversationSidFromFriendlyName(request)
 
     existingWebConversation.enqueue(object : Callback<List<ConversationSidFromFriendlyNameResponse>> {
         override fun onResponse(
@@ -180,17 +174,8 @@ class ContactListViewModel(
 }
 
     fun checkExistingconversation(contact : ContactListViewItem){
-        val httpClientWithToken = OkHttpClient.Builder()
-            .connectTimeout(300, TimeUnit.SECONDS)
-            .readTimeout(300, TimeUnit.SECONDS)
-            .writeTimeout(300, TimeUnit.SECONDS)
-            .addInterceptor(AuthInterceptor(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"authToken")!!))
-            .addInterceptor(RetryInterceptor())
-            .build()
-        val retrofitWithToken =
-            RetrofitHelper.getInstance(applicationContext,httpClientWithToken).create(TwilioApi::class.java)
         var request = ConversationSidFromFriendlyNameRequest(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"context")!!)
-        val existingWebConversation = retrofitWithToken.getTwilioConversationSidFromFriendlyName(request)
+        val existingWebConversation = RetrofitClient.retrofitWithToken.getTwilioConversationSidFromFriendlyName(request)
 
         existingWebConversation.enqueue(object :
             Callback<List<ConversationSidFromFriendlyNameResponse>> {
@@ -237,19 +222,11 @@ class ContactListViewModel(
 
     fun addWebParticipants(contact:ContactListViewItem,conversationSid: String){
         val webUser = ArrayList<webParticipant>()
+        val isAutoRegistrationEnabled = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"isAutoRegistrationEnabled") == "true"
         webUser.add(webParticipant(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"friendlyName")!!,""))
         webUser.add(webParticipant(contact.email,contact.name,""))
-        val httpClientWithToken = OkHttpClient.Builder()
-            .connectTimeout(300, TimeUnit.SECONDS)
-            .readTimeout(300, TimeUnit.SECONDS)
-            .writeTimeout(300, TimeUnit.SECONDS)
-            .addInterceptor(AuthInterceptor(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"authToken")!!))
-            .addInterceptor(RetryInterceptor())
-            .build()
-        val retrofitWithToken =
-            RetrofitHelper.getInstance(applicationContext,httpClientWithToken).create(TwilioApi::class.java)
-        val request = addParticipantToWebConversationRequest(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,webUser,conversationSid,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"context")!!,true,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"proxyNumber")!!)
-        val participantDetails = retrofitWithToken.addParticipantToWebToWebConversation(request)
+        val request = addParticipantToWebConversationRequest(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,webUser,conversationSid,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"context")!!,isAutoRegistrationEnabled,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"proxyNumber")!!)
+        val participantDetails = RetrofitClient.retrofitWithToken.addParticipantToWebToWebConversation(request)
 
         participantDetails.enqueue(object: Callback<List<webParticipant>> {
             override fun onResponse(
@@ -272,6 +249,30 @@ class ContactListViewModel(
 
             }
 
+        })
+    }
+
+    fun checkTwilioUser(contact: ContactListViewItem, callback: (Boolean) -> Unit) {
+        val request = SearchContactRequest(
+            Constants.getStringFromVitalTextSharedPreferences(applicationContext, "currentUser")!!,
+            Constants.getStringFromVitalTextSharedPreferences(applicationContext, "tenantCode")!!,
+            contact.email
+        )
+
+        RetrofitClient.retrofitWithToken.getSearchedUsers(request).enqueue(object : Callback<List<SearchUsersResponse>> {
+            override fun onResponse(
+                call: Call<List<SearchUsersResponse>>,
+                response: Response<List<SearchUsersResponse>>
+            ) {
+                val isTwilioUser = response.isSuccessful && !response.body().isNullOrEmpty()
+                Log.d("isTwilioUser", isTwilioUser.toString())
+                callback(isTwilioUser)
+            }
+
+            override fun onFailure(call: Call<List<SearchUsersResponse>>, t: Throwable) {
+                Log.e("API Error", t.message ?: "Unknown error")
+                callback(false)
+            }
         })
     }
 

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.eemphasys.vitalconnect.api.AuthInterceptor
+import com.eemphasys.vitalconnect.api.RetrofitClient
 import com.eemphasys.vitalconnect.api.RetrofitHelper
 import com.eemphasys.vitalconnect.api.RetryInterceptor
 import com.eemphasys.vitalconnect.api.TwilioApi
@@ -74,10 +75,11 @@ class MainActivity : AppCompatActivity() {
         val showExternalContacts = intent.getStringExtra("showExternalContacts")
         val role = intent.getStringExtra("role")
         val bpId = intent.getStringExtra("bpId")
+        val isAutoRegistrationEnabled = intent.getStringExtra("isAutoRegistrationEnabled")
 
 //        Constants.AUTH_TOKEN = authToken!!
 //        Constants.CONTACTS = contacts!!
-        Constants.WEBUSERS = webusers!!
+//        Constants.WEBUSERS = webusers!!
 //        Constants.BASE_URL = baseurl!!
 //        Constants.TENANT_CODE = tenantcode!!
 //        Constants.CLIENT_ID = clientID!!
@@ -136,6 +138,7 @@ class MainActivity : AppCompatActivity() {
         saveStringToVitalTextSharedPreferences(this,"twilioToken",twilioToken!!)
 //        saveStringToVitalTextSharedPreferences(this,"customerContactList",list)
         saveStringToVitalTextSharedPreferences(this,"contacts",contacts!!)
+        saveStringToVitalTextSharedPreferences(this,"webUsers",webusers!!)
 //        saveStringToVitalTextSharedPreferences(this,"phoneNumberList",listOfPhoneNumbers)
 //        saveStringToVitalTextSharedPreferences(this,"unreadCountResponse",unreadCountResponse)
         saveStringToVitalTextSharedPreferences(this,"department",department!!)
@@ -158,23 +161,14 @@ class MainActivity : AppCompatActivity() {
         saveStringToVitalTextSharedPreferences(this,"showExternalContacts",showExternalContacts!!)
         saveStringToVitalTextSharedPreferences(this,"role",role!!)
         saveStringToVitalTextSharedPreferences(this,"bpId",bpId!!)
+        saveStringToVitalTextSharedPreferences(this,"isAutoRegistrationEnabled",isAutoRegistrationEnabled!!)
 
 //        Log.d("timezoneoffset", timeoffset!!)
 
 //        mainViewModel.create()
         super.onCreate(savedInstanceState)
         if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"openChat")!!.lowercase() == "true") {
-            val httpClientWithToken = OkHttpClient.Builder()
-                .connectTimeout(300, TimeUnit.SECONDS)
-                .readTimeout(300, TimeUnit.SECONDS)
-                .writeTimeout(300, TimeUnit.SECONDS)
-                .addInterceptor(AuthInterceptor(Constants.getStringFromVitalTextSharedPreferences(this,"authToken")!!))
-                .addInterceptor(RetryInterceptor())
-                .build()
-            val retrofitWithToken =
-                RetrofitHelper.getInstance(applicationContext,httpClientWithToken).create(TwilioApi::class.java)
-
-            val existingConversation = retrofitWithToken.fetchExistingConversation(
+            val existingConversation = RetrofitClient.retrofitWithToken.fetchExistingConversation(
                 Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
                 Constants.cleanedNumber(Constants.formatPhoneNumber(applicationContext,customerNumber!!,countryCode!!)),
                 false,
@@ -201,7 +195,7 @@ class MainActivity : AppCompatActivity() {
                                 if(!conversation.conversationSid.isNullOrEmpty()) {
                                     try {
                                         val participantSid =
-                                            retrofitWithToken.addParticipantToConversation(
+                                            RetrofitClient.retrofitWithToken.addParticipantToConversation(
                                                 Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
                                                 conversation.conversationSid,
                                                 Constants.getStringFromVitalTextSharedPreferences(this@MainActivity,"currentUser")!!

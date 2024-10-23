@@ -23,6 +23,7 @@ import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.adapters.SuggestionAdapter
 import com.eemphasys.vitalconnect.api.AuthInterceptor
+import com.eemphasys.vitalconnect.api.RetrofitClient
 import com.eemphasys.vitalconnect.api.RetrofitHelper
 import com.eemphasys.vitalconnect.api.RetryInterceptor
 import com.eemphasys.vitalconnect.api.TwilioApi
@@ -103,23 +104,13 @@ class ConversationDetailsActivity : AppCompatActivity() {
                 if(s!!.length >= 3){
                 lifecycleScope.launch {
                     val listOfSearchedUsers = mutableListOf<ContactListViewItem>()
-                    val httpClientWithToken = OkHttpClient.Builder()
-                        .connectTimeout(300, TimeUnit.SECONDS)
-                        .readTimeout(300, TimeUnit.SECONDS)
-                        .writeTimeout(300, TimeUnit.SECONDS)
-                        .addInterceptor(AuthInterceptor(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"authToken")!!))
-                        .addInterceptor(RetryInterceptor())
-                        .build()
-                    val retrofitWithToken =
-                        RetrofitHelper.getInstance(applicationContext,httpClientWithToken)
-                            .create(TwilioApi::class.java)
                     var request =
                         SearchContactRequest(
                             Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,
                             Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
                             s.toString()
                         )
-                    var response = retrofitWithToken.getSearchedUsers(request)
+                    var response = RetrofitClient.retrofitWithToken.getSearchedUsers(request)
 
                     response.enqueue(object : Callback<List<SearchUsersResponse>> {
                         override fun onResponse(

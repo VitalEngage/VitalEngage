@@ -35,8 +35,7 @@
         android:background="@drawable/bg_participant_icon"
         android:gravity="center"
         android:text="E E T"
-        android:textColor="@color/white"
-        android:textSize="16sp"
+        style="@style/TextInitials"
         tools:ignore="MissingConstraints" />
     <TextView
         android:id="@+id/contactName"

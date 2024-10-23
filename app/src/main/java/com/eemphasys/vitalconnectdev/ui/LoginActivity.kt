@@ -19,6 +19,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View.VISIBLE
 import androidx.core.app.ActivityCompat
+import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.extensions.enableErrorResettingOnTextChanged
 import com.eemphasys.vitalconnectdev.R
 import com.eemphasys.vitalconnectdev.common.enums.ConversationsError
@@ -248,8 +249,8 @@ class LoginActivity : AppCompatActivity() {
 //            packageName.toString()
 //
 //        )
-        LoginConstants.saveStringToVitalTextSharedPreferences(this,"baseUrl",LoginConstants.BASE_URL)
-        LoginConstants.saveStringToVitalTextSharedPreferences(this,"packageName",packageName.toString())
+        Constants.saveStringToVitalTextSharedPreferences(this,"baseUrl",LoginConstants.BASE_URL)
+        Constants.saveStringToVitalTextSharedPreferences(this,"packageName",packageName.toString())
     }
 
     private fun comparePasswords(){
@@ -480,6 +481,7 @@ class LoginActivity : AppCompatActivity() {
             intent.putExtra("showExternalContacts",LoginConstants.SHOW_EXTERNAL_CONTACTS)
             intent.putExtra("role","")
             intent.putExtra("bpId","")
+            intent.putExtra("isAutoRegistrationEnabled","false")
             context.startActivity(intent)
         }
     }

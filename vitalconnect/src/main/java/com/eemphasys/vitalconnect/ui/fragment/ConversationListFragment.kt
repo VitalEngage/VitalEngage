@@ -343,7 +343,7 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
         val rootView = requireActivity().window.decorView.findViewById<View>(android.R.id.content) as ViewGroup
         rootView.addView(dimBackground)
         // Close the popup when the button is clicked
-        val closeButton: Button = popupView.findViewById(R.id.close_button)
+        val closeButton: TextView = popupView.findViewById(R.id.close_button)
         closeButton.setOnClickListener {
             popupWindow.dismiss()
             rootView.removeView(dimBackground)

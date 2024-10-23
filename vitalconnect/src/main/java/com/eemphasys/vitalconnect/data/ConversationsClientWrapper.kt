@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 
 import com.eemphasys.vitalconnect.api.AuthInterceptor
+import com.eemphasys.vitalconnect.api.RetrofitClient
 import com.eemphasys.vitalconnect.api.RetrofitHelper
 import com.eemphasys.vitalconnect.api.RetryInterceptor
 import com.eemphasys.vitalconnect.api.TwilioApi
@@ -101,18 +102,7 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
                 Constants.saveStringToVitalTextSharedPreferences(applicationContext,"authToken",result.body()!!.jwtToken)
             }
 
-            val httpClientWithToken = OkHttpClient.Builder()
-                .connectTimeout(300, TimeUnit.SECONDS)
-                .readTimeout(300, TimeUnit.SECONDS)
-                .writeTimeout(300, TimeUnit.SECONDS)
-                .addInterceptor(AuthInterceptor(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"authToken")!!))
-                .addInterceptor(RetryInterceptor())
-                .build()
-            val retrofitWithToken =
-                RetrofitHelper.getInstance(applicationContext,httpClientWithToken).create(TwilioApi::class.java)
-
-
-            val TwilioToken = retrofitWithToken.getTwilioToken(
+            val TwilioToken = RetrofitClient.retrofitWithToken.getTwilioToken(
                 Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
                 username,
                 Constants.getStringFromVitalTextSharedPreferences(applicationContext,"friendlyName")!!

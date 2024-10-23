@@ -127,22 +127,25 @@ class ConversationListAdapter(private val callback: OnConversationEvent, private
                     )
                 )
                 holder.binding.participantIcon.setBackgroundResource(R.drawable.bg_participant_icon)
-                changeButtonBackgroundColor(holder.binding.participantIcon,ParticipantColorManager.getColorForParticipant(conversationItem.name))
+                changeButtonBackgroundColor(holder.binding.participantIcon,ParticipantColorManager.getColorForParticipant(conversationItem.name),ParticipantColorManager.getDarkColorForParticipant(conversationItem.name))
                 holder.binding.participantIcon.text = Constants.getInitials(conversationItem.name.trim { it <= ' '} )
             }
 
 
 
     }
-    private fun changeButtonBackgroundColor(textView: TextView?, colorid: Int) {
+    private fun changeButtonBackgroundColor(textView: TextView?, colorid: Int,coloridText: Int) {
         try {
             val background = textView!!.background
             if (background is ShapeDrawable) {
                 background.paint.color = colorid
+                textView.setTextColor(coloridText)
             } else if (background is GradientDrawable) {
                 background.setColor(colorid)
+                textView.setTextColor(coloridText)
             } else if (background is ColorDrawable) {
                 background.color = colorid
+                textView.setTextColor(coloridText)
             }
         } catch (e: Exception) {
             EETLog.error(

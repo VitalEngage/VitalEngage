@@ -29,6 +29,7 @@ import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.adapters.ContactListAdapter
 import com.eemphasys.vitalconnect.adapters.OnContactItemClickListener
 import com.eemphasys.vitalconnect.api.AuthInterceptor
+import com.eemphasys.vitalconnect.api.RetrofitClient
 import com.eemphasys.vitalconnect.api.RetrofitHelper
 import com.eemphasys.vitalconnect.api.RetryInterceptor
 import com.eemphasys.vitalconnect.api.TwilioApi
@@ -100,23 +101,13 @@ class InternalFragment : Fragment() {
                         //Search using SearchedUsers api
                         lifecycleScope.launch {
                             val listOfSearchedUsers = mutableListOf<ContactListViewItem>()
-                            val httpClientWithToken = OkHttpClient.Builder()
-                                .connectTimeout(300, TimeUnit.SECONDS)
-                                .readTimeout(300, TimeUnit.SECONDS)
-                                .writeTimeout(300, TimeUnit.SECONDS)
-                                .addInterceptor(AuthInterceptor(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"authToken")!!))
-                                .addInterceptor(RetryInterceptor())
-                                .build()
-                            val retrofitWithToken =
-                                RetrofitHelper.getInstance(context!!,httpClientWithToken)
-                                    .create(TwilioApi::class.java)
                             var request =
                                 SearchContactRequest(
                                     Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,
                                     Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
                                     newText!!
                                 )
-                            var response = retrofitWithToken.getSearchedUsers(request)
+                            var response = RetrofitClient.retrofitWithToken.getSearchedUsers(request)
 
                             response.enqueue(object : Callback<List<SearchUsersResponse>> {
                                 override fun onResponse(
@@ -204,18 +195,8 @@ class InternalFragment : Fragment() {
     }
 
     fun getAllUserList(callBack: () -> Unit){
-        val httpClientWithToken = OkHttpClient.Builder()
-            .connectTimeout(300, TimeUnit.SECONDS)
-            .readTimeout(300, TimeUnit.SECONDS)
-            .writeTimeout(300, TimeUnit.SECONDS)
-            .addInterceptor(AuthInterceptor(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"authToken")!!))
-            .addInterceptor(RetryInterceptor())
-            .build()
-        val retrofitWithToken =
-            RetrofitHelper.getInstance(applicationContext,httpClientWithToken)
-                .create(TwilioApi::class.java)
         var request = ContactListRequest(currentIndex,Constants.PAGE_SIZE.toInt(),"","fullName","asc",Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,0)
-        var response = retrofitWithToken.getUserList(request)
+        var response = RetrofitClient.retrofitWithToken.getUserList(request)
 
         response.enqueue(object : Callback<List<UserListResponse>>{
             override fun onResponse(
@@ -244,7 +225,6 @@ class InternalFragment : Fragment() {
                                 )
                             listOfUsers.add(userItem)
                             maxPageSize = ceil((response.totalCount/Constants.PAGE_SIZE)).toInt()
-                            Log.d("maxcount",response.totalCount.toString())
                         }
                         adapter.notifyItemRangeInserted(previousPosition,listOfUsers.size)
                     }
@@ -287,8 +267,8 @@ class InternalFragment : Fragment() {
         }
         webuserList = ArrayList<WebUser>()
 
-        if(!Constants.WEBUSERS.isNullOrEmpty()) {
-            val jsonObjectwebusers = JSONObject(Constants.WEBUSERS)
+        if(!Constants.getStringFromVitalTextSharedPreferences(applicationContext,"webUsers")!!.isNullOrEmpty()) {
+            val jsonObjectwebusers = JSONObject(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"webUsers")!!)
             val jsonArrayWebUsers = jsonObjectwebusers.getJSONArray("webUser")
             for (i in 0 until jsonArrayWebUsers.length()) {
                 val jsonObject = jsonArrayWebUsers.getJSONObject(i)
@@ -338,15 +318,6 @@ class InternalFragment : Fragment() {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun setAdapter(list : List<ContactListViewItem>){
-        val httpClientWithToken = OkHttpClient.Builder()
-            .connectTimeout(300, TimeUnit.SECONDS)
-            .readTimeout(300, TimeUnit.SECONDS)
-            .writeTimeout(300, TimeUnit.SECONDS)
-            .addInterceptor(AuthInterceptor(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"authToken")!!))
-            .addInterceptor(RetryInterceptor())
-            .build()
-        val retrofitWithToken =
-            RetrofitHelper.getInstance(applicationContext,httpClientWithToken).create(TwilioApi::class.java)
         //Creating the Adapter
         adapter = ContactListAdapter(list,list,applicationContext,object : OnContactItemClickListener {
             @SuppressLint("SuspiciousIndentation")
@@ -355,18 +326,56 @@ class InternalFragment : Fragment() {
                     "WebUserClicked",contact.name)
 //                  Web to web chat
                     binding?.progressBarID?.visibility = View.VISIBLE
-
-                if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"withContext")!!.lowercase() == "true") {
+                if(!contact.email.isNullOrEmpty()) {
+                    if (Constants.getStringFromVitalTextSharedPreferences(
+                            applicationContext,
+                            "withContext"
+                        )!!.lowercase() == "true"
+                    ) {
 //                  Check if existing coversation exist
-                    contactListViewModel.checkExistingconversation(contact)
-                    binding?.progressBarID?.visibility = View.GONE
-                }
-                else{
-                    Constants.CURRENT_CONTACT = contact
-                    binding?.progressBarID?.visibility = View.GONE
-                    NewConversationDialog().showNow(childFragmentManager, null)
-                }
+                        if (Constants.getStringFromVitalTextSharedPreferences(
+                                applicationContext,
+                                "isAutoRegistrationEnabled"
+                            )!!.lowercase() == "false"
+                        ) {
+                            contactListViewModel.checkTwilioUser(contact) { isTwilioUser ->
+                                if (isTwilioUser) {
+                                    contactListViewModel.checkExistingconversation(contact)
+                                } else {
+                                    //need to show error here
+                                    binding?.userList?.showSnackbar(
+                                        "User not found."
+                                    )
+                                }
+                            }
+                        } else {
+                            contactListViewModel.checkExistingconversation(contact)
+                        }
 
+
+                        binding?.progressBarID?.visibility = View.GONE
+                    } else {
+                        Constants.CURRENT_CONTACT = contact
+                        contactListViewModel.checkTwilioUser(contact) { isTwilioUser ->
+                            if (isTwilioUser) {
+                                binding?.progressBarID?.visibility = View.GONE
+                                NewConversationDialog().showNow(childFragmentManager, null)
+                            } else {
+                                //need to show error here
+                                binding?.userList?.showSnackbar(
+                                    getString(R.string.user_not_registered)
+                                )
+                            }
+                        }
+
+                    }
+                }else {
+                //email id is not configured or blank
+                    binding?.progressBarID?.visibility = View.GONE
+                    binding?.userList?.showSnackbar(
+                            getString(R.string.empty_username)
+                    )
+                }
             }
             override fun onContactItemLongClick(contact: ContactListViewItem) {
                 showPopup(contact)
@@ -467,7 +476,7 @@ class InternalFragment : Fragment() {
                 val rootView = activity!!.window.decorView.findViewById<View>(android.R.id.content) as ViewGroup
                 rootView.addView(dimBackground)
                 // Close the popup when the button is clicked
-                val closeButton: Button = popupView.findViewById(R.id.close_button)
+                val closeButton: TextView = popupView.findViewById(R.id.close_button)
                 closeButton.setOnClickListener {
                     popupWindow.dismiss()
                     rootView.removeView(dimBackground)
@@ -524,7 +533,6 @@ class InternalFragment : Fragment() {
                 setTextColor(Color.LTGRAY)
                 setBackgroundColor(Color.TRANSPARENT)
                 setOnClickListener {
-                    Log.d("clicked","clicked")
                     val position = adapter.getPositionForLetter(letter)
                     if (position != RecyclerView.NO_POSITION) {
                         binding!!.userList.smoothScrollToPosition(position)
@@ -560,7 +568,6 @@ class InternalFragment : Fragment() {
         }
 
         binding!!.azScrollbar.setOnTouchListener { _, event ->
-            Log.d("clicked","touched")
             if (event.action == MotionEvent.ACTION_MOVE || event.action == MotionEvent.ACTION_DOWN) {
                 val y = event.y
                 val height =  binding!!.azScrollbar.height

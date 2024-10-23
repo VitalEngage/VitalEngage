@@ -157,7 +157,8 @@ class MessageListAdapter(
 
                 changeButtonBackgroundColor(
                     binding.participantIcon,
-                    ParticipantColorManager.getColorForParticipant(message.author)
+                    ParticipantColorManager.getColorForParticipant(message.author),
+                    ParticipantColorManager.getDarkColorForParticipant(message.author)
                 )
             }
             is RowMessageItemOutgoingBinding -> {
@@ -192,15 +193,18 @@ class MessageListAdapter(
 
     class ViewHolder(val binding: ViewDataBinding) : RecyclerView.ViewHolder(binding.root)
 
-    private fun changeButtonBackgroundColor(textView: TextView?, colorid: Int) {
+    private fun changeButtonBackgroundColor(textView: TextView?, colorid: Int,coloridText:Int) {
         try {
             val background = textView!!.background
             if (background is ShapeDrawable) {
                 background.paint.color = colorid
+                textView.setTextColor(coloridText)
             } else if (background is GradientDrawable) {
                 background.setColor(colorid)
+                textView.setTextColor(coloridText)
             } else if (background is ColorDrawable) {
                 background.color = colorid
+                textView.setTextColor(coloridText)
             }
         } catch (e: Exception) {
             Log.e("Catchmessage", Log.getStackTraceString(e))

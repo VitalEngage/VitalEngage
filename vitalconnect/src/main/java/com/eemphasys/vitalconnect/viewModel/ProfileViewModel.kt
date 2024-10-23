@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.eemphasys.vitalconnect.api.AuthInterceptor
+import com.eemphasys.vitalconnect.api.RetrofitClient
 import com.eemphasys.vitalconnect.api.RetrofitHelper
 import com.eemphasys.vitalconnect.api.RetryInterceptor
 import com.eemphasys.vitalconnect.api.TwilioApi
@@ -87,18 +88,9 @@ class ProfileViewModel(
 
     fun changeUserAlertStatus(isChecked : Boolean,applicationContext: Context) = viewModelScope.launch {
         EETLog.saveUserJourney("vitaltext:  ProfileViewModel changeUserAlertStatus Called")
-        val httpClientWithToken = OkHttpClient.Builder()
-            .connectTimeout(300, TimeUnit.SECONDS)
-            .readTimeout(300, TimeUnit.SECONDS)
-            .writeTimeout(300, TimeUnit.SECONDS)
-            .addInterceptor(AuthInterceptor(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"authToken")!!))
-            .addInterceptor(RetryInterceptor())
-            .build()
-        val retrofitWithToken =
-            RetrofitHelper.getInstance(applicationContext,httpClientWithToken).create(TwilioApi::class.java)
         if(isChecked){
             val requestData = UserAlertRequest(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,"true", Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!)
-            val response = retrofitWithToken.updateUserAlertStatus(requestData)
+            val response = RetrofitClient.retrofitWithToken.updateUserAlertStatus(requestData)
             if(response.isSuccessful) {
                 Log.d("useralertstatus","changed to true")
                 Constants.saveStringToVitalTextSharedPreferences(applicationContext,"userSMSAlert", response.body()!!.status.lowercase())
@@ -106,7 +98,7 @@ class ProfileViewModel(
         }
         else{
             val requestData = UserAlertRequest(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,"false", Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!)
-            val response= retrofitWithToken.updateUserAlertStatus(requestData)
+            val response= RetrofitClient.retrofitWithToken.updateUserAlertStatus(requestData)
             if(response.isSuccessful) {
                 Log.d("useralertstatus","changed to false")
                 Constants.saveStringToVitalTextSharedPreferences(applicationContext,"userSMSAlert", response.body()!!.status.lowercase())
