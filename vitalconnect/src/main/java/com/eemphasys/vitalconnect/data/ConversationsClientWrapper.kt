@@ -82,25 +82,25 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
 
     private suspend fun getToken(username: String,applicationContext: Context) = withContext(Dispatchers.IO) {
         try {
-            if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"authToken")!!.isNullOrEmpty()) {
-                val requestData = RequestToken(
-                    Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
-                    Constants.getStringFromVitalTextSharedPreferences(applicationContext,"clientId")!!,
-                    Constants.getStringFromVitalTextSharedPreferences(applicationContext,"clientSecret")!!,
-                    username,
-                    Constants.getStringFromVitalTextSharedPreferences(applicationContext,"product")!!,
-                    "",
-                    true,
-                    Constants.getStringFromVitalTextSharedPreferences(applicationContext,"friendlyName")!!,
-                    Constants.getStringFromVitalTextSharedPreferences(applicationContext,"proxyNumber")!!
-                )
-
-                val tokenApi = RetrofitHelper.getInstance(applicationContext).create(TwilioApi::class.java)
-                val result = tokenApi.getAuthToken(requestData)
-                Log.d("Authtoken in clientwrapper: ", result.body()!!.jwtToken)
-
-                Constants.saveStringToVitalTextSharedPreferences(applicationContext,"authToken",result.body()!!.jwtToken)
-            }
+//            if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"authToken")!!.isNullOrEmpty()) {
+//                val requestData = RequestToken(
+//                    Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
+//                    Constants.getStringFromVitalTextSharedPreferences(applicationContext,"clientId")!!,
+//                    Constants.getStringFromVitalTextSharedPreferences(applicationContext,"clientSecret")!!,
+//                    username,
+//                    Constants.getStringFromVitalTextSharedPreferences(applicationContext,"product")!!,
+//                    "",
+//                    true,
+//                    Constants.getStringFromVitalTextSharedPreferences(applicationContext,"friendlyName")!!,
+//                    Constants.getStringFromVitalTextSharedPreferences(applicationContext,"proxyNumber")!!
+//                )
+//
+//                val tokenApi = RetrofitHelper.getInstance(applicationContext).create(TwilioApi::class.java)
+//                val result = tokenApi.getAuthToken(requestData)
+//                Log.d("Authtoken in clientwrapper: ", result.body()!!.jwtToken)
+//
+//                Constants.saveStringToVitalTextSharedPreferences(applicationContext,"authToken",result.body()!!.jwtToken)
+//            }
 
             val TwilioToken = RetrofitClient.retrofitWithToken.getTwilioToken(
                 Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
