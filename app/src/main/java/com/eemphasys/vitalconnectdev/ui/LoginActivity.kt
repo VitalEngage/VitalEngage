@@ -71,6 +71,10 @@ class LoginActivity : AppCompatActivity() {
                 binding.confirmpasswordInputLayoutRP.visibility = GONE
                 binding.sendOTP.visibility= GONE
 
+        val sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
+        binding.usernameTv.setText(sharedPreferences.getString("username", ""))
+        binding.passwordTv.setText(sharedPreferences.getString("password", ""))
+
         binding.TenantCodeInputLayoutRP.editText?.addTextChangedListener(object : TextWatcher{
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
@@ -139,7 +143,13 @@ class LoginActivity : AppCompatActivity() {
         binding.signInBtn.setOnClickListener {
             hideKeyboard()
             signInPressed() }
-        binding.settingsBtn.setOnClickListener { openSettings() }
+        binding.settingsBtn.setOnClickListener {
+            with(sharedPreferences.edit()) {
+                putString("username", binding.usernameTv.text.toString())
+                putString("password", binding.passwordTv.text.toString())
+                apply() // Save changes
+            }
+            openSettings() }
 
         loginViewModel.isAADEnabled.observe(this){
             if(it) {

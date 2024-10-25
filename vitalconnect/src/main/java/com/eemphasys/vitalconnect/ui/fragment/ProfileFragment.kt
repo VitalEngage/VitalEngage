@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -85,7 +86,14 @@ class ProfileFragment:Fragment() {
         }
 
         profileViewModel.onSignedOut.observe(viewLifecycleOwner) {
-//            LoginActivity.start(requireContext())
+            val sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", AppCompatActivity.MODE_PRIVATE)
+//            sharedPreferences.edit().clear().apply()  //toclear all values
+            //to clear specific values
+            with(sharedPreferences.edit()) {
+                remove("username")
+                remove("password")
+                apply() // Commit changes
+            }
             activity?.finish()
         }
 

@@ -24,23 +24,9 @@ class Settings : AppCompatActivity() {
         val baseurl = binding.baseurl
         val tenantcode = binding.tenantcode
 
-        try {
-            baseurl.setText(LoginConstants.BASE_URL)
-            tenantcode.setText(LoginConstants.TENANT_CODE)
-        } catch (e: Exception) {
-            e.printStackTrace()
-
-            EETLog.error(
-                AppContextHelper.appContext, LogTraceConstants.logDetails(
-                    e,
-                    LogConstants.LOG_LEVEL.ERROR.toString(),
-                    LogConstants.LOG_SEVERITY.HIGH.toString()
-                ),
-                Constants.EX, LogTraceConstants.getUtilityData(
-                    AppContextHelper.appContext!!
-                )!!
-            );
-        }
+        val sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
+        baseurl.setText(sharedPreferences.getString("baseurlvalue", ""))
+        tenantcode.setText(sharedPreferences.getString("tenantcodevalue", ""))
 
         // Set click listener using binding
         binding.save.setOnClickListener {
@@ -48,6 +34,12 @@ class Settings : AppCompatActivity() {
             LoginConstants.BASE_URL = baseurl.text.toString()
             LoginConstants.TENANT_CODE = tenantcode.text.toString()
 
+            // Save values to SharedPreferences
+            with(sharedPreferences.edit()) {
+                putString("baseurlvalue", baseurl.text.toString())
+                putString("tenantcodevalue", tenantcode.text.toString())
+                apply() // Save changes
+            }
             // Start LoginActivity
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
