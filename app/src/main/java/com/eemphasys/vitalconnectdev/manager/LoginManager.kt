@@ -3,6 +3,8 @@ package com.eemphasys.vitalconnectdev.manager
 import android.content.Context
 import android.util.Log
 import com.eemphasys.vitalconnect.api.RetrofitClient
+import com.eemphasys.vitalconnect.api.RetrofitHelper
+import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.ValidateUserReq
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
@@ -52,7 +54,10 @@ class LoginManagerImpl(
             true,
             ""
         )
-        val result = RetrofitClient.retrofitWithToken.validateUser(requestData)
+        val apiInstance = RetrofitHelper.getInstance(applicationContext).create(
+            TwilioApi::class.java
+        )
+        val result = apiInstance.validateUser(requestData)
         if(result.isSuccessful) {
             Log.d("Authtoken: ", result.body()!!.jwtToken)
             Constants.saveStringToVitalTextSharedPreferences(applicationContext, "authToken", result.body()!!.jwtToken)

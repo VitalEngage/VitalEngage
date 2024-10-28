@@ -11,7 +11,7 @@ object RetrofitHelper {
 
         fun getInstance(applicationContext: Context, httpClient: OkHttpClient? = null): Retrofit {
 
-            val builder = Retrofit.Builder().baseUrl(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"baseUrl"))
+            val builder = Retrofit.Builder().baseUrl(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"baseUrl")!!)
                 .addConverterFactory(GsonConverterFactory.create())
 
             if (httpClient != null) {
