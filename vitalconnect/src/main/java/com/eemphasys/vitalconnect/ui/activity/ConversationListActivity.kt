@@ -11,6 +11,7 @@ import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.lifecycleScope
 import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.common.AppContextHelper
+import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.extensions.lazyViewModel
 import com.eemphasys.vitalconnect.common.injector
@@ -125,6 +126,11 @@ class ConversationListActivity:AppCompatActivity() {
             super.onBackPressed()
         }
     }
+    override fun onResume() {
+        super.onResume()
+        ChatAppModel.FirebaseLogEventListener?.screenLogEvent(this,"ConversationList","ConversationListActivity")
+    }
+
     private fun replaceFragment(fragment: Fragment) {
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " replaceFragment Called")
         supportFragmentManager.findFragmentById(R.id.fragment_container)?.let { currentFragment ->

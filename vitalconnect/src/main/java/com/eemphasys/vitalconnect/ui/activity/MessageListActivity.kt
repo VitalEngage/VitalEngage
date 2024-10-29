@@ -126,6 +126,11 @@ class MessageListActivity: AppCompatActivity() {
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onStop Called")
         super.onStop()
     }
+
+    override fun onResume() {
+        super.onResume()
+        ChatAppModel.FirebaseLogEventListener?.screenLogEvent(this,"MessageList","MessageListActivity")
+    }
         override fun onCreateOptionsMenu(menu: Menu): Boolean {
             super.onCreateOptionsMenu(menu)
             menuInflater.inflate(R.menu.menu_message_list, menu)

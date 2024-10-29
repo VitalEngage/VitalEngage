@@ -16,6 +16,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.adapters.ParticipantListAdapter
 import com.eemphasys.vitalconnect.common.AppContextHelper
+import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.Constants.Companion.getSearchViewEditText
 import com.eemphasys.vitalconnect.common.SheetListener
@@ -89,7 +90,10 @@ class ParticipantListActivity : AppCompatActivity() {
         }
         super.onBackPressed()
     }
-
+    override fun onResume() {
+        super.onResume()
+        ChatAppModel.FirebaseLogEventListener?.screenLogEvent(this,"ParticipantList","ParticipantListActivity")
+    }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         super.onCreateOptionsMenu(menu)
         menuInflater.inflate(R.menu.menu_participant_list, menu)

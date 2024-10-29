@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.adapters.ConversationListAdapter
 import com.eemphasys.vitalconnect.adapters.OnConversationEvent
+import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.Constants.Companion.getSearchViewEditText
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.extensions.getErrorMessage
@@ -107,6 +108,7 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
         super.onResume()
         Log.d("onResume","onResumeCalled")
         conversationListViewModel.getUserConversations()
+        ChatAppModel.FirebaseLogEventListener?.screenLogEvent(requireContext(),"Conversations","ConversationListFragment")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

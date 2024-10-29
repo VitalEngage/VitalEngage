@@ -44,6 +44,7 @@ import com.eemphasys.vitalconnect.api.data.UserListResponse
 import com.eemphasys.vitalconnect.api.data.addParticipantToWebConversationRequest
 import com.eemphasys.vitalconnect.api.data.webParticipant
 import com.eemphasys.vitalconnect.common.AppContextHelper
+import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.common.extensions.lazyActivityViewModel
@@ -193,7 +194,10 @@ class InternalFragment : Fragment() {
             binding!!.progressBarID.visibility = View.VISIBLE
         }
     }
-
+    override fun onResume() {
+        super.onResume()
+        ChatAppModel.FirebaseLogEventListener?.screenLogEvent(requireContext(),"InternalUsers","InternalFragment")
+    }
     fun getAllUserList(callBack: () -> Unit){
         var request = ContactListRequest(currentIndex,Constants.PAGE_SIZE.toInt(),"","fullName","asc",Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,0)
         var response = RetrofitClient.retrofitWithToken.getUserList(request)
@@ -376,6 +380,10 @@ class InternalFragment : Fragment() {
                             getString(R.string.empty_username)
                     )
                 }
+                ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "InternalUserClick",
+                    "InternalUsers",
+                    "InternalFragment"
+                )
             }
             override fun onContactItemLongClick(contact: ContactListViewItem) {
                 showPopup(contact)

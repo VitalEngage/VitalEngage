@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.eemphasys.vitalconnect.R
+import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.common.extensions.getErrorMessage
@@ -44,6 +45,10 @@ class ProfileFragment:Fragment() {
 //        }
     }
 
+    override fun onResume() {
+        super.onResume()
+        ChatAppModel.FirebaseLogEventListener?.screenLogEvent(requireContext(),"Settings","ProfileFragment")
+    }
     fun shouldInterceptBackPress() = true
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onCreateView Called")

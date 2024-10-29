@@ -18,6 +18,7 @@ import com.eemphasys.vitalconnect.adapters.PagerAdapter
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.Constants.Companion.isValidPhoneNumber
 import com.eemphasys.vitalconnect.common.AppContextHelper
+import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.Constants.Companion.getSearchViewEditText
 import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.common.extensions.lazyActivityViewModel
@@ -48,6 +49,11 @@ class ContactListFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onCreate Called")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        ChatAppModel.FirebaseLogEventListener?.screenLogEvent(requireContext(),"Contacts","ContactListFragment")
     }
     fun shouldInterceptBackPress() = true
     override fun onCreateView(

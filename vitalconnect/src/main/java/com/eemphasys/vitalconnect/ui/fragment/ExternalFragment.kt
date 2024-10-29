@@ -38,6 +38,7 @@ import com.eemphasys.vitalconnect.api.data.ParticipantExistingConversation
 import com.eemphasys.vitalconnect.api.data.SearchContactRequest
 import com.eemphasys.vitalconnect.api.data.SearchContactResponse
 import com.eemphasys.vitalconnect.common.AppContextHelper
+import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.common.extensions.lazyActivityViewModel
@@ -180,7 +181,10 @@ class ExternalFragment : Fragment() {
             )
         }
     }
-
+    override fun onResume() {
+        super.onResume()
+        ChatAppModel.FirebaseLogEventListener?.screenLogEvent(requireContext(),"CustomerContacts","ExternalFragment")
+    }
     fun getAllContactList(callBack: () -> Unit){
         lifecycleScope.launch {
         var request = ContactListRequest(currentIndex,Constants.PAGE_SIZE.toInt(),"","fullName","asc",Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,0)
@@ -540,6 +544,10 @@ class ExternalFragment : Fragment() {
                     else{
                         binding!!.contactList .showSnackbar("Invalid Phone number.")
                     }
+                ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "CustomerContactClick",
+                    "CustomerContacts",
+                    "ExternalFragment"
+                )
             }
 
             override fun onContactItemLongClick(contact: ContactListViewItem) {

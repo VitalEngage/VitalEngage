@@ -29,6 +29,7 @@ import com.eemphasys.vitalconnect.api.RetryInterceptor
 import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.SearchContactRequest
 import com.eemphasys.vitalconnect.api.data.SearchUsersResponse
+import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.SheetListener
 import com.eemphasys.vitalconnect.common.enums.ConversationsError
 import com.eemphasys.vitalconnect.common.extensions.*
@@ -231,6 +232,10 @@ class ConversationDetailsActivity : AppCompatActivity() {
         super.onBackPressed()
     }
 
+    override fun onResume() {
+        super.onResume()
+        ChatAppModel.FirebaseLogEventListener?.screenLogEvent(this,"ConversationDetails","ConversationDetailsActivity")
+    }
     private fun initViews() {
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " initViews Called")
         setSupportActionBar(binding.conversationDetailsToolbar)
