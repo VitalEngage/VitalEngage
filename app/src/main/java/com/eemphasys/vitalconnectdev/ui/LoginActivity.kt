@@ -75,6 +75,10 @@ class LoginActivity : AppCompatActivity() {
         binding.usernameTv.setText(sharedPreferences.getString("username", ""))
         binding.passwordTv.setText(sharedPreferences.getString("password", ""))
 
+        LoginConstants.BASE_URL = sharedPreferences.getString("baseurlvalue", "").toString()
+        LoginConstants.TENANT_CODE = sharedPreferences.getString("tenantcodevalue", "").toString()
+//
+
         binding.TenantCodeInputLayoutRP.editText?.addTextChangedListener(object : TextWatcher{
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 

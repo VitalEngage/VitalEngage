@@ -163,6 +163,7 @@ class ConversationListAdapter(private val callback: OnConversationEvent, private
         fun isMuted(position: Int) = conversations[position].isMuted
 
         fun setFilter(criteria: String, add: Boolean) {
+            Log.d("filter",criteria)
             notifyDataSetChanged()
             if (add) {
                 filterCriteria.add(criteria)
@@ -175,37 +176,38 @@ class ConversationListAdapter(private val callback: OnConversationEvent, private
                     filterCriteria.add("All")
                 }
             }
+            Log.d("filtercriteria",filterCriteria.toString())
             conversations = filterConversations(allConversations,contextItems)
             notifyDataSetChanged()
         }
 
         private fun filterConversations(conversations: List<ConversationListViewItem>,contextItems: ArrayList<String>): List<ConversationListViewItem> {
-           if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"withContext") == "true") {
-               filterCriteria.remove("All")
-               filterCriteria.add("CONTEXT")
-           }
+//           if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"withContext") == "true") {
+//               filterCriteria.remove("All")
+//               filterCriteria.add(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"context")!!)
+//           }
             val filteredConversations = conversations.filter { conversation ->
-                if (filterCriteria.contains(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"dealerName")!!) && filterCriteria.contains("Customer") && filterCriteria.size == 2) {
-                    filterCriteria.all { criteria ->
-                        when ("All") {
-                            "All" -> conversation.sid != ""
-                            else -> true
-                        }
-                    }
-                } else {
+//                if (filterCriteria.contains(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"dealerName")!!) && filterCriteria.contains("Customer") && filterCriteria.size == 2) {
+//                    filterCriteria.all { criteria ->
+//                        when ("All") {
+//                            "All" -> conversation.sid != ""
+//                            else -> true
+//                        }
+//                    }
+//                } else {
                     filterCriteria.all { criteria ->
                         when (criteria) {
                             "All" -> conversation.sid != ""
                             "Unread" -> conversation.unreadMessageCount != "0"
                             Constants.getStringFromVitalTextSharedPreferences(applicationContext,"dealerName")!! -> conversation.isWebChat == "true"
                             "Customer" -> conversation.isWebChat != "true"
-                            "CONTEXT" -> contextItems.any { contextItem ->
+                            Constants.getStringFromVitalTextSharedPreferences(applicationContext,"context")!! -> contextItems.any { contextItem ->
                                 conversation.name.contains(contextItem, ignoreCase = true)
                             } // Check for CONTEXT
                             else -> true
                         }
                     }
-                }
+//                }
             }
             return filteredConversations.sortedWith(compareByDescending { it.isPinned })
         }
