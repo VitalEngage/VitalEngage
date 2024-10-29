@@ -63,6 +63,17 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
         super.onCreate(savedInstanceState)
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onCreate Called")
         setHasOptionsMenu(true)
+
+        binding = FragmentConversationListBinding.inflate(layoutInflater)
+        if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"withContext")!! == "true") {
+            binding.lblContext?.let {
+                it.background = resources.getDrawable(R.drawable.bg_selectedlabel)
+                it.setTextColor(resources.getColorStateList(R.color.white))
+                // Perform logic on deselection
+                onLabelSelect(it)
+            }
+        }
+
     }
 
     private fun handleLabelClick(clickedLabel: TextView) {
@@ -88,7 +99,12 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
 
     private fun onLabelSelect(label: TextView) {
         //when a label is selected
-        adapter.setFilter(label.text.toString(),true)
+        if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"withContext")!! == "true" && binding.lblContext == label){
+            adapter.setFilter(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"context")!!,true)
+        }
+        else{
+            adapter.setFilter(label.text.toString(),true)
+        }
     }
 
     private fun onLabelDeselect(label: TextView) {
@@ -99,7 +115,8 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
     fun shouldInterceptBackPress() = true
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onCreateView Called")
-        binding = FragmentConversationListBinding.inflate(inflater, container, false)
+//        binding = FragmentConversationListBinding.inflate(inflater, container, false)
+
         return binding.root
     }
 
@@ -121,16 +138,25 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
         if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"showExternalContacts")!! == "false"){
             binding.lblExternal.visibility = View.GONE
         }
+        if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"withContext")!! == "false"){
+            binding.lblContext.visibility = View.GONE
+        }
 
         binding.lblUnread.text = "Unread"
         binding.lblInternal.text = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"dealerName")!!
         binding.lblExternal.text = "Customer"
+        binding.lblContext.text = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"context")!!
 
         isSelectedMap[binding.lblUnread.id] = true
         isSelectedMap[binding.lblInternal.id] = true
         isSelectedMap[binding.lblExternal.id] = true
+        if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"withContext")!! == "true") {
+            isSelectedMap[binding.lblContext.id] = false
+        }else{
+            isSelectedMap[binding.lblContext.id] = true
+        }
         // Set click listeners
-//        binding.label0.setOnClickListener { handleLabelClick(binding.label0) }
+        binding.lblContext.setOnClickListener { handleLabelClick(binding.lblContext) }
         binding.lblUnread.setOnClickListener { handleLabelClick(binding.lblUnread) }
         binding.lblInternal.setOnClickListener { handleLabelClick(binding.lblInternal) }
         binding.lblExternal.setOnClickListener { handleLabelClick(binding.lblExternal) }

@@ -50,6 +50,16 @@
                 android:id="@+id/lblExternal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:textSize="14sp"
+                android:padding="8dp"
+                android:textStyle="bold"
+                android:background="@drawable/bg_unselectedlabel"
+                android:textColor="@color/alternate_message_text"/>
+            <TextView
+                android:id="@+id/lblContext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:textSize="14sp"
                 android:padding="8dp"
                 android:textStyle="bold"
