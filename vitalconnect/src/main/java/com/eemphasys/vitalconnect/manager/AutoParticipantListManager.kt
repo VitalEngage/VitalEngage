@@ -14,6 +14,7 @@ import com.twilio.conversations.extensions.addParticipantByAddress
 import com.twilio.conversations.extensions.addParticipantByIdentity
 import com.twilio.conversations.extensions.getConversation
 import com.twilio.conversations.extensions.waitForSynchronization
+import com.twilio.util.TwilioException
 
 interface AutoParticipantListManager {
     suspend fun addChatParticipant(identity: String,conversationSid:String)
@@ -42,24 +43,25 @@ class AutoParticipantListManagerImpl(
             conversation.waitForSynchronization()
             val json = JSONObject("{ \"$FRIENDLY_NAME_ATTRIBUTE\": \"$friendlyName\" }")
 
-            try {
+//            try {
                 Log.d("addnonchatparticipant", "$phone $proxyPhone ${Attributes(json)}" )
                 conversation.addParticipantByAddress(phone, proxyPhone, Attributes(json))
-            } catch (e: Exception) {
-                /*Log.d("exception", e.localizedMessage)*/
-                e.printStackTrace()
-
-                EETLog.error(
-                    AppContextHelper.appContext, LogConstants.logDetails(
-                        e,
-                        LogConstants.LOG_LEVEL.ERROR.toString(),
-                        LogConstants.LOG_SEVERITY.HIGH.toString()
-                    ),
-                    Constants.EX, LogTraceConstants.getUtilityData(
-                        AppContextHelper.appContext!!
-                    )!!
-                )
-            }
+//            } catch (e: TwilioException) {
+//                Log.d("exception", e.localizedMessage)
+//                e.printStackTrace()
+//
+//                EETLog.error(
+//                    AppContextHelper.appContext, LogConstants.logDetails(
+//                        e,
+//                        LogConstants.LOG_LEVEL.ERROR.toString(),
+//                        LogConstants.LOG_SEVERITY.HIGH.toString()
+//                    ),
+//                    Constants.EX, LogTraceConstants.getUtilityData(
+//                        AppContextHelper.appContext!!
+//                    )!!
+//                )
+//                throw e
+//            }
 
         }
     }

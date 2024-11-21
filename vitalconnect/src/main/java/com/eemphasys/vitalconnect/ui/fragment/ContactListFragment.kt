@@ -1,25 +1,20 @@
 package com.eemphasys.vitalconnect.ui.fragment
 
 import android.os.Bundle
-import android.text.InputFilter
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import android.widget.EditText
-import androidx.appcompat.widget.SearchView
-import androidx.compose.ui.text.toLowerCase
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.viewpager2.widget.ViewPager2
 import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.adapters.PagerAdapter
 import com.eemphasys.vitalconnect.common.Constants
-import com.eemphasys.vitalconnect.common.Constants.Companion.isValidPhoneNumber
-import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.ChatAppModel
-import com.eemphasys.vitalconnect.common.Constants.Companion.getSearchViewEditText
 import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.common.extensions.lazyActivityViewModel
 import com.eemphasys.vitalconnect.common.injector
@@ -28,16 +23,6 @@ import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import com.twilio.conversations.Attributes
-import kotlinx.coroutines.launch
-import okhttp3.OkHttpClient
-import org.json.JSONObject
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import java.lang.reflect.Field
-import java.util.Locale
-import java.util.concurrent.TimeUnit
 
 class ContactListFragment : Fragment() {
     var binding: FragmentContactListBinding? = null
@@ -53,7 +38,7 @@ class ContactListFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        ChatAppModel.FirebaseLogEventListener?.screenLogEvent(requireContext(),"Contacts","ContactListFragment")
+//        ChatAppModel.FirebaseLogEventListener?.screenLogEvent(requireContext(),"VC_Contacts","ContactListFragment")
     }
     fun shouldInterceptBackPress() = true
     override fun onCreateView(
@@ -81,10 +66,78 @@ class ContactListFragment : Fragment() {
         viewPager.adapter = pagerAdapter
 
         // Bind TabLayout with ViewPager2
+//        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+//            when (position) {
+//                0 -> tab.text = if (showInternal) Constants.getStringFromVitalTextSharedPreferences(applicationContext,"dealerName")!! else "Customer"
+//                1 -> tab.text = if (showExternal) "Customer" else Constants.getStringFromVitalTextSharedPreferences(applicationContext,"dealerName")!!
+//            }
+//        }.attach()
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+            // Prepare the tab icon and text
+            val context = tabLayout.context
+            var tabText: String? = ""
+            var tabIconResId: Int = 0
+
             when (position) {
-                0 -> tab.text = if (showInternal) Constants.getStringFromVitalTextSharedPreferences(applicationContext,"dealerName")!! else "Customer"
-                1 -> tab.text = if (showExternal) "Customer" else Constants.getStringFromVitalTextSharedPreferences(applicationContext,"dealerName")!!
+                0 -> {
+                    tabText = if (showInternal) Constants.getStringFromVitalTextSharedPreferences(applicationContext, "dealerName")!! else "Customer"
+                    tabIconResId = if (showInternal) R.drawable.ic_internal_selector else R.drawable.ic_external_selector
+                }
+                1 -> {
+                    tabText = if (showExternal) "Customer" else Constants.getStringFromVitalTextSharedPreferences(applicationContext, "dealerName")!!
+                    tabIconResId = if (showExternal) R.drawable.ic_external_selector else R.drawable.ic_internal_selector
+                }
+            }
+
+            if (context != null) {
+            // Create a custom view for the tab
+            val customTabView = LayoutInflater.from(context).inflate(R.layout.custom_fragment_tab,null)
+            val tabIcon = customTabView.findViewById<ImageView>(R.id.tab_icon)
+            val tabTextView = customTabView.findViewById<TextView>(R.id.tab_text)
+
+                if(tabTextView != null) {
+                    tabTextView.text = tabText ?: ""
+                }
+            tabIcon.setImageResource(tabIconResId)
+
+            tab.customView = customTabView
+
+            // Listen for tab selection changes to update the icon and text
+            tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+                override fun onTabSelected(selectedTab: TabLayout.Tab?) {
+                    if (selectedTab == tab) {
+                        tabIcon.setImageResource(tabIconResId) // Set the active icon
+                        tabTextView.setTextColor(ContextCompat.getColor(context, R.color.tabSelected)) // Set selected text color
+
+                        val selectedTabText = tabTextView.text.toString()
+
+                        if(selectedTabText =="Customer"){
+                            ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_Contacts_ExternalContactsTabClick",
+                                "Contacts",
+                                "ContactListFragment"
+                            )
+                        }else{
+                            ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_Contacts_InternalUsersTabClick",
+                                "Contacts",
+                                "ContactListFragment"
+                            )
+                        }
+                    }
+                }
+
+                override fun onTabUnselected(unselectedTab: TabLayout.Tab?) {
+                    if (unselectedTab == tab) {
+                        tabTextView.setTextColor(ContextCompat.getColor(context, R.color.alternate_message_text)) // Set unselected text color
+                    }
+                }
+
+                override fun onTabReselected(p0: TabLayout.Tab?) {
+                    // No-op for re-selection
+                }
+
+            })
+            } else {
+                Log.e("TabLayout", "Context is null!")
             }
         }.attach()
 
@@ -105,8 +158,14 @@ class ContactListFragment : Fragment() {
         binding?.contactList?.addItemDecoration(DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL))
         contactListViewModel.isNetworkAvailable.observe(viewLifecycleOwner) { isNetworkAvailable ->
             showNoInternetSnackbar(!isNetworkAvailable)
-            if (!isNetworkAvailable)
-                activity?.finish()
+            if (!isNetworkAvailable){
+                Constants.showPopup(layoutInflater, requireActivity())
+                var layout = layoutInflater.inflate(R.layout.activity_conversation_list, null)
+                var text = layout.findViewById<TextView>(R.id.textBox)
+                text.text = "offline"
+                text.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.text_gray))
+            }
+//                activity?.finish()
         }
     }
 

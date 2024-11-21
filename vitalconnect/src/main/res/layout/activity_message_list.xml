@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -14,28 +17,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:background="@color/white">
+        app:elevation="0dp">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/conversation_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/white"
+            android:background="@color/activity_title_back_color"
             app:titleCentered="true"
             app:titleTextAppearance="@style/AppBar_Title"
-             />
-        <TextView
-            android:id="@+id/toolbar_subtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:text="Your subtitle or additional info here"
-            android:textSize="16sp"
-            android:gravity="center"
-            android:textStyle="bold"
-            android:background="@color/white"
-            android:layout_marginBottom="5dp"
-            android:visibility="gone"/>
+            app:elevation="0dp"/>
 <!--        style="@style/Widget.MaterialComponents.Toolbar.Primary"-->
 <!--        android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"-->
 
@@ -44,6 +35,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/messagelist_background"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <ProgressBar
@@ -59,6 +51,22 @@
             app:layout_constraintTop_toTopOf="@id/messageList"
             app:layout_constraintBottom_toBottomOf="@id/messageList"
             />
+        <TextView
+            android:id="@+id/toolbar_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:layout_marginTop="8dp"
+            android:text="Your subtitle or additional info here"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:background="@color/messagelist_background"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:visibility="visible"/>
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/messageList"
             android:layout_width="0dp"
@@ -68,7 +76,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar_subtitle"
             app:stackFromEnd="true"
             android:background="@color/messagelist_background"/>
         <!--tools:listitem="@layout/row_message_item_outgoing"-->
@@ -246,3 +254,22 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>
+    <!-- TextView (TextBox) on top of the layout -->
+    <TextView
+        android:id="@+id/textBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/online"
+        android:textColor="@color/white"
+        android:layout_marginStart="-13dp"
+        android:layout_marginLeft="-11dp"
+        android:background="@color/completed"
+        android:paddingLeft="5dp"
+        android:paddingTop="10dp"
+        android:paddingRight="5dp"
+        android:paddingBottom="5dp"
+        android:textSize="8sp"
+        android:rotation="-90"
+        android:layout_gravity="start|center_vertical" /> <!-- This will center the TextView in the layout -->
+
+</FrameLayout>

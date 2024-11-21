@@ -41,6 +41,7 @@ import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.extensions.applicationContext
+import com.eemphasys.vitalconnect.common.extensions.getErrorMessage
 import com.eemphasys.vitalconnect.common.extensions.lazyActivityViewModel
 import com.eemphasys.vitalconnect.common.extensions.showSnackbar
 import com.eemphasys.vitalconnect.common.injector
@@ -66,14 +67,14 @@ class ExternalFragment : Fragment() {
     var binding: FragmentExternalBinding? = null
     val contactListViewModel by lazyActivityViewModel { injector.createContactListViewModel(applicationContext) }
     private val noInternetSnackBar by lazy {
-        Snackbar.make(binding!!.contactList, R.string.no_internet_connection, Snackbar.LENGTH_INDEFINITE)
+        Snackbar.make(requireView(), R.string.no_internet_connection, Snackbar.LENGTH_INDEFINITE)
     }
     private var contactsList = arrayListOf<Contact>()
     private lateinit var adapter: ContactListAdapter
     private lateinit var originalList: List<ContactListViewItem>
     private var listOfContacts = mutableListOf<ContactListViewItem>()
-    var currentIndex: Int = 1
-    var maxPageSize: Int = 1
+//    var currentIndex: Int = 1
+//    var maxPageSize: Int = 1
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_contact_list, menu)
@@ -99,7 +100,7 @@ class ExternalFragment : Fragment() {
                                         Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
                                         newText!!
                                     )
-                                var response = RetrofitClient.retrofitWithToken.getSearchedContact(request)
+                                var response = RetrofitClient.getRetrofitWithToken().getSearchedContact(request)
 
                                 response.enqueue(object : Callback<List<SearchContactResponse>> {
                                     override fun onResponse(
@@ -183,15 +184,16 @@ class ExternalFragment : Fragment() {
     }
     override fun onResume() {
         super.onResume()
-        ChatAppModel.FirebaseLogEventListener?.screenLogEvent(requireContext(),"CustomerContacts","ExternalFragment")
+        ChatAppModel.FirebaseLogEventListener?.screenLogEvent(requireContext(),"VC_CustomerContacts","ExternalFragment")
     }
     fun getAllContactList(callBack: () -> Unit){
         lifecycleScope.launch {
-        var request = ContactListRequest(currentIndex,Constants.PAGE_SIZE.toInt(),"","fullName","asc",Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,0)
-        var response = RetrofitClient.retrofitWithToken.getContactList(request)
+//        var request = ContactListRequest(currentIndex,Constants.PAGE_SIZE.toInt(),"","fullName","asc",Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,0)
+            var request = ContactListRequest(0,0,"","fullName","asc",Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,0)
+            var response = RetrofitClient.getRetrofitWithToken().getContactList(request)
 
         if (response.isSuccessful) {
-            var previousPosition = listOfContacts.size
+//            var previousPosition = listOfContacts.size
             for (contact in response.body()!!.contacts) {
                 var userItem = ContactListViewItem(
                     contact.fullName,
@@ -209,8 +211,8 @@ class ExternalFragment : Fragment() {
                 )
                 listOfContacts.add(userItem)
             }
-            adapter.notifyItemRangeInserted(previousPosition,listOfContacts.size)
-            maxPageSize = ceil((response.body()!!.totalCount/Constants.PAGE_SIZE)).toInt()
+//            adapter.notifyItemRangeInserted(previousPosition,listOfContacts.size)
+//            maxPageSize = ceil((response.body()!!.totalCount/Constants.PAGE_SIZE)).toInt()
         }
             callBack.invoke()
     }
@@ -234,12 +236,17 @@ class ExternalFragment : Fragment() {
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onViewCreated Called")
         super.onViewCreated(view, savedInstanceState)
         requireActivity().title = getString(R.string.contacts)
+
+        contactListViewModel.onDetailsError.observe(viewLifecycleOwner){ error ->
+            Log.d("snackbar",error.toString())
+            binding!!.azScrollbar.showSnackbar(applicationContext.getErrorMessage(error))
+        }
         binding?.contactList?.addItemDecoration(DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL))
 
         contactListViewModel.isNetworkAvailable.observe(viewLifecycleOwner) { isNetworkAvailable ->
             showNoInternetSnackbar(!isNetworkAvailable)
-            if(!isNetworkAvailable)
-                activity?.finish()
+//            if(!isNetworkAvailable)
+//                activity?.finish()
         }
         contactsList = ArrayList<Contact>()
         if(!Constants.getStringFromVitalTextSharedPreferences(applicationContext,"contacts")!!.isNullOrEmpty()) {
@@ -261,8 +268,11 @@ class ExternalFragment : Fragment() {
             }
         }
         if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"withContext")!! == "false"){
-            getAllContactList{}
-            setAdapter(listOfContacts)
+            if(listOfContacts.isEmpty()) {
+                getAllContactList {
+                    setAdapter(listOfContacts)
+                }
+            }
         }
         else
         {
@@ -270,25 +280,25 @@ class ExternalFragment : Fragment() {
             setAdapter(originalList)
         }
 
-        if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"withContext")!! == "false") {
-            binding?.contactList!!.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                    super.onScrollStateChanged(recyclerView, newState)
-                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                        if (!recyclerView.canScrollVertically(1)) {
-                            Log.d("scroll---up1", newState.toString())
-                            currentIndex++
-                            if(maxPageSize>=currentIndex) {
-                                binding!!.progressBarRecyclerview.visibility = View.VISIBLE
-                            }
-                            getAllContactList {
-                                binding!!.progressBarRecyclerview.visibility = View.GONE
-                            }
-                        }
-                    }
-                }
-            })
-        }
+//        if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"withContext")!! == "false") {
+//            binding?.contactList!!.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+//                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+//                    super.onScrollStateChanged(recyclerView, newState)
+//                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+//                        if (!recyclerView.canScrollVertically(1)) {
+//                            Log.d("scroll---up1", newState.toString())
+//                            currentIndex++
+//                            if(maxPageSize>=currentIndex) {
+//                                binding!!.progressBarRecyclerview.visibility = View.VISIBLE
+//                            }
+//                            getAllContactList {
+//                                binding!!.progressBarRecyclerview.visibility = View.GONE
+//                            }
+//                        }
+//                    }
+//                }
+//            })
+//        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -298,10 +308,10 @@ class ExternalFragment : Fragment() {
             @SuppressLint("SuspiciousIndentation")
             override fun onContactItemClick(contact: ContactListViewItem) {
                 var phone  = Constants.cleanedNumber(Constants.formatPhoneNumber(applicationContext,contact.number,contact.countryCode!!))
-                    if(Constants.isValidPhoneNumber(phone, Locale.getDefault().country)) {
+//                    if(Constants.isValidPhoneNumber(phone, Locale.getDefault().country)) {
                         binding?.progressBarID?.visibility = View.VISIBLE
 
-                        val existingConversation = RetrofitClient.retrofitWithToken.fetchExistingConversation(
+                        val existingConversation = RetrofitClient.getRetrofitWithToken().fetchExistingConversation(
                             Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
                             Constants.cleanedNumber(
                                 Constants.formatPhoneNumber(
@@ -314,6 +324,18 @@ class ExternalFragment : Fragment() {
                             1,
                             Constants.getStringFromVitalTextSharedPreferences(applicationContext,"proxyNumber")!!
                         )
+                Log.d("contactNumberClicked",Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!! + "  " +
+                    Constants.cleanedNumber(
+                        Constants.formatPhoneNumber(
+                            applicationContext,
+                            contact.number,
+                            contact.countryCode!!
+                        )
+                    )  + "  " +
+                    false  + "  " +
+                    1  + "  " +
+                    Constants.getStringFromVitalTextSharedPreferences(applicationContext,"proxyNumber")!!
+                )
                         Log.d(
                             "contactNumberClicked",
                             Constants.cleanedNumber(
@@ -345,7 +367,7 @@ class ExternalFragment : Fragment() {
                                             if (!conversation.conversationSid.isNullOrEmpty()) {
                                                 try {
                                                     val participantSid =
-                                                        RetrofitClient.retrofitWithToken.addParticipantToConversation(
+                                                        RetrofitClient.getRetrofitWithToken().addParticipantToConversation(
                                                             Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
                                                             conversation.conversationSid,
                                                             Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!
@@ -529,6 +551,8 @@ class ExternalFragment : Fragment() {
                                         }
                                     }
                                 } else {
+                                    binding?.progressBarID?.visibility = View.GONE
+                                    binding!!.contactList.showSnackbar("Something went wrong")
                                     println("Response was not successful: ${response.code()}")
                                 }
                             }
@@ -540,12 +564,12 @@ class ExternalFragment : Fragment() {
                                 println("Failed to fetch existing conversations: ${t.message}")
                             }
                         })
-                    }
-                    else{
-                        binding!!.contactList .showSnackbar("Invalid Phone number.")
-                    }
-                ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "CustomerContactClick",
-                    "CustomerContacts",
+//                    }
+//                    else{
+//                        binding!!.contactList .showSnackbar("Invalid Phone number.")
+//                    }
+                ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_Contacts_ExternalContactClick",
+                    "Contacts",
                     "ExternalFragment"
                 )
             }

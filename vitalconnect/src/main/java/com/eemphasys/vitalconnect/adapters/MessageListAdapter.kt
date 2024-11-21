@@ -4,7 +4,10 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.ShapeDrawable
 import android.net.Uri
+import android.text.SpannableString
+import android.text.Spanned
 import android.text.format.Formatter
+import android.text.style.ImageSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -140,7 +143,24 @@ class MessageListAdapter(
                 binding.attachmentBackground.setOnLongClickListener(longClickListener)
 
                 if(Constants.isExternalContact( message.author)){
-                    binding.messageAuthor.text = cleanConversationName()
+                    val text = cleanConversationName()
+
+                    // Create a SpannableString to hold the text
+                    val spannableString = SpannableString("$text ")
+
+                    // Load your drawable icon (can be from resources)
+                    val iconDrawable = ContextCompat.getDrawable(context, R.drawable.icon_customer_chat_passive) // Replace with icon resource
+                    iconDrawable?.setBounds(0, 0, iconDrawable.intrinsicWidth, iconDrawable.intrinsicHeight)  // Set icon size
+
+                    // Create an ImageSpan to embed the drawable inside the text
+                    val imageSpan = ImageSpan(iconDrawable!!, ImageSpan.ALIGN_BOTTOM)
+
+                    // Append the ImageSpan to the text (at the end, in this case)
+                    spannableString.setSpan(imageSpan, text.length, spannableString.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+                    // Set the SpannableString to your TextView
+                    binding.messageAuthor.text = spannableString
+//                    binding.messageAuthor.text = cleanConversationName()
                     binding.participantIcon.text = Constants.getInitials(cleanConversationName().trim { it <= ' '} )
                 }else {
                     if(message.friendlyName == ""){

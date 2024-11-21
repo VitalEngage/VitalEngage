@@ -78,8 +78,9 @@
     <string name="no_contacts_details">Contacts are not associated with this context.</string>
     <string name="size_note">Select a single file: either a JPEG or PNG up to 5MB, or a PDF up to 600KB</string>
     <string name="webSize_note">Select a single file:PDF, JPEG or PNG up to 20MB</string>
+    <string name="settings_saved">Saved settings successfully</string>
 
-    <string name="no_conversations">No Conversations </string>
+    <string name="no_conversations">No Conversation(s) found</string>
     <string name="no_conversations_description">Conversations you create or are involved in will appear here</string>
 
     <string name="err_conversation_generic_error">Request failed, please try again later</string>
@@ -233,4 +234,5 @@
 <!--    Webuser conversations-->
     <string name="empty_username">Username doesn\'t exist</string>
     <string name="user_not_registered">User not registered</string>
+    <string name="online">Online</string>
 </resources>

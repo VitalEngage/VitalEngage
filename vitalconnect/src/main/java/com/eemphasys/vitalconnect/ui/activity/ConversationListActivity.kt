@@ -7,7 +7,6 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.lifecycleScope
 import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.common.AppContextHelper
@@ -25,8 +24,6 @@ import com.eemphasys.vitalconnect.ui.fragment.ProfileFragment
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -51,9 +48,24 @@ class ConversationListActivity:AppCompatActivity() {
 
         binding.bottomNavigation.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
-                R.id.page_contact_list -> replaceFragment(ContactListFragment())
-                R.id.page_conversation_list -> replaceFragment(ConversationListFragment())
-                R.id.page_profile -> replaceFragment(ProfileFragment())
+                R.id.page_contact_list -> {replaceFragment(ContactListFragment())
+                    ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_ContactsTabClick",
+                        "Contacts",
+                        "ConversationListActivity"
+                    )
+                }
+                R.id.page_conversation_list -> {replaceFragment(ConversationListFragment())
+                    ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_ConversationsTabClick",
+                        "Conversations",
+                        "ConversationListActivity"
+                    )
+                }
+                R.id.page_profile -> {replaceFragment(ProfileFragment())
+                    ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_SettingsTabClick",
+                        "Settings",
+                        "ConversationListActivity"
+                    )
+                }
             }
             return@setOnItemSelectedListener true
         }
@@ -71,7 +83,9 @@ class ConversationListActivity:AppCompatActivity() {
         }
         if(Constants.getStringFromVitalTextSharedPreferences(this,"isStandalone")!!.lowercase() == "false")
         {
+            binding.toolbar.setNavigationIcon(R.drawable.back_button)
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            supportActionBar?.setHomeAsUpIndicator(R.drawable.back_button)
         }
         binding.toolbar.setNavigationOnClickListener { onBackPressed() }
     }
@@ -128,7 +142,6 @@ class ConversationListActivity:AppCompatActivity() {
     }
     override fun onResume() {
         super.onResume()
-        ChatAppModel.FirebaseLogEventListener?.screenLogEvent(this,"ConversationList","ConversationListActivity")
     }
 
     private fun replaceFragment(fragment: Fragment) {

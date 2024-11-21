@@ -46,6 +46,7 @@ import com.eemphasys.vitalconnect.api.data.webParticipant
 import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.Constants
+import com.eemphasys.vitalconnect.common.Constants.Companion.isValidEmail
 import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.common.extensions.lazyActivityViewModel
 import com.eemphasys.vitalconnect.common.extensions.showSnackbar
@@ -75,21 +76,26 @@ class InternalFragment : Fragment() {
     var binding: FragmentInternalBinding? = null
     val contactListViewModel by lazyActivityViewModel { injector.createContactListViewModel(applicationContext) }
     private val noInternetSnackBar by lazy {
-        Snackbar.make(binding!!.userList, R.string.no_internet_connection, Snackbar.LENGTH_INDEFINITE)
+        Snackbar.make(requireView(), R.string.no_internet_connection, Snackbar.LENGTH_INDEFINITE)
     }
     private var webuserList = arrayListOf<WebUser>()
     private lateinit var adapter: ContactListAdapter
     private lateinit var originalList: List<ContactListViewItem>
     private var listOfUsers = mutableListOf<ContactListViewItem>()
-    var currentIndex: Int = 1
-    var maxPageSize: Int = 1
+//    var currentIndex: Int = 1
+//    var maxPageSize: Int = 1
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_contact_list, menu)
 
         val searchItem = menu.findItem(R.id.filter_contacts)
         val searchView = searchItem?.actionView as SearchView
-
+        searchView.setOnSearchClickListener {
+            ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_Contacts_SearchBtnClick",
+                "Contacts",
+                "InternalFragment"
+            )
+        }
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
@@ -108,7 +114,7 @@ class InternalFragment : Fragment() {
                                     Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
                                     newText!!
                                 )
-                            var response = RetrofitClient.retrofitWithToken.getSearchedUsers(request)
+                            var response = RetrofitClient.getRetrofitWithToken().getSearchedUsers(request)
 
                             response.enqueue(object : Callback<List<SearchUsersResponse>> {
                                 override fun onResponse(
@@ -196,22 +202,25 @@ class InternalFragment : Fragment() {
     }
     override fun onResume() {
         super.onResume()
-        ChatAppModel.FirebaseLogEventListener?.screenLogEvent(requireContext(),"InternalUsers","InternalFragment")
+        ChatAppModel.FirebaseLogEventListener?.screenLogEvent(requireContext(),"VC_InternalUsers","InternalFragment")
     }
     fun getAllUserList(callBack: () -> Unit){
-        var request = ContactListRequest(currentIndex,Constants.PAGE_SIZE.toInt(),"","fullName","asc",Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,0)
-        var response = RetrofitClient.retrofitWithToken.getUserList(request)
+//        var request = ContactListRequest(currentIndex,Constants.PAGE_SIZE.toInt(),"","fullName","asc",Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,0)
+        var request = ContactListRequest(0,0,"","fullName","asc",Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,0)
+        var response = RetrofitClient.getRetrofitWithToken().getUserList(request)
 
         response.enqueue(object : Callback<List<UserListResponse>>{
             override fun onResponse(
                 call: Call<List<UserListResponse>>,
                 response: Response<List<UserListResponse>>
             ) {
+                Log.d("userlist","issuccessful" + response.isSuccessful.toString())
                 if(response.isSuccessful){
                     var usersResponse: List<UserListResponse>? =
                         response.body()
+                    Log.d("userlist",response.body().toString())
                     if (!usersResponse.isNullOrEmpty()) {
-                    var previousPosition = listOfUsers.size
+//                    var previousPosition = listOfUsers.size
                         for (response in usersResponse) {
                             var userItem = ContactListViewItem(
                                 response.fullName,
@@ -228,15 +237,16 @@ class InternalFragment : Fragment() {
                                 ""
                                 )
                             listOfUsers.add(userItem)
-                            maxPageSize = ceil((response.totalCount/Constants.PAGE_SIZE)).toInt()
+//                            maxPageSize = ceil((response.totalCount/Constants.PAGE_SIZE)).toInt()
                         }
-                        adapter.notifyItemRangeInserted(previousPosition,listOfUsers.size)
+//                        adapter.notifyItemRangeInserted(previousPosition,listOfUsers.size)
                     }
                 }
                 callBack.invoke()
             }
 
             override fun onFailure(call: Call<List<UserListResponse>>, t: Throwable) {
+                Log.d("apifailed",t.message.toString())
                 callBack.invoke()
             }
 
@@ -266,8 +276,8 @@ class InternalFragment : Fragment() {
 
         contactListViewModel.isNetworkAvailable.observe(viewLifecycleOwner) { isNetworkAvailable ->
             showNoInternetSnackbar(!isNetworkAvailable)
-            if(!isNetworkAvailable)
-                activity?.finish()
+//            if(!isNetworkAvailable)
+//                activity?.finish()
         }
         webuserList = ArrayList<WebUser>()
 
@@ -289,8 +299,14 @@ class InternalFragment : Fragment() {
         }
 
         if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"withContext")!! == "false"){
-            getAllUserList{}
-            setAdapter(listOfUsers)
+
+            if(listOfUsers.isEmpty()) {
+                getAllUserList {
+                    if(isAdded) {
+                        setAdapter(listOfUsers)
+                    }
+                }
+            }
         }
         else
             {
@@ -298,26 +314,26 @@ class InternalFragment : Fragment() {
                 setAdapter(originalList)
             }
 
-        if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"withContext")!! == "false") {
-            binding?.userList!!.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                    super.onScrollStateChanged(recyclerView, newState)
-                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                        if (!recyclerView.canScrollVertically(1)) {
-                            Log.d("scroll---up1", newState.toString())
-                            currentIndex++
-                            Log.d("maxPagesize",maxPageSize.toString())
-                            if(maxPageSize>=currentIndex) {
-                                binding!!.progressBarRecyclerview.visibility = View.VISIBLE
-                            }
-                            getAllUserList{
-                                binding!!.progressBarRecyclerview.visibility = View.GONE
-                            }
-                        }
-                    }
-                }
-            })
-        }
+//        if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"withContext")!! == "false") {
+//            binding?.userList!!.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+//                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+//                    super.onScrollStateChanged(recyclerView, newState)
+//                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+//                        if (!recyclerView.canScrollVertically(1)) {
+//                            Log.d("scroll---up1", newState.toString())
+//                            currentIndex++
+//                            Log.d("maxPagesize",maxPageSize.toString())
+//                            if(maxPageSize>=currentIndex) {
+//                                binding!!.progressBarRecyclerview.visibility = View.VISIBLE
+//                            }
+//                            getAllUserList{
+//                                binding!!.progressBarRecyclerview.visibility = View.GONE
+//                            }
+//                        }
+//                    }
+//                }
+//            })
+//        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -330,7 +346,7 @@ class InternalFragment : Fragment() {
                     "WebUserClicked",contact.name)
 //                  Web to web chat
                     binding?.progressBarID?.visibility = View.VISIBLE
-                if(!contact.email.isNullOrEmpty()) {
+                if(!contact.email.isNullOrEmpty() ) {
                     if (Constants.getStringFromVitalTextSharedPreferences(
                             applicationContext,
                             "withContext"
@@ -380,8 +396,8 @@ class InternalFragment : Fragment() {
                             getString(R.string.empty_username)
                     )
                 }
-                ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "InternalUserClick",
-                    "InternalUsers",
+                ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_Contacts_InternalUserClick",
+                    "Contacts",
                     "InternalFragment"
                 )
             }
@@ -617,9 +633,9 @@ class InternalFragment : Fragment() {
     private fun showNoInternetSnackbar(show: Boolean) {
 
         if (show) {
-            noInternetSnackBar.show()
+            noInternetSnackBar?.show()
         } else {
-            noInternetSnackBar.dismiss()
+            noInternetSnackBar?.dismiss()
         }
     }
 

@@ -37,6 +37,21 @@
         android:text="E E T"
         style="@style/TextInitials"
         tools:ignore="MissingConstraints" />
+
+    <TextView
+        android:id="@+id/default_label"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:text=" Default "
+        android:inputType="text"
+        android:layout_marginTop="5dp"
+        android:padding="5dp"
+        app:layout_constraintTop_toBottomOf="@id/participant_icon"
+        app:layout_constraintStart_toStartOf="@id/participant_icon"
+        style="@style/TextViewDefaultContact"
+        android:background="@drawable/bg_default_contact"
+        android:visibility="gone"
+        />
     <TextView
         android:id="@+id/contactName"
         android:layout_width="0dp"

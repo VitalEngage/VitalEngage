@@ -8,8 +8,10 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -92,7 +94,7 @@ class ParticipantListActivity : AppCompatActivity() {
     }
     override fun onResume() {
         super.onResume()
-        ChatAppModel.FirebaseLogEventListener?.screenLogEvent(this,"ParticipantList","ParticipantListActivity")
+        ChatAppModel.FirebaseLogEventListener?.screenLogEvent(this,"VC_ParticipantList","ParticipantListActivity")
     }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         super.onCreateOptionsMenu(menu)
@@ -134,6 +136,8 @@ class ParticipantListActivity : AppCompatActivity() {
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " initViews Called")
         setSupportActionBar(binding.conversationToolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        binding.conversationToolbar.setNavigationIcon(R.drawable.back_button)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.back_button)
         binding.conversationToolbar.setNavigationOnClickListener { onBackPressed() }
         sheetBehavior.addBottomSheetCallback(sheetListener)
         title = getString(R.string.participant_title)
@@ -166,8 +170,14 @@ class ParticipantListActivity : AppCompatActivity() {
         }
         participantListViewModel.isNetworkAvailable.observe(this) { isNetworkAvailable ->
             showNoInternetSnackbar(!isNetworkAvailable)
-            if(!isNetworkAvailable)
-                this.finish()
+            if(!isNetworkAvailable){
+                Constants.showPopup(layoutInflater, this)
+                var layout = layoutInflater.inflate(R.layout.activity_participants, null)
+                var text = layout.findViewById<TextView>(R.id.textBox)
+                text.text = "offline"
+                text.setBackgroundColor(ContextCompat.getColor(this, R.color.text_gray))
+            }
+//                this.finish()
         }
     }
     private fun showNoInternetSnackbar(show: Boolean) {

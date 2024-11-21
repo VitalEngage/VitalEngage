@@ -37,5 +37,13 @@ abstract class LocalCacheProvider: RoomDatabase() {
 //            ).setJournalMode(JournalMode.AUTOMATIC)
 //                .allowMainThreadQueries().build()
         }
+
+        fun clearDatabase() {
+            _instance?.clearAllTables()
+        }
+
+        fun destroyInstance() {
+            _instance = null
+        }
     }
 }

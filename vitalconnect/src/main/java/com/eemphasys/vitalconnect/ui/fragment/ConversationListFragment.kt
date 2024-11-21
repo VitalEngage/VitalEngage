@@ -11,8 +11,6 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.PopupWindow
@@ -24,29 +22,25 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.adapters.ConversationListAdapter
 import com.eemphasys.vitalconnect.adapters.OnConversationEvent
 import com.eemphasys.vitalconnect.common.ChatAppModel
-import com.eemphasys.vitalconnect.common.Constants.Companion.getSearchViewEditText
 import com.eemphasys.vitalconnect.common.Constants
+import com.eemphasys.vitalconnect.common.Constants.Companion.getSearchViewEditText
+import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.common.extensions.getErrorMessage
 import com.eemphasys.vitalconnect.common.extensions.lazyActivityViewModel
-import com.eemphasys.vitalconnect.databinding.FragmentConversationListBinding
-import com.eemphasys.vitalconnect.ui.ConversationListSwipeCallback
-import com.google.android.material.snackbar.Snackbar
-import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.common.extensions.onDismissed
 import com.eemphasys.vitalconnect.common.extensions.requireValue
 import com.eemphasys.vitalconnect.common.injector
-import com.eemphasys.vitalconnect.data.models.ContactListViewItem
 import com.eemphasys.vitalconnect.data.models.ConversationListViewItem
+import com.eemphasys.vitalconnect.databinding.FragmentConversationListBinding
+import com.eemphasys.vitalconnect.ui.ConversationListSwipeCallback
+import com.eemphasys.vitalconnect.ui.activity.ConversationListActivity
 import com.eemphasys.vitalconnect.ui.activity.MessageListActivity
 import com.eemphasys_enterprise.commonmobilelib.EETLog
-import kotlinx.coroutines.delay
-import java.lang.reflect.Field
+import com.google.android.material.snackbar.Snackbar
 
 class ConversationListFragment:Fragment(), OnConversationEvent {
     lateinit var binding: FragmentConversationListBinding
@@ -125,7 +119,7 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
         super.onResume()
         Log.d("onResume","onResumeCalled")
         conversationListViewModel.getUserConversations()
-        ChatAppModel.FirebaseLogEventListener?.screenLogEvent(requireContext(),"Conversations","ConversationListFragment")
+        ChatAppModel.FirebaseLogEventListener?.screenLogEvent(requireContext(),"VC_Conversations","ConversationListFragment")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -158,10 +152,26 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
             isSelectedMap[binding.lblContext.id] = true
         }
         // Set click listeners
-        binding.lblContext.setOnClickListener { handleLabelClick(binding.lblContext) }
-        binding.lblUnread.setOnClickListener { handleLabelClick(binding.lblUnread) }
-        binding.lblInternal.setOnClickListener { handleLabelClick(binding.lblInternal) }
-        binding.lblExternal.setOnClickListener { handleLabelClick(binding.lblExternal) }
+        binding.lblContext.setOnClickListener { handleLabelClick(binding.lblContext)
+            ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_Conversations_ContextFilterClick",
+                "Conversations",
+                "ConversationListFragment"
+            )}
+        binding.lblUnread.setOnClickListener { handleLabelClick(binding.lblUnread)
+            ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_Conversations_UnreadFilterClick",
+                "Conversations",
+                "ConversationListFragment"
+            )}
+        binding.lblInternal.setOnClickListener { handleLabelClick(binding.lblInternal)
+            ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_Conversations_InternalFilterClick",
+                "Conversations",
+                "ConversationListFragment"
+            )}
+        binding.lblExternal.setOnClickListener { handleLabelClick(binding.lblExternal)
+            ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_Conversations_CustomerFilterClick",
+                "Conversations",
+                "ConversationListFragment"
+            )}
 
         conversationListViewModel.userConversationItems.observe(viewLifecycleOwner) { it:List<ConversationListViewItem>->
             adapter.notifyDataSetChanged()
@@ -179,10 +189,25 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
             binding.noResultFound.root.visibility = if (visible) View.VISIBLE else View.GONE
         }
 
+        adapter.sizeChange.observe(viewLifecycleOwner,{ size : Int ->
+            if (size < 1) {
+            binding.noConversations.root.visibility = View.VISIBLE
+        }
+        else{
+            binding.noConversations.root.visibility = View.GONE
+        }
+        })
+
         conversationListViewModel.isNetworkAvailable.observe(viewLifecycleOwner) { isNetworkAvailable ->
             showNoInternetSnackbar(!isNetworkAvailable)
-            if(!isNetworkAvailable)
-                activity?.finish()
+            if(!isNetworkAvailable) {
+                Constants.showPopup(layoutInflater, requireActivity())
+                var layout = layoutInflater.inflate(R.layout.activity_conversation_list, null)
+                var text = layout.findViewById<TextView>(R.id.textBox)
+                text.text = "offline"
+                text.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.text_gray))
+//                activity?.finish()
+            }
         }
 
         conversationListViewModel.onConversationCreated.observe(viewLifecycleOwner) {
@@ -216,15 +241,34 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
         val swipeCallback = ConversationListSwipeCallback(requireContext(), adapter)
 
         swipeCallback.onMute = { conversationSid ->
-            conversationListViewModel.muteConversation(conversationSid)
-        }
+            run {
+                conversationListViewModel.muteConversation(conversationSid)
+                ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_Conversations_MuteUnmute",
+                    "Conversations",
+                    "ConversationListFragment"
+                )}
+            }
 
         swipeCallback.onUnMute = { conversationSid ->
-            conversationListViewModel.unmuteConversation(conversationSid)
+            run {
+                conversationListViewModel.unmuteConversation(conversationSid)
+                ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(
+                    applicationContext, "VC_Conversations_MuteUnmute",
+                    "Conversations",
+                    "ConversationListFragment"
+                )
+            }
         }
 
         swipeCallback.onLeave = { conversationSid ->
-            showLeaveConfirmationDialog(conversationSid)
+            run {
+                showLeaveConfirmationDialog(conversationSid)
+                ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(
+                    applicationContext, "VC_Conversations_LeaveConversationConfirmClick",
+                    "Conversations",
+                    "ConversationListFragment"
+                )
+            }
 
         }
 
@@ -242,6 +286,13 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
         inflater.inflate(R.menu.menu_conversation_list, menu)
 
         val filterMenuItem = menu.findItem(R.id.filter_conversations)
+        val searchView = filterMenuItem?.actionView as SearchView
+        searchView.setOnSearchClickListener {
+            ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_Conversations_SearchBtnClick",
+                "Conversations",
+                "ConversationListFragment"
+            )
+        }
         if (conversationListViewModel.conversationFilter.isNotEmpty()) {
             filterMenuItem.expandActionView()
         }
@@ -270,6 +321,10 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
     override fun onConversationClicked(conversationSid: String) {
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onConversationClicked Called" + conversationSid)
         MessageListActivity.start(requireContext(), conversationSid)
+        ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_Conversations_ConversationClick",
+            "Conversations",
+            "ConversationListFragment"
+        )
     }
 
     override fun onConversationLongClicked(conversation: ConversationListViewItem) {
@@ -281,6 +336,10 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onParticipantIconClicked Called")
         showPopup(conversation)
         Log.d("clicked","clicked")
+        ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_Conversations_AvatarClick",
+            "Conversations",
+            "ConversationListFragment"
+        )
     }
 
     private fun showPopup(conversation: ConversationListViewItem) {
@@ -430,6 +489,10 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
 
     dialog.show()
     }
+        ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_Conversations_PinUnpinYesClick",
+            "Conversations",
+            "ConversationListFragment"
+        )
     }
     private fun showLeaveConfirmationDialog(conversationSid: String) {
         val dialog = AlertDialog.Builder(requireContext())

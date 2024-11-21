@@ -9,6 +9,8 @@ import com.eemphasys.vitalconnect.api.data.EncryptionRequest
 import com.eemphasys.vitalconnect.api.data.GetUserAlertStatusRequest
 import com.eemphasys.vitalconnect.api.data.GetUserAlertStatusResponse
 import com.eemphasys.vitalconnect.api.data.ParticipantExistingConversation
+import com.eemphasys.vitalconnect.api.data.RenewToken
+import com.eemphasys.vitalconnect.api.data.RenewTokenRequest
 import com.eemphasys.vitalconnect.api.data.RequestToken
 import com.eemphasys.vitalconnect.api.data.SavePinnedConversationRequest
 import com.eemphasys.vitalconnect.api.data.SavePinnedConversationResponse
@@ -36,6 +38,9 @@ interface TwilioApi {
 
     @POST("User/Authenticate")
     suspend fun getAuthToken(@Body requestData : RequestToken) : Response<AuthToken>
+
+    @POST("User/RenewAuthToken")
+    suspend fun getRenewedAuthToken(@Body requestData : RenewTokenRequest) : Response<RenewToken>
 
     @GET("Notification/getTwilioToken")
      suspend fun getTwilioToken(@Query("tenantCode") tenantCode : String,@Query("user") user : String, @Query("friendlyName") friendlyName: String) : Response<Token>

@@ -5,7 +5,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.OpenableColumns
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,7 +26,8 @@ import java.io.File
 import java.io.InputStream
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 class AttachFileDialog : BaseBottomSheetDialogFragment() {
 
@@ -55,6 +55,10 @@ class AttachFileDialog : BaseBottomSheetDialogFragment() {
             else{
                 messageListViewModel.onMessageError.value = ConversationsError.FILE_TOO_LARGE
             }}
+        ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_MessageList_CapturePhotoClick",
+            "MessageList",
+            "AttachFileDialog"
+        )
         dismiss()
     }
 
@@ -95,6 +99,10 @@ class AttachFileDialog : BaseBottomSheetDialogFragment() {
                 }
             }
         }
+        ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_MessageList_AttachFileClick",
+            "MessageList",
+            "AttachFileDialog"
+        )
         dismiss()
     }
 

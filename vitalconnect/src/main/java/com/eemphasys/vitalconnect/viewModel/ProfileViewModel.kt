@@ -90,7 +90,7 @@ class ProfileViewModel(
         EETLog.saveUserJourney("vitaltext:  ProfileViewModel changeUserAlertStatus Called")
         if(isChecked){
             val requestData = UserAlertRequest(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,"true", Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!)
-            val response = RetrofitClient.retrofitWithToken.updateUserAlertStatus(requestData)
+            val response = RetrofitClient.getRetrofitWithToken().updateUserAlertStatus(requestData)
             if(response.isSuccessful) {
                 Log.d("useralertstatus","changed to true")
                 Constants.saveStringToVitalTextSharedPreferences(applicationContext,"userSMSAlert", response.body()!!.status.lowercase())
@@ -98,7 +98,7 @@ class ProfileViewModel(
         }
         else{
             val requestData = UserAlertRequest(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,"false", Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!)
-            val response= RetrofitClient.retrofitWithToken.updateUserAlertStatus(requestData)
+            val response= RetrofitClient.getRetrofitWithToken().updateUserAlertStatus(requestData)
             if(response.isSuccessful) {
                 Log.d("useralertstatus","changed to false")
                 Constants.saveStringToVitalTextSharedPreferences(applicationContext,"userSMSAlert", response.body()!!.status.lowercase())

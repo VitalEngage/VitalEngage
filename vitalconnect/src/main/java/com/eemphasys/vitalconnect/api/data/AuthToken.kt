@@ -11,6 +11,8 @@ data class AuthToken(
     val count: Int,
     val email: String,
     val jwtToken: String,
+    val refreshToken: String,
+    val expirationTime: Int,
     val lastActivityDate: String,
     val vdPath: String,
     val userImgPath: String,
@@ -25,5 +27,6 @@ data class AuthToken(
     val showDesignation: Boolean,
     val showDepartment: Boolean,
     val dealerName: String,
-    val pinedConversation: ArrayList<String>
+    val pinedConversation: ArrayList<String> = arrayListOf()
+
 )

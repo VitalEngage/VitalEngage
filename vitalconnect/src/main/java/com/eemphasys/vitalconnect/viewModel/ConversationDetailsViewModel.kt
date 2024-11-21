@@ -1,6 +1,7 @@
 package com.eemphasys.vitalconnect.viewModel
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
@@ -40,6 +41,7 @@ class ConversationDetailsViewModel(
     private val onConversationRenamed = SingleLiveEvent<Unit>()
     val onParticipantAdded = SingleLiveEvent<String>()
     val isNetworkAvailable = connectivityMonitor.isNetworkAvailable.asLiveData(viewModelScope.coroutineContext)
+    var isPinned = MutableLiveData<Boolean>()
     init {
         viewModelScope.launch {
             getConversationResult()
@@ -55,6 +57,12 @@ class ConversationDetailsViewModel(
             }
            try{ result.data?.let { conversationDetails.value = it.asConversationDetailsViewItem(applicationContext) }}catch(e:Exception){}
         }
+    }
+
+    fun onPinConversationClicked(pinValue : Boolean) {
+        Log.d("onpinclick","clciked")
+//        isPinned.value = !(isPinned.value ?: false)
+        isPinned.value = !pinValue
     }
 
     private fun setShowProgress(show: Boolean) {

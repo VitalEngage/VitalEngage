@@ -5,31 +5,25 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.eemphasys.vitalconnect.api.AuthInterceptor
 import com.eemphasys.vitalconnect.api.RetrofitClient
-import com.eemphasys.vitalconnect.api.RetrofitHelper
-import com.eemphasys.vitalconnect.api.RetryInterceptor
-import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.ParticipantExistingConversation
-import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.AppContextHelper
+import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.Constants.Companion.saveStringToVitalTextSharedPreferences
-import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.common.extensions.lazyViewModel
+import com.eemphasys.vitalconnect.common.extensions.showSnackbar
+import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.databinding.ActivityMainBinding
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys.vitalconnect.ui.activity.ConversationListActivity
-import com.eemphasys.vitalconnect.ui.activity.MessageListActivity
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.google.gson.Gson
 import com.twilio.conversations.Attributes
-import okhttp3.OkHttpClient
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
@@ -39,8 +33,6 @@ class MainActivity : AppCompatActivity() {
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onCreate Called")
         val username = intent.getStringExtra("username")
         val friendlyName = intent.getStringExtra("friendlyName")
-        val clientID = intent.getStringExtra("clientID")
-        val clientSecret = intent.getStringExtra("clientSecret")
         val tenantcode = intent.getStringExtra("tenantcode")
         val baseurl = intent.getStringExtra("baseurl")
         val parentApp = intent.getStringExtra("parentApp")
@@ -55,7 +47,6 @@ class MainActivity : AppCompatActivity() {
         val customerNumber = intent.getStringExtra("customerNumber")
         val customerName = intent.getStringExtra("customerName")
         val showConversations = intent.getStringExtra("showConversations")
-        val userSMSAlert = intent.getStringExtra("userSMSAlert")
         val showDepartment = intent.getStringExtra("showDepartment")
         val showDesignation = intent.getStringExtra("showDesignation")
         val department = intent.getStringExtra("department")
@@ -76,57 +67,17 @@ class MainActivity : AppCompatActivity() {
         val role = intent.getStringExtra("role")
         val bpId = intent.getStringExtra("bpId")
         val isAutoRegistrationEnabled = intent.getStringExtra("isAutoRegistrationEnabled")
+        val refreshToken = intent.getStringExtra("refreshToken")
+        val expirationDuration = intent.getIntExtra("expirationDuration",0)
 
-//        Constants.AUTH_TOKEN = authToken!!
-//        Constants.CONTACTS = contacts!!
-//        Constants.WEBUSERS = webusers!!
-//        Constants.BASE_URL = baseurl!!
-//        Constants.TENANT_CODE = tenantcode!!
-//        Constants.CLIENT_ID = clientID!!
-//        Constants.CLIENT_SECRET = clientSecret!!
-//        Constants.FRIENDLY_NAME = friendlyName!!
-//        Constants.PRODUCT = parentApp!!
-//        Constants.USERNAME = username!!
-//        Constants.TWILIO_TOKEN = twilioToken!!
-//        Constants.PROXY_NUMBER = proxyNumber!!
-//        Constants.FULL_NAME = fullName!!
-//        Constants.SHOW_CONTACTS = showContacts!!
-//        Constants.IS_STANDALONE = isStandalone!!
-//        Constants.CUSTOMER_NUMBER = Constants.formatPhoneNumber(applicationContext,customerNumber!!,countryCode!!)
-//        Constants.CUSTOMER_NAME = customerName!!
-//        Constants.SHOW_CONVERSATIONS = showConversations!!
-//        Constants.USER_SMS_ALERT = userSMSAlert!!
-//        Constants.SHOW_DEPARTMENT = showDepartment!!
-//        Constants.SHOW_DESIGNATION =showDesignation!!
-//        Constants.DEPARTMENT= department!!
-//        Constants.DESIGNATION=designation!!
-//        Constants.CUSTOMER=customer!!
-//        Constants.COUNTRYCODE=countryCode
-//        Constants.EMAIL = email!!
-//        Constants.MOBILENUMBER = mobileNumber!!
-//        Constants.DEFAULT_COUNTRYCODE = defaultcountryCode!!
-//        Constants.TIME_OFFSET = Integer.valueOf( timeoffset)
-//        Constants.WITH_CONTEXT = withContext!!
-//        Constants.OPEN_CHAT = openChat!!
-//        Constants.CONTEXT = context!!
-//        Constants.DEALER_NAME = dealerName!!
-//        Constants.PINNED_CONVO = pinnedConvo!!
-//        Constants.SHOW_INTERNAL_CONTACTS = showInternalContacts!!
-//        Constants.SHOW_EXTERNAL_CONTACTS = showExternalContacts!!
-//        Constants.ROLE = role!!
-//        Constants.BPID = bpId!!
+        Constants.PINNED_CONVO = pinnedConvo!!
+        Log.d("pinned",pinnedConvo.toString())
 
         saveStringToVitalTextSharedPreferences(this,"pinnedConvo",Gson().toJson(pinnedConvo!!))
-
-
-
-
         saveStringToVitalTextSharedPreferences(this,"baseUrl",baseurl!!)
 //        saveStringToVitalTextSharedPreferences(this,"packageName",packageName.toString())
         saveStringToVitalTextSharedPreferences(this,"currentUser",username!!)
         saveStringToVitalTextSharedPreferences(this,"friendlyName",fullName!!)
-        saveStringToVitalTextSharedPreferences(this,"clientId",clientID!!)
-        saveStringToVitalTextSharedPreferences(this,"clientSecret",clientSecret!!)
         saveStringToVitalTextSharedPreferences(this,"authToken",authToken!!)
         saveStringToVitalTextSharedPreferences(this,"proxyNumber",proxyNumber!!)
         saveStringToVitalTextSharedPreferences(this,"showDepartment",showDepartment!!)
@@ -134,7 +85,7 @@ class MainActivity : AppCompatActivity() {
         saveStringToVitalTextSharedPreferences(this,"email",email!!)
         saveStringToVitalTextSharedPreferences(this,"mobileNumber",mobileNumber!!)
         saveStringToVitalTextSharedPreferences(this,"defaultCountryCode",defaultcountryCode!!)
-        saveStringToVitalTextSharedPreferences(this,"userSMSAlert",userSMSAlert!!)
+//        saveStringToVitalTextSharedPreferences(this,"userSMSAlert",userSMSAlert!!)
         saveStringToVitalTextSharedPreferences(this,"twilioToken",twilioToken!!)
 //        saveStringToVitalTextSharedPreferences(this,"customerContactList",list)
         saveStringToVitalTextSharedPreferences(this,"contacts",contacts!!)
@@ -162,13 +113,14 @@ class MainActivity : AppCompatActivity() {
         saveStringToVitalTextSharedPreferences(this,"role",role!!)
         saveStringToVitalTextSharedPreferences(this,"bpId",bpId!!)
         saveStringToVitalTextSharedPreferences(this,"isAutoRegistrationEnabled",isAutoRegistrationEnabled!!)
-
+        saveStringToVitalTextSharedPreferences(this,"refreshToken",refreshToken!!)
+        saveStringToVitalTextSharedPreferences(this,"expirationDuration",expirationDuration!!.toString())
 //        Log.d("timezoneoffset", timeoffset!!)
 
 //        mainViewModel.create()
         super.onCreate(savedInstanceState)
         if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"openChat")!!.lowercase() == "true") {
-            val existingConversation = RetrofitClient.retrofitWithToken.fetchExistingConversation(
+            val existingConversation = RetrofitClient.getRetrofitWithToken().fetchExistingConversation(
                 Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
                 Constants.cleanedNumber(Constants.formatPhoneNumber(applicationContext,customerNumber!!,countryCode!!)),
                 false,
@@ -195,7 +147,7 @@ class MainActivity : AppCompatActivity() {
                                 if(!conversation.conversationSid.isNullOrEmpty()) {
                                     try {
                                         val participantSid =
-                                            RetrofitClient.retrofitWithToken.addParticipantToConversation(
+                                            RetrofitClient.getRetrofitWithToken().addParticipantToConversation(
                                                 Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
                                                 conversation.conversationSid,
                                                 Constants.getStringFromVitalTextSharedPreferences(this@MainActivity,"currentUser")!!
@@ -357,6 +309,7 @@ class MainActivity : AppCompatActivity() {
                             }
                         }
                     } else {
+                        this@MainActivity.finish()
                         println("Response was not successful: ${response.code()}")
                     }
                 }

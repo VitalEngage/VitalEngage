@@ -6,22 +6,20 @@ import com.eemphasys.vitalconnect.api.RetrofitClient
 import com.eemphasys.vitalconnect.api.RetrofitHelper
 import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.ValidateUserReq
-import com.eemphasys.vitalconnect.common.Constants
-import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
-import com.eemphasys.vitalconnect.common.FirebaseTokenManager
 import com.eemphasys.vitalconnect.common.AppContextHelper
+import com.eemphasys.vitalconnect.common.Constants
+import com.eemphasys.vitalconnect.common.FirebaseTokenManager
+import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys.vitalconnect.repository.ConversationsRepositoryImpl
-import com.eemphasys.vitalconnectdev.data.LoginConstants
 import com.eemphasys.vitalconnectdev.common.enums.ConversationsError
 import com.eemphasys.vitalconnectdev.common.extensions.createTwilioException
 import com.eemphasys.vitalconnectdev.data.CredentialStorage
+import com.eemphasys.vitalconnectdev.data.LoginConstants
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.twilio.conversations.ConversationsClient
 import com.twilio.conversations.extensions.registerFCMToken
-import okhttp3.OkHttpClient
-import java.util.concurrent.TimeUnit
 
 
 interface LoginManager {
@@ -61,22 +59,28 @@ class LoginManagerImpl(
         if(result.isSuccessful) {
             Log.d("Authtoken: ", result.body()!!.jwtToken)
             Constants.saveStringToVitalTextSharedPreferences(applicationContext, "authToken", result.body()!!.jwtToken)
+            Constants.saveStringToVitalTextSharedPreferences(applicationContext,"authTokenTimeStamp",Constants.getTimeStamp())
+            Constants.saveStringToVitalTextSharedPreferences(applicationContext,"expirationDuration",result.body()!!.expirationTime.toString())
+            Constants.saveStringToVitalTextSharedPreferences(applicationContext,"userSMSAlert",result.body()!!.enableNotification.toString())
             LoginConstants.AUTH_TOKEN = result.body()!!.jwtToken
             LoginConstants.PROXY_NUMBER = result.body()!!.proxyNumber
-            LoginConstants.USER_SMS_ALERT = result.body()!!.enableNotification.toString()
+//            LoginConstants.USER_SMS_ALERT = result.body()!!.enableNotification.toString()
             LoginConstants.SHOW_DEPARTMENT = result.body()!!.showDepartment.toString()
             LoginConstants.SHOW_DESIGNATION = result.body()!!.showDesignation.toString()
             LoginConstants.EMAIL = result.body()!!.email
             LoginConstants.MOBILENUMBER = result.body()!!.mobileNumber
             LoginConstants.DEALER_NAME = result.body()!!.dealerName
-            LoginConstants.PINNED_CONVO = result.body()!!.pinedConversation
+            LoginConstants.PINNED_CONVO = result.body()?.pinedConversation ?: arrayListOf()
+            LoginConstants.EXPIRATION_DURATION =result.body()!!.expirationTime
+            LoginConstants.REFRESH_TOKEN=result.body()!!.refreshToken
+            Log.d("pinnedconvo",result.body()!!.pinedConversation.toString())
             credentialStorage.storeCredentials(identity,password)
         }
     }
 
     override suspend fun getTwilioToken(applicationContext : Context) {
         Log.d("username", LoginConstants.CURRENT_USER)
-            val twilioToken = RetrofitClient.retrofitWithToken.getTwilioToken(
+            val twilioToken = RetrofitClient.getRetrofitWithToken().getTwilioToken(
                 LoginConstants.TENANT_CODE,
                 LoginConstants.CURRENT_USER,
                 LoginConstants.FRIENDLY_NAME

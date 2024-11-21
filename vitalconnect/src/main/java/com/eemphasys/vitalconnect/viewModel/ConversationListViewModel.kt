@@ -61,10 +61,10 @@ class ConversationListViewModel(
 
     val type = object : TypeToken<ArrayList<String>>() {}.type
     var jsonString = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"pinnedConvo") ?: ""
-    var pinnedConvo : ArrayList<String> = if(jsonString.isNullOrEmpty()){
-        arrayListOf()
-    }
-    else Gson().fromJson(jsonString, type)
+//    var pinnedConvo : ArrayList<String> = if(jsonString.isNullOrEmpty()){
+//        arrayListOf()
+//    }
+//    else Gson().fromJson(jsonString, type)
 
     var conversationFilter by Delegates.observable("") { _, _, _ -> updateUserConversationItems() }
 
@@ -303,7 +303,7 @@ class ConversationListViewModel(
     fun savePinnedConversation(conversation: ConversationListViewItem,add:Boolean,adapter: ConversationListAdapter) = viewModelScope.launch{
         EETLog.saveUserJourney("vitaltext:  ConversationListViewModel savePinnedConversation Called")
         if(add){
-            pinnedConvo.add(conversation.sid)
+//            pinnedConvo.add(conversation.sid)
             Constants.PINNED_CONVO.add(conversation.sid)
             conversation.isPinned= add
             pinConversation.value = true
@@ -312,14 +312,14 @@ class ConversationListViewModel(
 
         }
         else{
-            pinnedConvo.remove(conversation.sid)
+//            pinnedConvo.remove(conversation.sid)
             Constants.PINNED_CONVO.remove(conversation.sid)
             conversation.isPinned= !add
             pinConversation.value = false
             adapter.notifyDataSetChanged()
             getUserConversations()
         }
-        Constants.saveStringToVitalTextSharedPreferences(applicationContext,"pinnedConvo",Gson().toJson(pinnedConvo!!))
+//        Constants.saveStringToVitalTextSharedPreferences(applicationContext,"pinnedConvo",Gson().toJson(pinnedConvo!!))
             savePinnedConversationToDB()
     }
 
@@ -332,7 +332,7 @@ class ConversationListViewModel(
                 Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!
             )
 
-            var response = RetrofitClient.retrofitWithToken.savePinnedConversation(request)
+            var response = RetrofitClient.getRetrofitWithToken().savePinnedConversation(request)
         }
     }
 }

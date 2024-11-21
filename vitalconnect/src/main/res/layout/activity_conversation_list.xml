@@ -1,20 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+<LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
      <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:elevation="0dp">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/white"
+            android:background="@color/activity_title_back_color"
             app:titleCentered="true"
             app:titleTextAppearance="@style/AppBar_Title"
+            app:elevation="0dp"
              />
 <!--        style="@style/Widget.MaterialComponents.Toolbar.Primary"-->
 <!--        android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"-->
@@ -56,3 +62,23 @@
         app:menu="@menu/menu_bottom_navigation" />
 <!--        style="@style/Widget.MaterialComponents.BottomNavigationView.Colored"-->
 </LinearLayout>
+
+    <!-- TextView (TextBox) on top of the layout -->
+    <TextView
+        android:id="@+id/textBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/online"
+        android:textColor="@color/white"
+        android:layout_marginStart="-13dp"
+        android:layout_marginLeft="-11dp"
+        android:background="@color/completed"
+        android:paddingLeft="5dp"
+        android:paddingTop="10dp"
+        android:paddingRight="5dp"
+        android:paddingBottom="5dp"
+        android:textSize="8sp"
+        android:rotation="-90"
+        android:layout_gravity="start|center_vertical" /> <!-- This will center the TextView in the layout -->
+
+</FrameLayout>

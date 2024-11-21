@@ -12,7 +12,15 @@ interface ConversationsDao {
     // Get User Conversations
 //    @Query("SELECT SUM(unreadMessagesCount) AS total_sum FROM conversation_table")
 //    fun getTotalUnreadMessages(): Int
-    @Query("SELECT * FROM conversation_table WHERE participatingStatus = 1 ORDER BY lastMessageDate DESC")
+    @Query("""
+    SELECT * FROM conversation_table 
+    WHERE participatingStatus = 1 
+    ORDER BY 
+        CASE 
+            WHEN lastMessageDate != 0 THEN lastMessageDate 
+            ELSE dateCreated 
+        END DESC
+""")
     fun getUserConversations(): Flow<List<ConversationDataItem>>
 
     // Get Conversation by sid

@@ -3,12 +3,17 @@ package com.eemphasys.vitalconnect.adapters
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.ShapeDrawable
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.ImageSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.ParticipantColorManager
 import com.eemphasys.vitalconnect.common.AppContextHelper
@@ -39,7 +44,24 @@ class ParticipantListAdapter(private val onParticipantClicked: (participant: Par
 //            chatParticipant?.let { onParticipantClicked(it) }
 //        }
         if(chatParticipant!!.identity.isNullOrEmpty()) {
-            holder.binding.participantName.text = cleanConversationName()
+            val text = cleanConversationName()
+
+            // Create a SpannableString to hold the text
+            val spannableString = SpannableString("$text ")
+
+            // Load your drawable icon (can be from resources)
+            val iconDrawable = ContextCompat.getDrawable(holder.binding.root.context, R.drawable.icon_customer_chat_passive) // Replace with icon resource
+            iconDrawable?.setBounds(0, 0, iconDrawable.intrinsicWidth, iconDrawable.intrinsicHeight)  // Set icon size
+
+            // Create an ImageSpan to embed the drawable inside the text
+            val imageSpan = ImageSpan(iconDrawable!!, ImageSpan.ALIGN_BOTTOM)
+
+            // Append the ImageSpan to the text (at the end, in this case)
+            spannableString.setSpan(imageSpan, text.length, spannableString.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+            // Set the SpannableString to your TextView
+            holder.binding.participantName.text = spannableString
+//            holder.binding.participantName.text = cleanConversationName()
             holder.binding.participantAvatar.text = Constants.getInitials(cleanConversationName().trim { it <= ' '} )
         }else{
             holder.binding.participantName.text = chatParticipant!!.friendlyName

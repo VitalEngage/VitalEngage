@@ -3,36 +3,39 @@ package com.eemphasys.vitalconnect.ui.activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.view.View
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
+import android.view.View
 import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.eemphasys.vitalconnect.R
-import com.eemphasys.vitalconnect.common.AppContextHelper
-import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.adapters.SuggestionAdapter
-import com.eemphasys.vitalconnect.api.AuthInterceptor
 import com.eemphasys.vitalconnect.api.RetrofitClient
-import com.eemphasys.vitalconnect.api.RetrofitHelper
-import com.eemphasys.vitalconnect.api.RetryInterceptor
-import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.SearchContactRequest
 import com.eemphasys.vitalconnect.api.data.SearchUsersResponse
+import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.ChatAppModel
+import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.SheetListener
 import com.eemphasys.vitalconnect.common.enums.ConversationsError
-import com.eemphasys.vitalconnect.common.extensions.*
+import com.eemphasys.vitalconnect.common.extensions.getErrorMessage
+import com.eemphasys.vitalconnect.common.extensions.hide
+import com.eemphasys.vitalconnect.common.extensions.hideKeyboard
+import com.eemphasys.vitalconnect.common.extensions.isShowing
+import com.eemphasys.vitalconnect.common.extensions.lazyViewModel
+import com.eemphasys.vitalconnect.common.extensions.show
+import com.eemphasys.vitalconnect.common.extensions.showSnackbar
+import com.eemphasys.vitalconnect.common.extensions.showToast
 import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
 import com.eemphasys.vitalconnect.data.models.ContactListViewItem
@@ -41,18 +44,15 @@ import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys.vitalconnect.repository.ConversationsRepositoryImpl
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.launch
-import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.util.concurrent.TimeUnit
-import kotlin.collections.ArrayList
 
 class ConversationDetailsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityConversationDetailsBinding
@@ -66,7 +66,6 @@ class ConversationDetailsActivity : AppCompatActivity() {
             .setView(R.layout.view_loading_dialog)
             .create()
     }
-
     val conversationDetailsViewModel by lazyViewModel {
         injector.createConversationDetailsViewModel(applicationContext, intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
     }
@@ -91,6 +90,9 @@ class ConversationDetailsActivity : AppCompatActivity() {
                 lifecycleOwner = this@ConversationDetailsActivity
             }
 
+        binding.viewModel = conversationDetailsViewModel
+        binding.lifecycleOwner = this
+
         initViews()
 
         editText = findViewById(R.id.add_chat_participant_id_input)
@@ -111,7 +113,7 @@ class ConversationDetailsActivity : AppCompatActivity() {
                             Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
                             s.toString()
                         )
-                    var response = RetrofitClient.retrofitWithToken.getSearchedUsers(request)
+                    var response = RetrofitClient.getRetrofitWithToken().getSearchedUsers(request)
 
                     response.enqueue(object : Callback<List<SearchUsersResponse>> {
                         override fun onResponse(
@@ -234,12 +236,14 @@ class ConversationDetailsActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        ChatAppModel.FirebaseLogEventListener?.screenLogEvent(this,"ConversationDetails","ConversationDetailsActivity")
+        ChatAppModel.FirebaseLogEventListener?.screenLogEvent(this,"VC_ConversationDetails","ConversationDetailsActivity")
     }
     private fun initViews() {
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " initViews Called")
         setSupportActionBar(binding.conversationDetailsToolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        binding.conversationDetailsToolbar.setNavigationIcon(R.drawable.back_button)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.back_button)
         binding.conversationDetailsToolbar.setNavigationOnClickListener { onBackPressed() }
         renameConversationSheetBehavior.addBottomSheetCallback(sheetListener)
         addChatParticipantSheetBehavior.addBottomSheetCallback(sheetListener)
@@ -254,6 +258,10 @@ class ConversationDetailsActivity : AppCompatActivity() {
         binding.addChatParticipantButton.setOnClickListener {
             binding.addChatParticipantSheet.addChatParticipantIdInput.text?.clear()
             addChatParticipantSheetBehavior.show()
+            ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_ConversationDetails_AddParticipantClick",
+                "ConversationDetails",
+                "ConversationDetailsActivity"
+            )
         }
 
         binding.addNonChatParticipantButton.setOnClickListener {
@@ -264,6 +272,10 @@ class ConversationDetailsActivity : AppCompatActivity() {
 
         binding.participantsListButton.setOnClickListener {
             ParticipantListActivity.start(this, conversationDetailsViewModel.conversationSid)
+            ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_ConversationDetails_ParticipantListClick",
+                "ConversationDetails",
+                "ConversationDetailsActivity"
+            )
         }
 
         binding.conversationRenameButton.setOnClickListener {
@@ -276,68 +288,43 @@ class ConversationDetailsActivity : AppCompatActivity() {
             } else {
                 conversationDetailsViewModel.muteConversation()
             }
+            ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_ConversationDetails_MuteUnmuteClick",
+                "ConversationDetails",
+                "ConversationDetailsActivity"
+            )
         }
 
-        binding.conversationPinButton.setOnClickListener {
-            val type = object : TypeToken<ArrayList<String>>() {}.type
-            var jsonString = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"pinnedConvo")!!
-            var pinnedConvo : ArrayList<String> = Gson().fromJson(jsonString, type)
-
-            if(binding.conversationPinButton.text == getString(R.string.details_pin_conversation)){
-                pinnedConvo.add(intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
-                conversationListViewModel.savePinnedConversationToDB()
-//                binding.conversationPinButton.text == getString(R.string.details_unpin_conversation)
-//                binding.conversationPinButton.setCompoundDrawables(resources.getDrawable(R.drawable.icon_unpin),null,null,null)
-//                binding.details!!.isPinned = false
+        conversationDetailsViewModel.isPinned.observe(this, Observer { isPinned ->
+            if(isPinned){
+            binding.conversationDetailsLayout.showSnackbar(
+                getString(
+                    R.string.conversation_pinned,
+                )
+            )
+            }else{
+                binding.conversationDetailsLayout.showSnackbar(
+                    getString(
+                        R.string.conversation_unpinned,
+                    )
+                )
             }
-            else {
-                pinnedConvo.remove(intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
-                conversationListViewModel.savePinnedConversationToDB()
-//                binding.conversationPinButton.text == getString(R.string.details_pin_conversation)
-//                binding.conversationPinButton.setCompoundDrawables(resources.getDrawable(R.drawable.ic_pin),null,null,null)
-//                binding.details!!.isPinned = true
-            }
-            Constants.saveStringToVitalTextSharedPreferences(applicationContext,"pinnedConvo",Gson().toJson(pinnedConvo!!))
-//            binding.details!!.isPinned = binding.details!!.isPinned
-        }
+            updatePinButtonUI(isPinned)
 
-//        binding.conversationPinButton.setOnClickListener {
-//            if(binding.conversationPinButton.text == getString(R.string.details_pin_conversation)){
-//                Constants.PINNED_CONVO.add(intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
-//                conversationListViewModel.savePinnedConversationToDB()
-//                binding.conversationPinButton.text == getString(R.string.details_unpin_conversation)
-//                binding.conversationPinButton.setCompoundDrawables(resources.getDrawable(R.drawable.icon_unpin),null,null,null)
-//                binding.details!!.isPinned = false
-//            }
-//            else if(binding.conversationPinButton.text == getString(R.string.details_unpin_conversation)){
-//                Constants.PINNED_CONVO.remove(intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
-//                conversationListViewModel.savePinnedConversationToDB()
-//                binding.conversationPinButton.text == getString(R.string.details_pin_conversation)
-//                binding.conversationPinButton.setCompoundDrawables(resources.getDrawable(R.drawable.ic_pin),null,null,null)
-//                binding.details!!.isPinned = true
-//            }
-//        }
+            ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_ConversationDetails_PinUnpinClick",
+                "ConversationDetails",
+                "ConversationDetailsActivity"
+            )
+        })
 
-//        binding.conversationPinButton.setOnClickListener {
-//            if(binding.details!!.isPinned){
-//                Log.d("pinned","pinned")
-//                Constants.PINNED_CONVO.add(intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
-//                conversationListViewModel.savePinnedConversationToDB()
-//                binding.conversationPinButton.text == getString(R.string.details_unpin_conversation)
-//                binding.details!!.isPinned = false
-//            }
-//            else{
-//                Log.d("pinned","unpinned")
-//                Constants.PINNED_CONVO.remove(intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
-//                conversationListViewModel.savePinnedConversationToDB()
-//                binding.conversationPinButton.text == getString(R.string.details_pin_conversation)
-//                binding.details!!.isPinned = true
-//            }
-////            binding.details!!.isPinned = !binding.details!!.isPinned
-//        }
+        // Initial UI setup
+        initPinButtonUI(conversationDetailsViewModel.isPinned.value ?: false)
 
         binding.conversationLeaveButton.setOnClickListener {
             conversationDetailsViewModel.leaveConversation()
+            ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_ConversationDetails_LeaveConversationClick",
+                "ConversationDetails",
+                "ConversationDetailsActivity"
+            )
         }
 
         binding.sheetBackground.setOnClickListener {
@@ -423,8 +410,59 @@ class ConversationDetailsActivity : AppCompatActivity() {
         }
         conversationDetailsViewModel.isNetworkAvailable.observe(this) { isNetworkAvailable ->
             showNoInternetSnackbar(!isNetworkAvailable)
-            if(!isNetworkAvailable)
-                this.finish()
+            if(!isNetworkAvailable){
+                Constants.showPopup(layoutInflater, this)
+                var layout = layoutInflater.inflate(R.layout.activity_conversation_details, null)
+                var text = layout.findViewById<TextView>(R.id.textBox)
+                text.text = "offline"
+                text.setBackgroundColor(ContextCompat.getColor(this, R.color.text_gray))
+            }
+//                this.finish()
+        }
+    }
+
+    private fun updatePinButtonUI(isPinned: Boolean) {
+        binding.conversationPinButton.apply {
+            text = if (isPinned) {
+                context.getString(R.string.details_unpin_conversation)
+            } else {
+                context.getString(R.string.details_pin_conversation)
+            }
+            setCompoundDrawablesWithIntrinsicBounds(
+                if (isPinned) R.drawable.icon_unpin else R.drawable.ic_pin,
+                0,
+                0,
+                0
+            )
+            val type = object : TypeToken<ArrayList<String>>() {}.type
+//            var jsonString = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"pinnedConvo")!!
+//            var pinnedConvo : ArrayList<String> = Gson().fromJson(jsonString, type)
+            if(isPinned){
+                Constants.PINNED_CONVO.add(intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
+//                pinnedConvo.add(intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
+                conversationListViewModel.savePinnedConversationToDB()
+                conversationDetailsViewModel.conversationDetails.value?.isPinned = true
+            }else{
+                Constants.PINNED_CONVO.remove(intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
+//                pinnedConvo.remove(intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
+                conversationListViewModel.savePinnedConversationToDB()
+                conversationDetailsViewModel.conversationDetails.value?.isPinned = false
+            }
+        }
+    }
+    private fun initPinButtonUI(isPinned: Boolean) {
+        binding.conversationPinButton.apply {
+            text = if (isPinned) {
+                context.getString(R.string.details_unpin_conversation)
+            } else {
+                context.getString(R.string.details_pin_conversation)
+            }
+            setCompoundDrawablesWithIntrinsicBounds(
+                if (isPinned) R.drawable.icon_unpin else R.drawable.ic_pin,
+                0,
+                0,
+                0
+            )
         }
     }
     private fun showNoInternetSnackbar(show: Boolean) {

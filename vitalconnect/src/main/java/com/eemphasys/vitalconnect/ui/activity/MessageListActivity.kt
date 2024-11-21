@@ -1,26 +1,19 @@
 package com.eemphasys.vitalconnect.ui.activity
 
-import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
 import android.util.Log
-import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.ui.text.toLowerCase
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
@@ -35,7 +28,6 @@ import com.eemphasys.vitalconnect.common.enums.ConversationsError
 import com.eemphasys.vitalconnect.common.enums.MessageType
 import com.eemphasys.vitalconnect.common.extensions.getErrorMessage
 import com.eemphasys.vitalconnect.common.extensions.lazyViewModel
-import com.eemphasys.vitalconnect.common.extensions.onSubmit
 import com.eemphasys.vitalconnect.common.extensions.showSnackbar
 import com.eemphasys.vitalconnect.common.extensions.showToast
 import com.eemphasys.vitalconnect.common.injector
@@ -129,7 +121,7 @@ class MessageListActivity: AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        ChatAppModel.FirebaseLogEventListener?.screenLogEvent(this,"MessageList","MessageListActivity")
+        ChatAppModel.FirebaseLogEventListener?.screenLogEvent(this,"VC_MessageList","MessageListActivity")
     }
         override fun onCreateOptionsMenu(menu: Menu): Boolean {
             super.onCreateOptionsMenu(menu)
@@ -145,13 +137,20 @@ class MessageListActivity: AppCompatActivity() {
                     messageListViewModel.conversationSid
                 )
             }
+            ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_MessageList_ConversationDetailsBtnClick",
+                "MessageList",
+                "MessageListActivity"
+            )
             return super.onOptionsItemSelected(item)
+
         }
 
         private fun initViews() {
             EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " initViews Called")
             setSupportActionBar(binding.conversationToolbar)
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            binding.conversationToolbar.setNavigationIcon(R.drawable.back_button)
+            supportActionBar?.setHomeAsUpIndicator(R.drawable.back_button)
             binding.conversationToolbar.setNavigationOnClickListener { onBackPressed() }
             val adapter = MessageListAdapter(
                 onDisplaySendError = { message ->
@@ -191,6 +190,10 @@ class MessageListActivity: AppCompatActivity() {
 //            }
             binding.messageSendButton.setOnClickListener {
                 sendMessage()
+                ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_MessageList_SendBtnClick",
+                    "MessageList",
+                    "MessageListActivity"
+                )
             }
             binding.messageInput.doAfterTextChanged {
                 messageListViewModel.typing()
@@ -272,11 +275,22 @@ class MessageListActivity: AppCompatActivity() {
             binding.messageInputHolder.setEndIconOnClickListener {
                 AttachFileDialog.getInstance(messageListViewModel.conversationSid)
                     .showNow(supportFragmentManager, null)
+
+                ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_MessageList_AttachBtnClick",
+                    "MessageList",
+                    "MessageListActivity"
+                )
             }
             messageListViewModel.isNetworkAvailable.observe(this) { isNetworkAvailable ->
                 showNoInternetSnackbar(!isNetworkAvailable)
-                if(!isNetworkAvailable)
-                    this.finish()
+                if(!isNetworkAvailable){
+                    Constants.showPopup(layoutInflater, this)
+                    var layout = layoutInflater.inflate(R.layout.activity_message_list, null)
+                    var text = layout.findViewById<TextView>(R.id.textBox)
+                    text.text = "offline"
+                    text.setBackgroundColor(ContextCompat.getColor(this, R.color.text_gray))
+                }
+//                    this.finish()
             }
             val editText = findViewById<TextInputEditText>(R.id.messageInput)
             val maxLength = 300 //  max length of text input

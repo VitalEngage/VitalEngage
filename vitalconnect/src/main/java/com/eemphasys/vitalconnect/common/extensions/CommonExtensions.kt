@@ -101,6 +101,7 @@ fun Context.getErrorMessage(
         ConversationsError.MESSAGE_COPY_FAILED -> getString(R.string.err_failed_to_copy_message)
         ConversationsError.INVALID_CONTENT_TYPE -> "Invalid media content type."
         ConversationsError.FILE_TOO_LARGE -> "Select a single file: either a JPEG or PNG up to 5MB, or a PDF up to 600KB"
+        ConversationsError.FAILED_TO_CREATE_CONVERSATION -> "Sorry, Unable to start chat with invalid number."
 
         else -> getString(defaultId)
     }

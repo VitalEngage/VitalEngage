@@ -2,7 +2,6 @@ package com.eemphasys.vitalconnectdev.data
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.preference.PreferenceManager
 import android.util.Log
 
 class LoginConstants   {
@@ -29,25 +28,80 @@ class LoginConstants   {
         var AUTH_TOKEN = ""
         var FULL_NAME =""
         var IS_AADENABLED = "false"
-        var TIMESTAMP = ""
         var IS_STANDALONE = "true"
-        var USER_SMS_ALERT = ""
+//        var USER_SMS_ALERT = ""
         var SHOW_DESIGNATION = ""
         var SHOW_DEPARTMENT = ""
         var EMAIL = ""
         var MOBILENUMBER = ""
-        var WITH_CONTEXT = "false"
+        var WITH_CONTEXT = "true"
         var OPEN_CHAT = "false"
         var CONTEXT = "QWERTY"
         var DEALER_NAME = ""
         var PINNED_CONVO : ArrayList<String> = arrayListOf()
         var SHOW_INTERNAL_CONTACTS = "true"
         var SHOW_EXTERNAL_CONTACTS = "true"
+        var EXPIRATION_DURATION = 0
+        var REFRESH_TOKEN = ""
 
 
 
-        val CONTACTS = ""
-        val WEBUSERS = ""
+        val CONTACTS =
+            """{
+            "contacts" : 
+            [
+                  {
+                     "name":"Ankush Belorkar",
+                     "number":"+919422855735",
+                     "customerName":"",
+                     "initials":"",
+                     "designation":"Technician",
+                     "department":"Service",
+                     "customer":"Customer",
+                     "countryCode":"",
+                     "role":"",
+                     "bpId":""
+                  },
+                  {
+                     "name":"Mark Moulder",
+                     "number":"8600125105",
+                     "customerName":"",
+                     "initials":"",
+                     "designation":"",
+                     "department":"",
+                     "customer":"",
+                     "countryCode":"+91",
+                     "role":"",
+                     "bpId":""
+                  }
+            ]
+       } """.trimIndent()
+
+        val WEBUSERS = """{
+            "webUser":[
+            {
+                "name":"Ankush Belorkar",
+                "userName":"abelorkar@e-emphasys.com",
+                "initials":"",
+                "designation":"Technician",
+                "department":"",
+                "customer":"VitalEdge",
+                "countryCode":"",
+                "role":""
+            },
+            {
+                "name":"Himanshu Mahajan",
+                "userName":"hmahajan@e-emphasys.com",
+                "initials":"",
+                "designation":"Supervisor",
+                "department":"Xapps",
+                "customer":"VitalEdge",
+                "countryCode":"",
+                "role":""
+            }
+            ]
+        }
+        """.trimIndent()
 
         const val MyPREFERENCES = "MyVitaltextPrefs"
         var sharedpreferences: SharedPreferences? = null

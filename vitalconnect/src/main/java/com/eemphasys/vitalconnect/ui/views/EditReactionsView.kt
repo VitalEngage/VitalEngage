@@ -5,8 +5,10 @@ import android.util.AttributeSet
 import android.widget.LinearLayout
 import androidx.core.view.children
 import androidx.emoji.widget.EmojiTextView
+import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.enums.Reaction
 import com.eemphasys.vitalconnect.common.enums.Reactions
+import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import kotlin.properties.Delegates
 
 class EditReactionsView @JvmOverloads constructor(
@@ -53,6 +55,12 @@ class EditReactionsView @JvmOverloads constructor(
         }
 
         onChangeListener()
+
+        ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(context, "VC_MessageList_ReactionClick",
+            "MessageList",
+            "EditReactionsView"
+        )
+
     }
 
     private fun addReaction(reaction: Reaction) {

@@ -14,7 +14,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.ParticipantColorManager
 import com.eemphasys.vitalconnect.common.AppContextHelper
+import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.SingleLiveEvent
+import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.data.models.ContactListViewItem
 import com.eemphasys.vitalconnect.databinding.RowContactItemBinding
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
@@ -42,6 +44,10 @@ class ContactListAdapter(
                 if (position != RecyclerView.NO_POSITION) {
                     val contact = itemList[position]
                     itemClickListener.onParticipantIconClick(contact)
+                    ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_Contacts_AvatarClick",
+                        "Contacts",
+                        "ContactListAdapter"
+                    )
                 }
             }
         }
@@ -93,10 +99,12 @@ class ContactListAdapter(
             }
             if(!item.isGlobal && isFirst && item.type == "SMS"){
                 Log.d("default", "${item.name} $isFirst")
-                itemBinding.defaultContact.visibility = View.VISIBLE
+//                itemBinding.defaultContact.visibility = View.VISIBLE
+                itemBinding.defaultLabel.visibility = View.VISIBLE
             }
             else{
-                itemBinding.defaultContact.visibility = View.GONE
+//                itemBinding.defaultContact.visibility = View.GONE
+                itemBinding.defaultLabel.visibility = View.GONE
             }
 
             changeButtonBackgroundColor(
@@ -141,6 +149,10 @@ class ContactListAdapter(
         notifyDataSetChanged()
     }
     fun getPositionForLetter(letter: Char): Int {
+        ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_Contacts_AlphabetsScrollbarClick",
+            "Contacts",
+            "ContactListAdapter"
+        )
         for (i in itemList.indices) {
             if (itemList[i].name.startsWith(letter, ignoreCase = true)) {
                 return i

@@ -7,26 +7,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.eemphasys.vitalconnect.api.RetrofitClient
-import com.eemphasys.vitalconnect.api.RetrofitHelper
-import com.eemphasys.vitalconnect.api.TwilioApi
 import com.eemphasys.vitalconnect.api.data.SendOtpReq
 import com.eemphasys.vitalconnect.api.data.UpdatePasswordReq
-import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.AppContextHelper
+import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys.vitalconnectdev.common.SingleLiveEvent
 import com.eemphasys.vitalconnectdev.common.call
 import com.eemphasys.vitalconnectdev.common.enums.ConversationsError
 import com.eemphasys.vitalconnectdev.data.LoginConstants
-import kotlinx.coroutines.launch
 import com.eemphasys.vitalconnectdev.manager.ConnectivityMonitor
 import com.eemphasys.vitalconnectdev.manager.LoginManager
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.twilio.util.TwilioException
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.TimeZone
+import kotlinx.coroutines.launch
 
 class LoginViewModel(
     private val loginManager: LoginManager,
@@ -62,8 +57,7 @@ class LoginViewModel(
         isLoading.value = true
         viewModelScope.launch {
             try {
-                LoginConstants.TIMESTAMP = getTimeStamp()
-                loginManager.getAuthenticationToken(identity, password, getTimeStamp(),applicationContext)
+                loginManager.getAuthenticationToken(identity, password, Constants.getTimeStamp(),applicationContext)
                 if(!LoginConstants.AUTH_TOKEN.isNullOrEmpty()) {
                     loginManager.getTwilioToken(applicationContext)
 //                    loginManager.getTwilioclient()
@@ -104,13 +98,6 @@ class LoginViewModel(
             }
         }
     }
-
-    fun getTimeStamp(): String{
-        val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
-        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
-        sdf.timeZone = TimeZone.getTimeZone("UTC")
-        return sdf.format(calendar.time)
-    }
     private fun validateSignInDetails(identity: String, password: String): ConversationsError {
         return when {
             identity.isBlank() -> ConversationsError.EMPTY_USERNAME_AND_PASSWORD
@@ -122,7 +109,7 @@ class LoginViewModel(
 
     fun isAzureADEnabled (tenant : String,applicationContext: Context){
         viewModelScope.launch {
-            val result = RetrofitClient.retrofitWithToken.validateTenant(tenant)
+            val result = RetrofitClient.getRetrofitWithToken().validateTenant(tenant)
             if(result.isSuccessful) {
                 Log.d("isAzureAdenabled", result.body()!!.isAADEnabled.toString())
                 LoginConstants.IS_AADENABLED = result.body()!!.isAADEnabled.toString()
@@ -147,7 +134,7 @@ class LoginViewModel(
     fun sendOtp(tenantCode: String,userName: String,applicationContext: Context,callback: (Boolean) -> Unit) {
         viewModelScope.launch {
             val requestBody = SendOtpReq(userName, tenantCode)
-            val response = RetrofitClient.retrofitWithToken.sendOTP(requestBody)
+            val response = RetrofitClient.getRetrofitWithToken().sendOTP(requestBody)
             callback(response.isSuccessful)
         }
     }
@@ -155,7 +142,7 @@ class LoginViewModel(
     fun updatePassword(tenantCode : String, userName:String,password:String,otp:String,applicationContext: Context){
         viewModelScope.launch {
             val requestBody = UpdatePasswordReq(tenantCode, userName, password, otp)
-            val response = RetrofitClient.retrofitWithToken.updatePassword(requestBody)
+            val response = RetrofitClient.getRetrofitWithToken().updatePassword(requestBody)
             if(response.isSuccessful) {
                 isPasswordUpdated.value = response.isSuccessful
             }

@@ -8,7 +8,13 @@
         <variable
             name="details"
             type="com.eemphasys.vitalconnect.data.models.ConversationDetailsViewItem" />
+        <variable
+            name="viewModel"
+            type="com.eemphasys.vitalconnect.viewModel.ConversationDetailsViewModel" />
     </data>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/conversationDetailsLayout"
@@ -19,15 +25,17 @@
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/conversation_details_app_bar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            app:elevation="0dp">
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/conversation_details_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@color/white"
+                android:background="@color/activity_title_back_color"
                 app:titleCentered="true"
-                app:titleTextAppearance="@style/AppBar_Title"/>
+                app:titleTextAppearance="@style/AppBar_Title"
+                app:elevation="0dp"/>
 <!--            style="@style/Widget.MaterialComponents.Toolbar.Primary"-->
 <!--            android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"-->
 
@@ -171,8 +179,9 @@
                             android:background="?attr/selectableItemBackground"
                             android:drawablePadding="16dp"
                             android:gravity="center_vertical"
-                            android:drawableStart="@{details.isPinned ? @drawable/icon_unpin : @drawable/ic_pin }"
+                            android:onClick="@{() -> viewModel.onPinConversationClicked(details.isPinned)}"
                             android:text="@{details.isPinned ? @string/details_unpin_conversation : @string/details_pin_conversation }"
+                            android:drawableStart="@{details.isPinned ? @drawable/icon_unpin : @drawable/ic_pin }"
                             style="@style/TextViewConversationDetails"
                             android:padding="16dp" />
                         <View
@@ -278,5 +287,26 @@
             layout="@layout/view_add_non_chat_participant_screen" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
+    <!-- TextView (TextBox) on top of the layout -->
+    <TextView
+        android:id="@+id/textBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/online"
+        android:textColor="@color/white"
+        android:layout_marginStart="-13dp"
+        android:layout_marginLeft="-11dp"
+        android:background="@color/completed"
+        android:paddingLeft="5dp"
+        android:paddingTop="10dp"
+        android:paddingRight="5dp"
+        android:paddingBottom="5dp"
+        android:textSize="8sp"
+        android:rotation="-90"
+        android:layout_gravity="start|center_vertical" /> <!-- This will center the TextView in the layout -->
+
+</FrameLayout>
 
 </layout>

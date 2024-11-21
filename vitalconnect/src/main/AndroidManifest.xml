@@ -14,29 +14,34 @@
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
+            android:screenOrientation="sensorPortrait"
             android:noHistory="true">
         </activity>
 
         <activity
             android:name=".ui.activity.ConversationListActivity"
-            android:theme="@style/AppTheme.null">
+            android:theme="@style/AppTheme.null"
+            android:screenOrientation="sensorPortrait">
 
         </activity>
         <activity
             android:name=".ui.activity.MessageListActivity"
-            android:theme="@style/AppTheme.null">
+            android:theme="@style/AppTheme.null"
+            android:screenOrientation="sensorPortrait">
 
 
         </activity>
         <activity
             android:name=".ui.activity.ConversationDetailsActivity"
-            android:theme="@style/AppTheme.null">
+            android:theme="@style/AppTheme.null"
+            android:screenOrientation="sensorPortrait">
 
 
         </activity>
         <activity
             android:name=".ui.activity.ParticipantListActivity"
-            android:theme="@style/AppTheme.null">
+            android:theme="@style/AppTheme.null"
+            android:screenOrientation="sensorPortrait">
 
         </activity>
 

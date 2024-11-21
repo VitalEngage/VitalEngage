@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.eemphasys.vitalconnect.R
+import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.common.extensions.enableErrorResettingOnTextChanged
@@ -32,8 +33,17 @@ class NewConversationDialog: BaseBottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.newConversationNameInputHolder.enableErrorResettingOnTextChanged()
         binding.newConversationNameInput.onSubmit { createConversation() }
-        binding.createConversation.setOnClickListener { createConversation() }
-        binding.cancelButton.setOnClickListener { dismiss() }
+        binding.createConversation.setOnClickListener { createConversation()
+            ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_Contacts_NewConversationDialog_ConfirmClick",
+                "Contacts",
+                "NewConversationDialog"
+            )
+        }
+        binding.cancelButton.setOnClickListener { dismiss()
+            ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_Contacts_NewConversationDialog_CancelClick",
+                "Contacts",
+                "NewConversationDialog"
+            )}
     }
 
     private fun createConversation() {

@@ -1,39 +1,45 @@
 package com.eemphasys.vitalconnectdev.ui
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.view.View
-import android.view.View.GONE
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import com.eemphasys.vitalconnect.MainActivity
-import com.eemphasys.vitalconnect.common.ChatAppModel
-import com.eemphasys.vitalconnect.common.extensions.hideKeyboard
-import android.Manifest
 import android.os.CountDownTimer
 import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
+import android.view.View
+import android.view.View.GONE
 import android.view.View.VISIBLE
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.eemphasys.vitalconnect.MainActivity
+import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.extensions.enableErrorResettingOnTextChanged
+import com.eemphasys.vitalconnect.common.extensions.hideKeyboard
+import com.eemphasys.vitalconnect.interfaces.FirebaseLogEventListener
 import com.eemphasys.vitalconnectdev.R
 import com.eemphasys.vitalconnectdev.common.enums.ConversationsError
-import com.eemphasys.vitalconnectdev.common.enums.ConversationsError.*
+import com.eemphasys.vitalconnectdev.common.enums.ConversationsError.EMPTY_PASSWORD
+import com.eemphasys.vitalconnectdev.common.enums.ConversationsError.EMPTY_USERNAME
+import com.eemphasys.vitalconnectdev.common.enums.ConversationsError.EMPTY_USERNAME_AND_PASSWORD
+import com.eemphasys.vitalconnectdev.common.enums.ConversationsError.TOKEN_ACCESS_DENIED
+import com.eemphasys.vitalconnectdev.common.enums.ConversationsError.USERNAME_PASSWORD_INCORRECT
 import com.eemphasys.vitalconnectdev.common.extensions.lazyViewModel
 import com.eemphasys.vitalconnectdev.common.extensions.onSubmit
 import com.eemphasys.vitalconnectdev.common.injector
 import com.eemphasys.vitalconnectdev.data.LoginConstants
 import com.eemphasys.vitalconnectdev.databinding.ActivityLoginBinding
+import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.google.android.material.snackbar.Snackbar
-import  com.eemphasys_enterprise.commonmobilelib.EETLog
 import java.util.Locale
 
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : AppCompatActivity(),FirebaseLogEventListener {
 
     val binding by lazy { ActivityLoginBinding.inflate(layoutInflater) }
 
@@ -257,12 +263,8 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun initializeChatAppModel(){
-//        ChatAppModel.init(
-//            LoginConstants.BASE_URL,
-//            LoginConstants.TWILIO_TOKEN,
-//            packageName.toString()
-//
-//        )
+        ChatAppModel.init("","","",this)
+
         Constants.saveStringToVitalTextSharedPreferences(this,"baseUrl",LoginConstants.BASE_URL)
         Constants.saveStringToVitalTextSharedPreferences(this,"packageName",packageName.toString())
     }
@@ -458,8 +460,6 @@ class LoginActivity : AppCompatActivity() {
         fun start(context: Context){
             val intent = Intent(context, MainActivity::class.java)
             intent.putExtra("username", LoginConstants.CURRENT_USER)
-            intent.putExtra("clientID", LoginConstants.CLIENT_ID)
-            intent.putExtra("clientSecret", LoginConstants.CLIENT_SECRET)
             intent.putExtra("baseurl",LoginConstants.BASE_URL)
             intent.putExtra("tenantcode",LoginConstants.TENANT_CODE)
             intent.putExtra("parentApp",LoginConstants.PRODUCT)
@@ -475,7 +475,6 @@ class LoginActivity : AppCompatActivity() {
             intent.putExtra("customerNumber","9876543210")
             intent.putExtra("customerName","DummyUser")
             intent.putExtra("showConversations","true")
-            intent.putExtra("userSMSAlert",LoginConstants.USER_SMS_ALERT)
             intent.putExtra("showDepartment",LoginConstants.SHOW_DEPARTMENT)
             intent.putExtra("showDesignation",LoginConstants.SHOW_DESIGNATION)
             intent.putExtra("department","")
@@ -496,8 +495,24 @@ class LoginActivity : AppCompatActivity() {
             intent.putExtra("role","")
             intent.putExtra("bpId","")
             intent.putExtra("isAutoRegistrationEnabled","false")
+            intent.putExtra("refreshToken",LoginConstants.REFRESH_TOKEN)
+            intent.putExtra("expirationDuration",LoginConstants.EXPIRATION_DURATION)
             context.startActivity(intent)
         }
+    }
+
+
+    override fun screenLogEvent(context: Context, screenName: String, className: String) {
+        Log.d("GTMscreenlogevent",   screenName +  " "  +   className)
+    }
+
+    override fun buttonLogEvent(
+        context: Context,
+        eventName: String,
+        screenName: String,
+        className: String
+    ) {
+        Log.d("GTMbuttonlogevent",   screenName + " "  +  eventName + " "  +   className)
     }
 
 }

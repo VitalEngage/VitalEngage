@@ -63,7 +63,7 @@ class ContactListViewModel(
 
     private val isShowProgress = MutableLiveData<Boolean>()
     val onParticipantAdded = SingleLiveEvent<String>()
-    private val onDetailsError = SingleLiveEvent<ConversationsError>()
+    val onDetailsError = SingleLiveEvent<ConversationsError>()
     val isNetworkAvailable = connectivityMonitor.isNetworkAvailable.asLiveData(viewModelScope.coroutineContext)
 
     private fun setDataLoading(loading: Boolean) {
@@ -96,8 +96,7 @@ class ContactListViewModel(
                 val conversationSid = conversationListManager.createConversation(friendlyName,attributes)
                 conversationListManager.joinConversation(conversationSid)
                 addNonChatParticipant(phoneNumber, Constants.getStringFromVitalTextSharedPreferences(applicationContext,"proxyNumber")!!,friendlyName,conversationSid)
-                MessageListActivity.startfromFragment(applicationContext,conversationSid)
-                Log.d("nonchat participant","participant added")
+//                MessageListActivity.startfromFragment(applicationContext,conversationSid)
             }
             else {
                 val conversationSid = conversationListManager.createConversation(friendlyName,attributes)
@@ -122,6 +121,8 @@ class ContactListViewModel(
         } catch (e: TwilioException) {
             onConversationError.value = ConversationsError.CONVERSATION_CREATE_FAILED
             e.printStackTrace()
+
+            Log.d("thrown",e.message.toString())
 
             EETLog.error(
                 AppContextHelper.appContext!!, LogConstants.logDetails(
@@ -148,7 +149,7 @@ class ContactListViewModel(
     }
     fun checkName(friendlyName: String, callback: CheckNameCallback) {
     val request = ConversationSidFromFriendlyNameRequest(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!, Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!, friendlyName)
-    val existingWebConversation = RetrofitClient.retrofitWithToken.getTwilioConversationSidFromFriendlyName(request)
+    val existingWebConversation = RetrofitClient.getRetrofitWithToken().getTwilioConversationSidFromFriendlyName(request)
 
     existingWebConversation.enqueue(object : Callback<List<ConversationSidFromFriendlyNameResponse>> {
         override fun onResponse(
@@ -175,7 +176,7 @@ class ContactListViewModel(
 
     fun checkExistingconversation(contact : ContactListViewItem){
         var request = ConversationSidFromFriendlyNameRequest(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"context")!!)
-        val existingWebConversation = RetrofitClient.retrofitWithToken.getTwilioConversationSidFromFriendlyName(request)
+        val existingWebConversation = RetrofitClient.getRetrofitWithToken().getTwilioConversationSidFromFriendlyName(request)
 
         existingWebConversation.enqueue(object :
             Callback<List<ConversationSidFromFriendlyNameResponse>> {
@@ -226,7 +227,7 @@ class ContactListViewModel(
         webUser.add(webParticipant(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"friendlyName")!!,""))
         webUser.add(webParticipant(contact.email,contact.name,""))
         val request = addParticipantToWebConversationRequest(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,webUser,conversationSid,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"context")!!,isAutoRegistrationEnabled,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"proxyNumber")!!)
-        val participantDetails = RetrofitClient.retrofitWithToken.addParticipantToWebToWebConversation(request)
+        val participantDetails = RetrofitClient.getRetrofitWithToken().addParticipantToWebToWebConversation(request)
 
         participantDetails.enqueue(object: Callback<List<webParticipant>> {
             override fun onResponse(
@@ -259,7 +260,7 @@ class ContactListViewModel(
             contact.email
         )
 
-        RetrofitClient.retrofitWithToken.getSearchedUsers(request).enqueue(object : Callback<List<SearchUsersResponse>> {
+        RetrofitClient.getRetrofitWithToken().getSearchedUsers(request).enqueue(object : Callback<List<SearchUsersResponse>> {
             override fun onResponse(
                 call: Call<List<SearchUsersResponse>>,
                 response: Response<List<SearchUsersResponse>>
@@ -326,6 +327,8 @@ class ContactListViewModel(
             Log.d("addnonchatparticipant", "$phone $proxyPhone $friendlyName $sid")
             autoParticipantListManager.addNonChatParticipant(phone, proxyPhone,friendlyName,sid)
             onParticipantAdded.value = phone
+            Log.d("nonchat participant","participant added")
+            MessageListActivity.startfromFragment(applicationContext,sid)
             LogTraceHelper.trace(
                 applicationContext,
                 LogTraceConstants.traceDetails(
@@ -338,8 +341,9 @@ class ContactListViewModel(
                 LogTraceConstants.getUtilityData(applicationContext)!!
             )
         } catch (e: TwilioException) {
-            onDetailsError.value = ConversationsError.PARTICIPANT_ADD_FAILED
+            onDetailsError.value = ConversationsError.FAILED_TO_CREATE_CONVERSATION
             e.printStackTrace()
+            conversationListManager.removeConversation(sid)
 
             EETLog.error(
                 AppContextHelper.appContext!!, LogConstants.logDetails(

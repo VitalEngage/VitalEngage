@@ -63,7 +63,7 @@ class MainViewModel(private val mainManager: MainManager) : ViewModel() {
     fun getUserAlertStatus(applicationContext: Context) = viewModelScope.launch {
         EETLog.saveUserJourney("vitaltext:  Mainviewmodel getUserAlertStatus Called")
         val request = GetUserAlertStatusRequest(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!)
-        val response = RetrofitClient.retrofitWithToken.getUserAlertStatus(request)
+        val response = RetrofitClient.getRetrofitWithToken().getUserAlertStatus(request)
         if(response.isSuccessful) {
             Constants.saveStringToVitalTextSharedPreferences(applicationContext,"userSMSAlert", response.body()!!.status.lowercase())
         }

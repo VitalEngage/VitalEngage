@@ -1,26 +1,37 @@
 package com.eemphasys.vitalconnect.common
 
+import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Build
-import android.preference.PreferenceManager
+import android.text.TextUtils
 import android.util.Log
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.FrameLayout
+import android.widget.LinearLayout
+import android.widget.PopupWindow
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import com.eemphasys.vitalconnect.R
-import com.eemphasys.vitalconnect.api.data.ContactListResponse
+import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.data.models.ContactListViewItem
+import com.eemphasys.vitalconnect.data.models.ConversationListViewItem
 import com.eemphasys.vitalconnect.data.models.ParticipantListViewItem
-import com.google.gson.Gson
 import com.google.i18n.phonenumbers.NumberParseException
 import com.google.i18n.phonenumbers.PhoneNumberUtil
-import okhttp3.OkHttpClient
 import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.lang.reflect.Field
+import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Random
-import java.util.concurrent.TimeUnit
+import java.util.TimeZone
 
 class Constants   {
     companion object{
@@ -86,6 +97,8 @@ class Constants   {
         var PAGE_SIZE = 10000.0 //keep this floating
         var ROLE = ""
         var BPID = ""
+        var ALLUSERS : MutableList<ContactListViewItem> = arrayListOf()
+        var ALLCONTACTS : MutableList<ContactListViewItem> = arrayListOf()
 
 
         const val MyPREFERENCES = "MyVitaltextPrefs"
@@ -95,7 +108,7 @@ class Constants   {
             context?.let {
                 sharedpreferences = context.getSharedPreferences(MyPREFERENCES,Context.MODE_PRIVATE)
                 val value = sharedpreferences?.getString(key, null) // Use null as default value to check if key exists
-//                Log.d("SharedPreferencesUtil", "Retrieved value: $value for key: $key")
+                Log.d("SharedPreferencesUtilVT", "Retrieved value: $value for key: $key")
                 return value
             } ?: Log.e("SharedPreferencesUtil", "Context is null")
             return null
@@ -108,8 +121,27 @@ class Constants   {
                 val editor = sharedpreferences?.edit()
                 editor?.putString(key, value)
                 editor?.apply()
-//                Log.d("SharedPreferencesUtil", "Saved value: $value with key: $key")
+                Log.d("SharedPreferencesUtilVT", "Saved value: $value with key: $key")
             } ?: Log.e("SharedPreferencesUtil", "Context is null")
+        }
+
+        @JvmStatic
+        fun clearVitalTextSharedPreferences(context: Context?) {
+            context?.let {
+                val sharedPreferences = it.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE)
+                val editor = sharedPreferences.edit()
+                editor.clear() // Clear all data
+                editor.apply()
+                Log.d("SharedPreferencesUtil", "All shared preferences cleared for vitaltext.")
+            } ?: Log.e("SharedPreferencesUtil", "Context is null")
+        }
+
+        @JvmStatic
+        fun getTimeStamp(): String{
+            val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+            val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+            sdf.timeZone = TimeZone.getTimeZone("UTC")
+            return sdf.format(calendar.time)
         }
         @JvmStatic
         fun getInitials(name: String): String {
@@ -179,6 +211,49 @@ class Constants   {
         }
 
         @JvmStatic
+         fun showPopup(layoutInflater: LayoutInflater, activity : Activity) {
+            // Inflate the popup layout
+            val inflater = layoutInflater
+            val popupView = inflater.inflate(R.layout.error_popup_layout,null)
+            val errorText = popupView.findViewById<TextView>(R.id.error_text)
+
+            errorText.text = "You appear to be offline. While offline you cannot access chat."
+
+
+            // Create the PopupWindow
+            val popupWindow = PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            // Create a dimmed background view
+            val dimBackground = View(AppContextHelper.appContext).apply {
+                setBackgroundColor(Color.parseColor("#80000000")) // Semi-transparent black
+                layoutParams = FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
+                visibility = View.VISIBLE
+            }
+
+            // Get the root view
+            val rootView = activity.window.decorView.findViewById<View>(android.R.id.content) as ViewGroup
+            rootView.addView(dimBackground)
+            // Close the popup when the button is clicked
+            val closeButton: TextView = popupView.findViewById(R.id.ok_button)
+            closeButton.setOnClickListener {
+                popupWindow.dismiss()
+                rootView.removeView(dimBackground)
+                activity.finish()
+            }
+
+            // Show the popup
+            popupWindow.isFocusable = true
+            popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0)
+
+            // Set OnDismissListener to remove the dim background
+            popupWindow.setOnDismissListener {
+                rootView.removeView(dimBackground)
+            }
+        }
+
+        @JvmStatic
         fun cleanedNumber(phoneNumber:String): String{
             // Remove spaces, brackets, and hyphens
             return  phoneNumber.replace("[\\s()\\-]".toRegex(), "")
@@ -190,6 +265,12 @@ class Constants   {
                 """^\+[0-9]{5,16}$""")
 
             return phoneNumberRegex.matches(name)
+        }
+
+        @JvmStatic
+        fun isValidEmail(email: String): Boolean {
+            val emailRegex = "^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}$"
+            return email.matches(emailRegex.toRegex())
         }
         @JvmStatic
         fun isValidPhoneNumber(phoneNumberStr: String, defaultRegion: String): Boolean {

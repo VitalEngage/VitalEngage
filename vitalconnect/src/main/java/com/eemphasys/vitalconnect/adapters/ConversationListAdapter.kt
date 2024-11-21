@@ -17,6 +17,7 @@ import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.ParticipantColorManager
+import com.eemphasys.vitalconnect.common.SingleLiveEvent
 import com.eemphasys.vitalconnect.data.models.ConversationListViewItem
 import com.eemphasys.vitalconnect.databinding.RowConversationItemBinding
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
@@ -32,6 +33,7 @@ class ConversationListAdapter(private val callback: OnConversationEvent, private
     init {
         setHasStableIds(true) // Enable stable IDs
     }
+    val sizeChange = SingleLiveEvent<Int>()
     val type = object : TypeToken<ArrayList<String>>() {}.type
     var jsonString = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"contextList")
 
@@ -59,8 +61,10 @@ class ConversationListAdapter(private val callback: OnConversationEvent, private
         return ViewHolder(binding)
     }
 
-    override fun getItemCount(): Int = conversations.size
-
+    override fun getItemCount(): Int {
+        sizeChange.value = conversations.size
+        return conversations.size
+    }
     override fun getItemId(position: Int): Long {
         // Return a unique ID for the item at the given position
         return conversations[position].sid.hashCode().toLong()
