@@ -58,6 +58,7 @@ class ConversationListViewModel(
     val onConversationMuted = SingleLiveEvent<Boolean>()
     val onConversationError = SingleLiveEvent<ConversationsError>()
     val pinConversation = SingleLiveEvent<Boolean>()
+    val maxLimitPin = SingleLiveEvent<Unit>()
 
     val type = object : TypeToken<ArrayList<String>>() {}.type
     var jsonString = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"pinnedConvo") ?: ""
@@ -252,6 +253,10 @@ class ConversationListViewModel(
             return@launch
         }
         try {
+            if(Constants.PINNED_CONVO.contains(conversationSid)){
+                Constants.PINNED_CONVO.remove(conversationSid)
+                savePinnedConversationToDB{}
+            }
             setConversationLoading(conversationSid, true)
             conversationListManager.leaveConversation(conversationSid)
             onConversationLeft.call()
@@ -304,11 +309,17 @@ class ConversationListViewModel(
         EETLog.saveUserJourney("vitaltext:  ConversationListViewModel savePinnedConversation Called")
         if(add){
 //            pinnedConvo.add(conversation.sid)
-            Constants.PINNED_CONVO.add(conversation.sid)
-            conversation.isPinned= add
-            pinConversation.value = true
-            adapter.notifyDataSetChanged()
-            getUserConversations()
+//            Constants.PINNED_CONVO.add(conversation.sid)
+            var added = Constants.addToPinnedConvo(conversation.sid)
+            if(added) {
+                conversation.isPinned = add
+                pinConversation.value = true
+                adapter.notifyDataSetChanged()
+                getUserConversations()
+            }
+            else{
+                maxLimitPin.call()
+            }
 
         }
         else{
@@ -320,10 +331,10 @@ class ConversationListViewModel(
             getUserConversations()
         }
 //        Constants.saveStringToVitalTextSharedPreferences(applicationContext,"pinnedConvo",Gson().toJson(pinnedConvo!!))
-            savePinnedConversationToDB()
+            savePinnedConversationToDB{}
     }
 
-    fun savePinnedConversationToDB(){
+    fun savePinnedConversationToDB(callback: (() -> Unit)){
         viewModelScope.launch {
                 val request = SavePinnedConversationRequest(
                 Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,
@@ -333,6 +344,7 @@ class ConversationListViewModel(
             )
 
             var response = RetrofitClient.getRetrofitWithToken().savePinnedConversation(request)
+            callback.invoke()
         }
     }
 }

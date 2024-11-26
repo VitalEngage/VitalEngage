@@ -161,6 +161,9 @@ class ConversationDetailsViewModel(
         }
         try {
             setShowProgress(true)
+            if(Constants.PINNED_CONVO.contains(conversationSid)){
+                Constants.PINNED_CONVO.remove(conversationSid)
+            }
             conversationListManager.leaveConversation(conversationSid)
             onConversationLeft.call()
         } catch (e: TwilioException) {

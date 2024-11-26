@@ -232,6 +232,10 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
             showSnackbar(message)
         }
 
+        conversationListViewModel.maxLimitPin.observe(viewLifecycleOwner){
+            showSnackbar(getString(R.string.pin_limit))
+        }
+
         binding.conversationRefresh.setOnRefreshListener { conversationListViewModel.getUserConversations() }
         binding.conversationList.adapter = adapter
         binding.conversationList.scrollToPosition(0)

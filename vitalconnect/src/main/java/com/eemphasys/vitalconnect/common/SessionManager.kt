@@ -67,7 +67,7 @@ class SessionManager {
     fun updateAccessToken(newtoken: String, refreshToken: String) {
         Constants.saveStringToVitalTextSharedPreferences(
             AppContextHelper.appContext,
-            "authtoken",
+            "authToken",
             newtoken
         )
         Constants.saveStringToVitalTextSharedPreferences(

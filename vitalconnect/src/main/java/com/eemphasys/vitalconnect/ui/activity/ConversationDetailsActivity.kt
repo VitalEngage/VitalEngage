@@ -396,8 +396,10 @@ class ConversationDetailsActivity : AppCompatActivity() {
 
         conversationDetailsViewModel.onConversationLeft.observe(this) {
 //            ConversationListActivity.start(this)
-            ConversationListActivity.start(this, 2)
-            finish()
+            conversationListViewModel.savePinnedConversationToDB {
+                ConversationListActivity.start(this, 2)
+                finish()
+            }
         }
 
         conversationDetailsViewModel.onParticipantAdded.observe(this) { identity ->
@@ -423,29 +425,28 @@ class ConversationDetailsActivity : AppCompatActivity() {
 
     private fun updatePinButtonUI(isPinned: Boolean) {
         binding.conversationPinButton.apply {
-            text = if (isPinned) {
-                context.getString(R.string.details_unpin_conversation)
-            } else {
-                context.getString(R.string.details_pin_conversation)
-            }
-            setCompoundDrawablesWithIntrinsicBounds(
-                if (isPinned) R.drawable.icon_unpin else R.drawable.ic_pin,
-                0,
-                0,
-                0
-            )
             val type = object : TypeToken<ArrayList<String>>() {}.type
 //            var jsonString = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"pinnedConvo")!!
 //            var pinnedConvo : ArrayList<String> = Gson().fromJson(jsonString, type)
             if(isPinned){
-                Constants.PINNED_CONVO.add(intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
+//                Constants.PINNED_CONVO.add(intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
+                var added = Constants.addToPinnedConvo(intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
 //                pinnedConvo.add(intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
-                conversationListViewModel.savePinnedConversationToDB()
-                conversationDetailsViewModel.conversationDetails.value?.isPinned = true
+                if (added) {
+                    text = context.getString(R.string.details_unpin_conversation)
+                    setCompoundDrawablesWithIntrinsicBounds(R.drawable.icon_unpin,0,0,0)
+                    conversationListViewModel.savePinnedConversationToDB {}
+                    conversationDetailsViewModel.conversationDetails.value?.isPinned = true
+                }
+                else{
+                    binding.conversationDetailsLayout.showSnackbar(getString(R.string.pin_limit))
+                }
             }else{
+                text = context.getString(R.string.details_pin_conversation)
+                setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_pin,0,0,0)
                 Constants.PINNED_CONVO.remove(intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
 //                pinnedConvo.remove(intent.getStringExtra(EXTRA_CONVERSATION_SID)!!)
-                conversationListViewModel.savePinnedConversationToDB()
+                conversationListViewModel.savePinnedConversationToDB{}
                 conversationDetailsViewModel.conversationDetails.value?.isPinned = false
             }
         }

@@ -49,7 +49,7 @@ class NewConversationDialog: BaseBottomSheetDialogFragment() {
     private fun createConversation() {
         val friendlyName = binding.newConversationNameInput.text.toString().trim()
         if (friendlyName.isBlank()) {
-            binding.newConversationNameInputHolder.error = getString(R.string.profile_friendly_name_error_text)
+            binding.newConversationNameInputHolder.error = getString(R.string.blank_conversation_name)
             return
         }
         contactListViewModel.checkName(friendlyName, object : CheckNameCallback {

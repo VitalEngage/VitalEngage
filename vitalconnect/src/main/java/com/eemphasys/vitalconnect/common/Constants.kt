@@ -137,6 +137,17 @@ class Constants   {
         }
 
         @JvmStatic
+        fun addToPinnedConvo(item: String): Boolean {
+            return if (PINNED_CONVO.size < 5) {
+                PINNED_CONVO.add(item)
+                true // Successfully added
+            } else {
+                println("Cannot add more items. Maximum limit of 5 reached.") // Notification
+                false // Addition failed
+            }
+        }
+
+        @JvmStatic
         fun getTimeStamp(): String{
             val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
             val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
