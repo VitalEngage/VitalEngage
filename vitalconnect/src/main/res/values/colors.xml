@@ -48,4 +48,5 @@
     <color name="default_border">#707070</color>
     <color name="default_contact_text">#676767</color>
     <color name="default_contact_bg">#F5F5F7</color>
+    <color name="title_header_color">#5a5a5a</color>
 </resources>

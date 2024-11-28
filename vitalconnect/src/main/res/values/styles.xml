@@ -49,53 +49,59 @@
     <style name="TextViewTitle" parent="AppTheme.NoActionBar">
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">@color/text_title</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">@font/helvetica</item>
         <item name="android:singleLine">true</item>
     </style>
 
-    <style name="TextViewSubtitle" parent="TextViewTitle">
+    <style name="ParentStyle" parent="AppTheme.NoActionBar">
+        <item name="android:fontFamily">@font/helvetica</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="TextViewSubtitle" parent="ParentStyle">
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/text_subtitle</item>
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:fontFamily">@font/helveticaneueltstdlt</item>
+        <item name="android:singleLine">true</item>
     </style>
-    <style name="TextViewSize" parent="TextViewTitle">
+    <style name="TextViewSize" parent="ParentStyle">
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/message_background</item>
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:singleLine">true</item>
     </style>
-    <style name="TextViewOutgoingTimeStamp" parent="TextViewTitle">
+    <style name="TextViewOutgoingTimeStamp" parent="ParentStyle">
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/message_typing_background</item>
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:singleLine">true</item>
     </style>
-    <style name="TextViewIncomingTimeStamp" parent="TextViewTitle">
+    <style name="TextViewIncomingTimeStamp" parent="ParentStyle">
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/text_demo_experience</item>
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:fontFamily">@font/helveticaneueltproth</item>
+        <item name="android:singleLine">true</item>
     </style>
 
-    <style name="TextViewTime" parent="TextViewTitle">
+    <style name="TextViewTime" parent="ParentStyle">
         <item name="android:textSize">12sp</item>
         <item name="android:textColor">@color/text_subtitle</item>
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:singleLine">true</item>
     </style>
 
-    <style name="TextViewCounter" parent="AppTheme.NoActionBar">
+    <style name="TextViewCounter" parent="ParentStyle">
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">12sp</item>
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:singleLine">true</item>
     </style>
 
-    <style name="TextViewError">
+    <style name="TextViewError" parent="ParentStyle">
         <item name="android:textColor">@color/colorEet</item>
         <item name="android:textSize">12sp</item>
-        <item name="android:fontFamily">sans-serif</item>
     </style>
 
-    <style name="TextViewMenuItem">
+    <style name="TextViewMenuItem" parent="ParentStyle">
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">@color/text_title</item>
-        <item name="android:fontFamily">sans-serif</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:background">?android:attr/selectableItemBackground</item>
         <item name="android:paddingStart">16dp</item>
@@ -103,7 +109,7 @@
         <item name="android:drawablePadding">24dp</item>
     </style>
 
-    <style name="EmojiTextView">
+    <style name="EmojiTextView" parent="ParentStyle" >
         <item name="android:textColor">#000</item>
         <item name="android:textSize">28sp</item>
         <item name="android:gravity">center</item>
@@ -113,7 +119,7 @@
 
     </style>
 
-    <style name="AttachmentOption">
+    <style name="AttachmentOption" parent="ParentStyle">
         <item name="android:drawablePadding">8dp</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:minHeight">?android:attr/listPreferredItemHeight</item>
@@ -125,47 +131,43 @@
         <item name="android:background">?attr/selectableItemBackground</item>
     </style>
 
-    <style name="TextViewSearch">
+    <style name="TextViewSearch" parent="ParentStyle">
         <item name="android:textColor">@color/text_black</item>
         <item name="android:textSize">21sp</item> <!--16px-->
-        <item name="android:fontFamily">Helvetica</item>
     </style>
 
     <style name="SearchViewBackground">
         <item name="backgroundColor">@color/search_gray</item>
     </style>
 
-    <style name="TextViewHeader">
+    <style name="TextViewHeader" parent="ParentStyle">
         <item name="android:textColor">@color/text_black</item>
         <item name="android:textSize">27sp</item> <!--20px-->
-        <item name="android:fontFamily">Helvetica</item>
     </style>
 
-    <style name="TextViewChildTitle">
+    <style name="TextViewChildTitle" parent="ParentStyle">
         <item name="android:textColor">@color/text_black</item>
         <item name="android:textSize">19sp</item> <!--14px-->
-        <item name="android:fontFamily">Helvetica</item>
         <item name="fontWeight">500</item>
 <!--        <item name="android:textFontWeight">700</item>-->
     </style>
 
-    <style name="TextViewChildTime">
+    <style name="TextViewChildTime" parent="ParentStyle">
         <item name="android:textColor">@color/text_black_30_opacity</item>
         <item name="android:textSize">16sp</item> <!--12px-->
-        <item name="android:fontFamily">Helvetica</item>
         <item name="fontWeight">400</item>
+        <item name="android:singleLine">true</item>
     </style>
 
-    <style name="TextViewChildSubTitle" parent="TextViewTitle">
+    <style name="TextViewChildSubTitle" parent="ParentStyle">
         <item name="android:textColor">@color/text_gray</item>
         <item name="android:textSize">16sp</item> <!--12px-->
-        <item name="android:fontFamily">Helvetica</item>
         <item name="fontWeight">400</item>
+        <item name="android:singleLine">true</item>
     </style>
-    <style name="Disclaimer" parent="TextViewTitle">
+    <style name="Disclaimer" parent="ParentStyle">
         <item name="android:textColor">@color/text_gray</item>
         <item name="android:textSize">14sp</item> <!--12px-->
-        <item name="android:fontFamily">Helvetica</item>
         <item name="fontWeight">400</item>
     </style>
 
@@ -177,87 +179,79 @@
         <item name="backgroundColor">@color/message_background</item>
     </style>
 
-    <style name="TextViewMessage">
+    <style name="TextViewMessage" parent="ParentStyle">
         <item name="android:textColor">@color/message_text</item>
         <item name="android:textSize">19sp</item>
-        <item name="android:fontFamily">Helvetica</item>
         <item name="fontWeight">400</item>
     </style>
 
-    <style name="TextViewMessageTime">
+    <style name="TextViewMessageTime" parent="ParentStyle">
         <item name="android:textColor">@color/message_background</item>
         <item name="android:textSize">13sp</item>
-        <item name="android:fontFamily">Helvetica Neue</item>
+        <item name="android:fontFamily">@font/helveticaneueltproth</item>
         <item name="fontWeight">500</item>
     </style>
 
-    <style name="TextViewAlternateMessage">
+    <style name="TextViewAlternateMessage" parent="ParentStyle">
         <item name="android:textColor">@color/alternate_message_text</item>
         <item name="android:textSize">19sp</item>
-        <item name="android:fontFamily">Helvetica</item>
-        <item name="fontWeight">500</item>
+        <item name="android:textStyle"></item>
+        <item name="android:fontFamily">@font/helveticaneueltstdlt</item>
     </style>
 
-    <style name="TextViewMessageTyping">
+    <style name="TextViewMessageTyping" parent="ParentStyle">
         <item name="android:textColor">@color/alternate_message_text</item>
         <item name="android:textSize">16sp</item>
-        <item name="android:fontFamily">Helvetica Neue</item>
         <item name="fontWeight">400</item>
+        <item name="android:fontFamily">@font/helveticaneueltproth</item>
     </style>
 
     <style name="TextViewMessageTypingBackground">
         <item name="backgroundColor">@color/message_typing_background</item>
     </style>
 
-    <style name="TextViewConversationDetails">
+    <style name="TextViewConversationDetails" parent="ParentStyle">
 <!--        Below color is black with opacity 77%-->
         <item name="android:textColor">#C4000000</item>
         <item name="android:textSize">19sp</item>
-        <item name="android:fontFamily">Helvetica</item>
-        <item name="fontWeight">400</item>
     </style>
-    <style name="ConversationDetails_Subtext">
+    <style name="ConversationDetails_Subtext" parent="ParentStyle">
         <item name="android:textColor">@color/alternate_message_text</item>
         <item name="android:textSize">16sp</item>
-        <item name="android:fontFamily">Helvetica</item>
         <item name="fontWeight">400</item>
     </style>
     <style name="AppBar_Title">
-        <item name="android:textColor">@color/text_title</item>
         <item name="android:textSize">22sp</item>
-        <item name="android:fontFamily">Helvetica</item>
+        <item name="android:fontFamily">@font/helveticacdbd0</item>
+        <item name="android:textColor">@color/completed</item>
     </style>
-    <style name="Size_note">
+    <style name="Size_note" parent="ParentStyle">
         <item name="android:textColor">@color/black</item>
         <item name="android:textSize">14sp</item>
-        <item name="android:fontFamily">Helvetica</item>
         <item name="android:textStyle">bold</item>
     </style>
     <style name="TabTextAppearance" parent="TextAppearance.Design.Tab">
         <item name="android:textAllCaps">false</item>
         <item name="textAllCaps">false</item>
         <item name="android:textSize">16sp</item>
-        <item name="android:fontFamily">Helvetica</item>
+        <item name="android:fontFamily">@font/helvetica</item>
     </style>
-    <style name="TextHeadingPopup">
+    <style name="TextHeadingPopup" parent="ParentStyle">
         <item name="android:textColor">@color/swipe_mute_background</item>
         <item name="android:textSize">16sp</item>
-        <item name="android:fontFamily">Helvetica</item>
         <item name="fontWeight">500</item>
     </style>
-    <style name="TextSubtitlePopup">
+    <style name="TextSubtitlePopup" parent="ParentStyle">
         <item name="android:textColor">@color/text_gray</item>
         <item name="android:textSize">16sp</item>
-        <item name="android:fontFamily">Helvetica</item>
     </style>
-    <style name="TextInitials">
+    <style name="TextInitials" parent="ParentStyle">
         <item name="android:textSize">18sp</item>
-        <item name="android:fontFamily">Helvetica</item>
         <item name="fontWeight">600</item>
     </style>
-    <style name="TextViewDefaultContact">
+    <style name="TextViewDefaultContact" parent="ParentStyle">
         <item name="android:textColor">@color/default_contact_text</item>
         <item name="android:textSize">10sp</item>
-        <item name="android:fontFamily">Helvetica Neue</item>
+        <item name="android:fontFamily">@font/helveticaneueltproth</item>
     </style>
 </resources>

@@ -108,7 +108,7 @@ class Constants   {
             context?.let {
                 sharedpreferences = context.getSharedPreferences(MyPREFERENCES,Context.MODE_PRIVATE)
                 val value = sharedpreferences?.getString(key, null) // Use null as default value to check if key exists
-                Log.d("SharedPreferencesUtilVT", "Retrieved value: $value for key: $key")
+//                Log.d("SharedPreferencesUtilVT", "Retrieved value: $value for key: $key")
                 return value
             } ?: Log.e("SharedPreferencesUtil", "Context is null")
             return null
@@ -121,7 +121,7 @@ class Constants   {
                 val editor = sharedpreferences?.edit()
                 editor?.putString(key, value)
                 editor?.apply()
-                Log.d("SharedPreferencesUtilVT", "Saved value: $value with key: $key")
+//                Log.d("SharedPreferencesUtilVT", "Saved value: $value with key: $key")
             } ?: Log.e("SharedPreferencesUtil", "Context is null")
         }
 

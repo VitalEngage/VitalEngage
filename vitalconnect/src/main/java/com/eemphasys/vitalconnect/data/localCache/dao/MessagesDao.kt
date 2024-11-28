@@ -1,5 +1,6 @@
 package com.eemphasys.vitalconnect.data.localCache.dao
 
+import android.util.Log
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -53,8 +54,8 @@ interface MessagesDao {
         }
     }
 
-    @Delete
-    fun delete(message: MessageDataItem)
+    @Query("DELETE FROM message_table WHERE sid = :sid")
+    fun delete(sid: String)
 
     @Query("UPDATE message_table SET mediaDownloadState = :downloadState WHERE sid = :messageSid")
     fun updateMediaDownloadState(messageSid: String, downloadState: Int)

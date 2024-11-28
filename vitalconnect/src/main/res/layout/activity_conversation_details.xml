@@ -35,7 +35,8 @@
                 android:background="@color/activity_title_back_color"
                 app:titleCentered="true"
                 app:titleTextAppearance="@style/AppBar_Title"
-                app:elevation="0dp"/>
+                app:elevation="0dp"
+                app:titleTextColor="@color/title_header_color"/>
 <!--            style="@style/Widget.MaterialComponents.Toolbar.Primary"-->
 <!--            android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"-->
 

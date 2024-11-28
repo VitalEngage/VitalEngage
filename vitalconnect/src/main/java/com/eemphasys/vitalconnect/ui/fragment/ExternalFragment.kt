@@ -268,8 +268,11 @@ class ExternalFragment : Fragment() {
             }
         }
         if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"withContext")!! == "false"){
+
             if(listOfContacts.isEmpty()) {
+                binding?.progressBarID?.visibility = View.VISIBLE
                 getAllContactList {
+                    binding?.progressBarID?.visibility = View.GONE
                     setAdapter(listOfContacts)
                 }
             }

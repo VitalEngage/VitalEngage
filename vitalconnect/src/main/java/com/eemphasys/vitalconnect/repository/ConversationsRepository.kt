@@ -627,7 +627,7 @@ class ConversationsRepositoryImpl(
     private fun deleteMessage(message: Message) {
         launch {
             val identity = conversationsClientWrapper.getConversationsClient().myIdentity
-            localCache.messagesDao().delete(message.toMessageDataItem(identity))
+            localCache.messagesDao().delete(message.toMessageDataItem(identity).sid)
             updateConversationLastMessage(message.conversationSid)
         }
     }

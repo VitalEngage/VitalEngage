@@ -225,7 +225,7 @@ class InternalFragment : Fragment() {
                             var userItem = ContactListViewItem(
                                 response.fullName,
                                 response.userName,
-                                response.mobileNumber,
+                                "",
                                 "Web",
                                 Constants.getInitials(response.fullName.trim { it <= ' ' }),
                                 "",
@@ -259,7 +259,7 @@ class InternalFragment : Fragment() {
 
         // Convert WebUser objects to ContactListViewItem
         val webUserItems = webUsers.map {
-            ContactListViewItem(it.name, it.userName, "", "Chat",it.initials,it.designation,it.department,it.customer,it.countryCode,false,"",it.role)
+            ContactListViewItem(it.name, it.userName, "", "Web",it.initials,it.designation,it.department,it.customer,it.countryCode,false,"",it.role)
         }
 
         // Add all ContactListViewItem objects to the combined list
@@ -301,8 +301,10 @@ class InternalFragment : Fragment() {
         if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"withContext")!! == "false"){
 
             if(listOfUsers.isEmpty()) {
+                binding?.progressBarID?.visibility = View.VISIBLE
                 getAllUserList {
                     if(isAdded) {
+                        binding?.progressBarID?.visibility = View.GONE
                         setAdapter(listOfUsers)
                     }
                 }

@@ -168,6 +168,7 @@ class MessageListActivity: AppCompatActivity() {
                 },
                 onItemLongClick = { messageIndex ->
                     messageListViewModel.selectedMessageIndex = messageIndex
+                    Log.d("messageIndex",messageIndex.toString())
                     showMessageActionsDialog()
                 },
                 onReactionClicked = { messageIndex ->
