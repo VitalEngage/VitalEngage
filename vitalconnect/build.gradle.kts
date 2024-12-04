@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         //applicationId = "com.eemphasys.vitalconnect"
-        minSdk = 24
+        minSdk = 25
         targetSdk = 34
         /*versionCode = 1
         versionName = "1.0"*/
@@ -54,7 +54,7 @@ android {
     }
 }
 
-version = "1.1.0005"
+version = "1.1.0007"
 
 dependencies {
 

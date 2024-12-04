@@ -455,23 +455,21 @@ class ExternalFragment : Fragment() {
                                                 var role = ""
                                                 var bpId = ""
 
-                                                if (conversation.attributes.Department.isNullOrEmpty() &&
-                                                    conversation.attributes.Designation.isNullOrEmpty() &&
-                                                    conversation.attributes.CustomerName.isNullOrEmpty()
-                                                ) {
-
+//                                                if (conversation.attributes.Department.isNullOrEmpty() &&
+//                                                    conversation.attributes.Designation.isNullOrEmpty() &&
+//                                                    conversation.attributes.CustomerName.isNullOrEmpty()
+//                                                ) {
                                                     customer = contact.customerName ?: ""
                                                     department = contact.department ?: ""
                                                     designation = contact.designation ?: ""
                                                     role = contact.role ?: ""
                                                     bpId = contact.bpId ?: ""
-
-                                                } else {
-                                                    customer = conversation.attributes.CustomerName
-                                                    department = conversation.attributes.Department
-                                                    designation =
-                                                        conversation.attributes.Designation
-                                                }
+//                                                } else {
+//                                                    customer = conversation.attributes.CustomerName
+//                                                    department = conversation.attributes.Department
+//                                                    designation =
+//                                                        conversation.attributes.Designation
+//                                                }
                                                 val attributes = mapOf(
                                                     "Designation" to designation,
                                                     "Department" to department,
@@ -481,6 +479,7 @@ class ExternalFragment : Fragment() {
                                                     "isWebChat" to "false"
                                                 )
                                                 val jsonObject = JSONObject(attributes)
+                                                Log.d("selected1",attributes.toString())
                                                 contactListViewModel.createConversation(
                                                     contact.name + " " +
                                                             Constants.formatPhoneNumber(
@@ -513,6 +512,8 @@ class ExternalFragment : Fragment() {
                                             var role = contact.role ?: ""
                                             var bpId = contact.bpId ?: ""
 
+                                            Log.d("selected contact", contact.bpId + " " + contact.role + " " + contact.department + " " + contact.designation)
+
                                             val attributes = mapOf(
                                                 "Designation" to designation,
                                                 "Department" to department,
@@ -522,6 +523,7 @@ class ExternalFragment : Fragment() {
                                                 "isWebChat" to "false"
                                             )
                                             val jsonObject = JSONObject(attributes)
+                                            Log.d("selected",attributes.toString())
                                             contactListViewModel.createConversation(
                                                 contact.name + " " + Constants.formatPhoneNumber(
                                                     applicationContext,

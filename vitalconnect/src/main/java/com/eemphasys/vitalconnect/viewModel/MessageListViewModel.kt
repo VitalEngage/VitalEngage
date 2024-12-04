@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Environment
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -135,6 +136,7 @@ class MessageListViewModel(
             }
             isWebChat.value = try{JSONObject(result.data?.attributes).optString("isWebChat", "")}catch(e: Exception){""}
             conversationName.value = result.data?.friendlyName?.takeIf { it.isNotEmpty() } ?: result.data?.sid
+            conversationName.value?.let { Log.d("conversationname", it) }
             conversationFriendlyName = result.data?.friendlyName?.takeIf { it.isNotEmpty() }.toString()
         }
     }

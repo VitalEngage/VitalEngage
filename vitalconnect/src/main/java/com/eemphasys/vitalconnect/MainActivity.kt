@@ -221,21 +221,21 @@ class MainActivity : AppCompatActivity() {
                                     var role = ""
                                     var bpId = ""
 
-                                    if (conversation.attributes.Department.isNullOrEmpty() &&
-                                        conversation.attributes.Designation.isNullOrEmpty() &&
-                                        conversation.attributes.CustomerName.isNullOrEmpty()
-                                    ) {
+//                                    if (conversation.attributes.Department.isNullOrEmpty() &&
+//                                        conversation.attributes.Designation.isNullOrEmpty() &&
+//                                        conversation.attributes.CustomerName.isNullOrEmpty()
+//                                    ) {
                                          customer = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"customer")!!
                                          department = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"department")!!
                                          designation = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"designation")!!
                                         role = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"role")!!
                                         bpId = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"bpId")!!
-                                    }
-                                    else{
-                                        customer = conversation.attributes.CustomerName
-                                        department = conversation.attributes.Department
-                                        designation = conversation.attributes.Designation
-                                    }
+//                                    }
+//                                    else{
+//                                        customer = conversation.attributes.CustomerName
+//                                        department = conversation.attributes.Department
+//                                        designation = conversation.attributes.Designation
+//                                    }
                                     val attributes = mapOf(
                                         "Designation" to designation,
                                         "Department" to department,
