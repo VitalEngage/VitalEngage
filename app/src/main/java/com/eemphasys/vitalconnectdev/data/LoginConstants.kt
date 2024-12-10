@@ -15,11 +15,10 @@ class LoginConstants   {
         //Sachin's account
         var BASE_URL = ""
         var TENANT_CODE = ""
-        var CLIENT_ID = ""
-        var CLIENT_SECRET = ""
-//        var CLIENT_ID = "169JNr3JkBOMBopDincd2TCB+kMrmSNuXGjj3GUg0UsnuIOs2lny0ZG18Tsrq9+D312KFj1qLOM+7fuYXbDT9qCcoXFKJol8bc0xYPXtQsLIKS8jV38dcFJwKtRc/ITSjuytU7rvbQ3e9eNHspi4HmnToR7cYHr03rAeLzBdsZhbjaSJGS/rxz9LtZFYwYsxfK2NbqlMAl9DdMKgW8yJPULbBZR5fw6RQfjZknPwut7krh/unAgl8E8mbrwKXoDMs+mnXdUbjW5K4mfQQPwc/nAV/gLQJ/4Ng7whd7Lq85I34l11tw3qkF2Ku+gtqu8q2YU0ce4mQZn/mVXsxzY9ITfGY95X0UCah+XrlOs9QAhVoxwb5UQ1fdforEbeSga9"
-//        var CLIENT_SECRET = "j/mAdkXSMbAmXYi8Lz1jaaoKcfqK1HHA0YkehjjSRB6Xi54N44e/4WTxxKTLosP1bcJs2vZXQTkLo21YznlevAinN7re6uj05by7Wyn0shrFGvNnmctVBvvZI1UfcQcIGGvNvyEgyVAeANGjromG4mSngqX5b9713/SuUHrpOoeESFVD6d4LRftckVwtl9zkylrs/yMBLCFAfDapvopg4a8GSt2y/P6z806WZTzvOGIxHDbHA/ZkB2djOW1HBLPEdZ10PEfbUK7pahM3s6GvXoQP2qpnV5U+ql4vKz6xrpZW842yboKsr6EhfQc1tQqMQOT3eNJMUKEStBXHVXfcjFeLQw8OSAUFvLkHCkzGGkM="
-        var PROXY_NUMBER = ""
+        //fields to be change as per tenant(clientid, secret, proxy)
+        var CLIENT_ID = "VitalConnect-sQz2LmzcRLU07nnod9MlJJcJdcQj6iFZTg6uSnPbjxZ9Vssm9qONFhbPh64hmUYLxbKWpURQ0JesgZTvhNsFj3ca67lDuIWwyir4rS6GWFK5dxaHQ/4kqh8aCmB6JJP0"
+        var CLIENT_SECRET = "+QXNy5ItEjPCSDG6sF7R23oy7M9sDjfFJuNcizgyRXYKjcTc98EFye7g4G5CTiee7QCLaEfQhd2i1mihW9tOTaFxsO077LlciZyNCWpoUYjH5LLoPiqYIw7Ux/JYF3gP"
+        var PROXY_NUMBER = "+16503895687"
         var SHOW_CONTACTS = "false"
         var PRODUCT = "eLog"
         var CURRENT_USER =""

@@ -90,8 +90,10 @@ dependencies {
     implementation("androidx.room:room-ktx:2.6.1")
     kapt ("androidx.room:room-compiler:2.6.1")
 
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.10.0")
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.intuit.sdp:sdp-android:1.0.6")
     implementation ("com.intuit.ssp:ssp-android:1.0.6")
+    implementation ("com.google.android.gms:play-services-safetynet:18.1.0")
+    implementation ("com.google.android.recaptcha:recaptcha:18.7.0-beta01")
 }

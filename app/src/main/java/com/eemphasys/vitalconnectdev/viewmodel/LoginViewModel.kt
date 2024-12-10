@@ -7,6 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.eemphasys.vitalconnect.api.RetrofitClient
+import com.eemphasys.vitalconnect.api.RetrofitHelper
+import com.eemphasys.vitalconnect.api.TwilioApi
+import com.eemphasys.vitalconnect.api.data.EncryptionRequest
 import com.eemphasys.vitalconnect.api.data.SendOtpReq
 import com.eemphasys.vitalconnect.api.data.UpdatePasswordReq
 import com.eemphasys.vitalconnect.common.AppContextHelper
@@ -57,7 +60,24 @@ class LoginViewModel(
         isLoading.value = true
         viewModelScope.launch {
             try {
-                loginManager.getAuthenticationToken(identity, password, Constants.getTimeStamp(),applicationContext)
+                getEncryptedValues(
+                    onSuccess = { clientId, clientSecret ->
+                        viewModelScope.launch {
+                            loginManager.getAuthenticationToken(
+                                identity,
+                                clientId,
+                                clientSecret,
+                                password,
+                                Constants.getTimeStamp(),
+                                applicationContext
+                            )
+                        }
+                        println("Client ID: $clientId, Client Secret: $clientSecret")
+                    },
+                    onError = { errorMessage ->
+                        println("Error: $errorMessage")
+                    }
+                )
                 if(!LoginConstants.AUTH_TOKEN.isNullOrEmpty()) {
                     loginManager.getTwilioToken(applicationContext)
 //                    loginManager.getTwilioclient()
@@ -98,6 +118,36 @@ class LoginViewModel(
             }
         }
     }
+
+    fun getEncryptedValues(
+        onSuccess: (clientId: String, clientSecret: String) -> Unit,
+        onError: (errorMessage: String) -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                val request =
+                    EncryptionRequest(LoginConstants.CLIENT_ID, LoginConstants.CLIENT_SECRET, "")
+                val apiInstance = RetrofitHelper.getInstance(AppContextHelper.appContext).create(
+                    TwilioApi::class.java
+                )
+                val response = apiInstance.getEncryptedValues(request)
+
+                if (response.isSuccessful) {
+                    val responseBody = response.body()
+                    if (responseBody != null) {
+                        onSuccess(responseBody.value1, responseBody.value2)
+                    } else {
+                        onError("Response body is null")
+                    }
+                } else {
+                    onError("Error: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                onError("Exception: ${e.message}")
+            }
+        }
+    }
+
     private fun validateSignInDetails(identity: String, password: String): ConversationsError {
         return when {
             identity.isBlank() -> ConversationsError.EMPTY_USERNAME_AND_PASSWORD

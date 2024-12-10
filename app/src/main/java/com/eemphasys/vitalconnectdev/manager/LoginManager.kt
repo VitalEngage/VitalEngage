@@ -5,6 +5,7 @@ import android.util.Log
 import com.eemphasys.vitalconnect.api.RetrofitClient
 import com.eemphasys.vitalconnect.api.RetrofitHelper
 import com.eemphasys.vitalconnect.api.TwilioApi
+import com.eemphasys.vitalconnect.api.data.RequestToken
 import com.eemphasys.vitalconnect.api.data.ValidateUserReq
 import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.Constants
@@ -23,7 +24,7 @@ import com.twilio.conversations.extensions.registerFCMToken
 
 
 interface LoginManager {
-    suspend fun getAuthenticationToken(identity: String, password: String, timeStamp:String,applicationContext: Context)
+    suspend fun getAuthenticationToken(identity: String,clientId : String,clientSecret: String, password: String, timeStamp:String,applicationContext: Context)
 
     suspend fun getTwilioToken(applicationContext : Context)
     suspend fun signInUsingStoredCredentials()
@@ -42,20 +43,24 @@ class LoginManagerImpl(
     private val firebaseTokenManager: FirebaseTokenManager,
     private val conversationsClient: ConversationsClientWrapper,
 ): LoginManager {
-    override suspend fun getAuthenticationToken(identity: String, password: String, timeStamp: String,applicationContext: Context) {
-        val requestData = ValidateUserReq(
-            identity,
-            password,
-            LoginConstants.TENANT_CODE,
-            "",
-            timeStamp,
-            true,
-            ""
-        )
+    override suspend fun getAuthenticationToken(identity: String,clientId : String,clientSecret: String, password: String, timeStamp: String,applicationContext: Context) {
+//        val requestData = ValidateUserReq(
+//            identity,
+//            password,
+//            LoginConstants.TENANT_CODE,
+//            "",
+//            timeStamp,
+//            true,
+//            "",
+//            Constants.getStringFromVitalTextSharedPreferences(applicationContext,"reCaptchaToken") ?: ""
+//        )
         val apiInstance = RetrofitHelper.getInstance(applicationContext).create(
             TwilioApi::class.java
         )
-        val result = apiInstance.validateUser(requestData)
+//        val result = apiInstance.validateUser(requestData)
+
+        val request = RequestToken(LoginConstants.TENANT_CODE,clientId,clientSecret,identity,"","",false,"",LoginConstants.PROXY_NUMBER)
+        val result = apiInstance.getAuthToken(request)
         if(result.isSuccessful) {
             Log.d("Authtoken: ", result.body()!!.jwtToken)
             Constants.saveStringToVitalTextSharedPreferences(applicationContext, "authToken", result.body()!!.jwtToken)

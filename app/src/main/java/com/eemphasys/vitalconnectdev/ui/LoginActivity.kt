@@ -14,6 +14,7 @@ import android.util.Log
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -36,6 +37,7 @@ import com.eemphasys.vitalconnectdev.common.injector
 import com.eemphasys.vitalconnectdev.data.LoginConstants
 import com.eemphasys.vitalconnectdev.databinding.ActivityLoginBinding
 import com.eemphasys_enterprise.commonmobilelib.EETLog
+import com.google.android.gms.safetynet.SafetyNet
 import com.google.android.material.snackbar.Snackbar
 import java.util.Locale
 
@@ -70,6 +72,19 @@ class LoginActivity : AppCompatActivity(),FirebaseLogEventListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+//        val siteKey = "6Lfn8ZMqAAAAAMhfxjueCNbdJ0nwKWONyNYN5ShU"
+//        SafetyNet.getClient(this).verifyWithRecaptcha(siteKey)
+//            .addOnSuccessListener { response ->
+//                if (!response.tokenResult.isNullOrEmpty()) {
+//                    val token = response.tokenResult
+//                    Toast.makeText(this, "Success! Token: $token", Toast.LENGTH_SHORT).show()
+//                    Constants.saveStringToVitalTextSharedPreferences(this,"reCaptchaToken",token!!)
+//                }
+//            }
+//            .addOnFailureListener { e ->
+//                // Handle errors
+//                Toast.makeText(this, "reCAPTCHA failed: ${e.message}", Toast.LENGTH_SHORT).show()
+//            }
         EETLog.saveUserJourney(this::class.java.simpleName + " onCreate Called")
 
                 binding.usernameInputLayoutRP.visibility = GONE

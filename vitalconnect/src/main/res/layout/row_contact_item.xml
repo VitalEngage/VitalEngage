@@ -95,17 +95,19 @@
         app:layout_constraintStart_toStartOf="@+id/contactName"
         app:layout_constraintTop_toBottomOf="@id/contactName"
         tools:text="Type"
-        tools:ignore="MissingConstraints" />
+        app:layout_constraintEnd_toEndOf="parent"/>
     <TextView
         android:id="@+id/designation"
         style="@style/ConversationDetails_Subtext"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ellipsize="middle"
         android:textColor="@color/text_title_weak"
         app:layout_constraintStart_toStartOf="@+id/contactName"
         app:layout_constraintTop_toBottomOf="@id/contactNumber"
         tools:text="Type"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintEnd_toStartOf="@id/department"
         tools:ignore="MissingConstraints"
         android:visibility="visible"/>
     <TextView
@@ -113,14 +115,15 @@
         style="@style/ConversationDetails_Subtext"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:ellipsize="middle"
+        android:ellipsize="end"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
         android:textColor="@color/text_title_weak"
         app:layout_constraintStart_toEndOf="@+id/designation"
         app:layout_constraintTop_toBottomOf="@id/contactNumber"
         tools:text="Type"
-        tools:ignore="MissingConstraints"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintEnd_toEndOf="parent"
         android:visibility="visible"/>
     <TextView
         android:id="@+id/customerName"
@@ -132,6 +135,8 @@
         app:layout_constraintStart_toStartOf="@+id/contactName"
         app:layout_constraintTop_toBottomOf="@id/barrier"
         tools:text="Type"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
         tools:ignore="MissingConstraints"
         android:visibility="visible"/>
     <!-- Barrier to group designation and department -->

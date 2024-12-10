@@ -7,5 +7,6 @@ data class ValidateUserReq(
     val email : String,
     val lastActivityDate : String,
     val rememberMe : Boolean,
-    val azureAdToken : String
+    val azureAdToken : String,
+    val reCaptchaToken : String
 )
