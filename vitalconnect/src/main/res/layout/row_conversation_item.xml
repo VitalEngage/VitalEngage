@@ -48,7 +48,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_marginEnd="8dp"
-            android:src="@drawable/ic_muted_conversation"
+            android:src="@drawable/icon_mute_conversation"
             android:visibility="@{conversation.isMuted ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="@+id/conversationName"
             app:layout_constraintEnd_toStartOf="@+id/conversationName"

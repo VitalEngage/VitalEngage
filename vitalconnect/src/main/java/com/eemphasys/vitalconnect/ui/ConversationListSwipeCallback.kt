@@ -22,9 +22,9 @@ class ConversationListSwipeCallback(val context: Context, val adapter: Conversat
 
     private val leaveIcon = ContextCompat.getDrawable(context, R.drawable.ic_swipe_leave)!!
 
-    private val muteIcon = ContextCompat.getDrawable(context, R.drawable.ic_swipe_mute)!!
+    private val muteIcon = ContextCompat.getDrawable(context, R.drawable.icon_mute_conversation)!!
 
-    private val unMuteIcon = ContextCompat.getDrawable(context, R.drawable.ic_swipe_unmute)!!
+    private val unMuteIcon = ContextCompat.getDrawable(context, R.drawable.icon_unmute_conversation)!!
 
     private val leaveBackground = ContextCompat.getDrawable(context, R.color.colorEet)!!
 

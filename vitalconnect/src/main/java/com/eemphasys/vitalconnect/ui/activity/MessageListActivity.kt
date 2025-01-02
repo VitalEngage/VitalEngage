@@ -201,7 +201,13 @@ class MessageListActivity: AppCompatActivity() {
             }
             messageListViewModel.conversationName.observe(this) { conversationName ->
                 title = conversationName
-                Constants.saveStringToVitalTextSharedPreferences(applicationContext,"currentConversationName",conversationName)
+                if(!conversationName.isNullOrBlank()) {
+                    Constants.saveStringToVitalTextSharedPreferences(
+                        applicationContext,
+                        "currentConversationName",
+                        conversationName
+                    )
+                }
             }
             messageListViewModel.isWebChat.observe(this){ isWebChat ->
                 if(isWebChat.toLowerCase() == "true") {

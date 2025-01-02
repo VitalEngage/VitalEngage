@@ -103,68 +103,71 @@ class InternalFragment : Fragment() {
 
             override fun onQueryTextChange(newText: String?): Boolean {
                 if(isAdded){
-                if (newText != null && newText.length >= 3) {
+                    val text = newText.orEmpty()
+                    Log.d("length", text.length.toString())
+                if (text.length >= 3) {
                     if (Constants.getStringFromVitalTextSharedPreferences(applicationContext,"withContext")!! == "false") {
                         //Search using SearchedUsers api
-                        lifecycleScope.launch {
-                            val listOfSearchedUsers = mutableListOf<ContactListViewItem>()
-                            var request =
-                                SearchContactRequest(
-                                    Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,
-                                    Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
-                                    newText!!
-                                )
-                            var response = RetrofitClient.getRetrofitWithToken().getSearchedUsers(request)
-
-                            response.enqueue(object : Callback<List<SearchUsersResponse>> {
-                                override fun onResponse(
-                                    call: Call<List<SearchUsersResponse>>,
-                                    response: Response<List<SearchUsersResponse>>
-                                ) {
-                                    if (response.isSuccessful) {
-                                        var contactsResponse: List<SearchUsersResponse>? =
-                                            response.body()
-                                        if (!contactsResponse.isNullOrEmpty()) {
-
-                                            for (response in contactsResponse) {
-                                                var contactItem =
-                                                    ContactListViewItem(
-                                                        response.fullName,
-                                                        response.userName,
-                                                        response.mobileNumber,
-                                                        "Web",
-                                                        Constants.getInitials(response.fullName.trim { it <= ' ' }),
-                                                        "",
-                                                        response.department,
-                                                        "",
-                                                        "",
-                                                        true,
-                                                        "",
-                                                        ""
-                                                    )
-
-                                                listOfSearchedUsers.add(contactItem)
-                                            }
-                                            setAdapter(listOfSearchedUsers)
-                                        }
-                                    }
-                                }
-
-                                override fun onFailure(
-                                    call: Call<List<SearchUsersResponse>>,
-                                    t: Throwable
-                                ) {
-
-                                }
-
-                            })
-
-                        }
+//                        lifecycleScope.launch {
+//                            val listOfSearchedUsers = mutableListOf<ContactListViewItem>()
+//                            var request =
+//                                SearchContactRequest(
+//                                    Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,
+//                                    Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
+//                                    newText!!
+//                                )
+//                            var response = RetrofitClient.getRetrofitWithToken().getSearchedUsers(request)
+//
+//                            response.enqueue(object : Callback<List<SearchUsersResponse>> {
+//                                override fun onResponse(
+//                                    call: Call<List<SearchUsersResponse>>,
+//                                    response: Response<List<SearchUsersResponse>>
+//                                ) {
+//                                    if (response.isSuccessful) {
+//                                        var contactsResponse: List<SearchUsersResponse>? =
+//                                            response.body()
+//                                        if (!contactsResponse.isNullOrEmpty()) {
+//
+//                                            for (response in contactsResponse) {
+//                                                var contactItem =
+//                                                    ContactListViewItem(
+//                                                        response.fullName,
+//                                                        response.userName,
+//                                                        response.mobileNumber,
+//                                                        "Web",
+//                                                        Constants.getInitials(response.fullName.trim { it <= ' ' }),
+//                                                        "",
+//                                                        response.department,
+//                                                        "",
+//                                                        "",
+//                                                        true,
+//                                                        "",
+//                                                        ""
+//                                                    )
+//
+//                                                listOfSearchedUsers.add(contactItem)
+//                                            }
+//                                            setAdapter(listOfSearchedUsers)
+//                                        }
+//                                    }
+//                                }
+//
+//                                override fun onFailure(
+//                                    call: Call<List<SearchUsersResponse>>,
+//                                    t: Throwable
+//                                ) {
+//
+//                                }
+//
+//                            })
+//
+//                        }
+                        setAdapter(listOfUsers)
                     }
                     else{
                             setAdapter(originalList)
                     }
-                    adapter.filter(newText.orEmpty())
+                    adapter.filter(text)
                     return true
                 }
                 else{
@@ -349,48 +352,59 @@ class InternalFragment : Fragment() {
 //                  Web to web chat
                     binding?.progressBarID?.visibility = View.VISIBLE
                 if(!contact.email.isNullOrEmpty() ) {
-                    if (Constants.getStringFromVitalTextSharedPreferences(
+                    if (contact.email != Constants.getStringFromVitalTextSharedPreferences(
                             applicationContext,
-                            "withContext"
-                        )!!.lowercase() == "true"
-                    ) {
-//                  Check if existing coversation exist
+                            "email"
+                        )
+                    ){
                         if (Constants.getStringFromVitalTextSharedPreferences(
                                 applicationContext,
-                                "isAutoRegistrationEnabled"
-                            )!!.lowercase() == "false"
+                                "withContext"
+                            )!!.lowercase() == "true"
                         ) {
+//                  Check if existing coversation exist
+                            if (Constants.getStringFromVitalTextSharedPreferences(
+                                    applicationContext,
+                                    "isAutoRegistrationEnabled"
+                                )!!.lowercase() == "false"
+                            ) {
+                                contactListViewModel.checkTwilioUser(contact) { isTwilioUser ->
+                                    if (isTwilioUser) {
+                                        contactListViewModel.checkExistingconversation(contact)
+                                    } else {
+                                        //need to show error here
+                                        binding?.userList?.showSnackbar(
+                                            "User not found."
+                                        )
+                                    }
+                                }
+                            } else {
+                                contactListViewModel.checkExistingconversation(contact)
+                            }
+
+
+                            binding?.progressBarID?.visibility = View.GONE
+                        } else {
+                            Constants.CURRENT_CONTACT = contact
                             contactListViewModel.checkTwilioUser(contact) { isTwilioUser ->
                                 if (isTwilioUser) {
-                                    contactListViewModel.checkExistingconversation(contact)
+                                    binding?.progressBarID?.visibility = View.GONE
+                                    NewConversationDialog().showNow(childFragmentManager, null)
                                 } else {
                                     //need to show error here
                                     binding?.userList?.showSnackbar(
-                                        "User not found."
+                                        getString(R.string.user_not_registered)
                                     )
                                 }
                             }
-                        } else {
-                            contactListViewModel.checkExistingconversation(contact)
+
                         }
-
-
+                }else{
                         binding?.progressBarID?.visibility = View.GONE
-                    } else {
-                        Constants.CURRENT_CONTACT = contact
-                        contactListViewModel.checkTwilioUser(contact) { isTwilioUser ->
-                            if (isTwilioUser) {
-                                binding?.progressBarID?.visibility = View.GONE
-                                NewConversationDialog().showNow(childFragmentManager, null)
-                            } else {
-                                //need to show error here
-                                binding?.userList?.showSnackbar(
-                                    getString(R.string.user_not_registered)
-                                )
-                            }
-                        }
-
-                    }
+                        binding?.userList?.showSnackbar(
+                            getString(R.string.self_error)
+                        )
+                }
                 }else {
                 //email id is not configured or blank
                     binding?.progressBarID?.visibility = View.GONE

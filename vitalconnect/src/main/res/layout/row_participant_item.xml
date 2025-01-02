@@ -15,16 +15,6 @@
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackground">
 
-        <ImageView
-            android:id="@+id/participant_icon"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/icon_single_user_conversation"
-            android:layout_margin="8dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/participant_info_holder"
-            android:visibility="invisible"/>
         <TextView
             android:id="@+id/participant_avatar"
             android:layout_width="50dp"
@@ -50,7 +40,7 @@
             android:layout_marginStart="8dp"
            android:layout_marginTop="20dp"
             android:layout_marginBottom="10dp"
-            app:layout_constraintStart_toEndOf="@id/participant_icon"
+            app:layout_constraintStart_toEndOf="@id/participant_avatar"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
@@ -62,15 +52,6 @@
                 android:layout_marginBottom="4dp"
                 style="@style/TextViewChildTitle"
                 tools:text="Donald Trump" />
-<!--            android:text="@{participant.friendlyName}"-->
-            <!--android:textColor="@color/text_title"
-            android:fontFamily="sans-serif-medium"-->
-            <TextView
-                android:id="@+id/participant_info"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:visibility="visible"
-                tools:text="Additional info"/>
 
         </LinearLayout>
 

@@ -48,7 +48,8 @@
             android:maxLength="25"
             android:gravity="center_vertical"
             android:paddingTop="12dp"
-            android:paddingBottom="12dp"/>
+            android:paddingBottom="12dp"
+            android:imeOptions="actionNone"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -75,5 +76,18 @@
         android:backgroundTint="@color/colorEet"
         android:textColor="@color/white"
         app:layout_constraintStart_toEndOf="@+id/cancel_button" />
+
+    <ProgressBar
+        android:id="@+id/progressBar_ID"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:visibility="gone"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

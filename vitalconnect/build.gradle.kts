@@ -54,7 +54,7 @@ android {
     }
 }
 
-version = "1.1.0008"
+version = "1.1.0009"
 
 dependencies {
 

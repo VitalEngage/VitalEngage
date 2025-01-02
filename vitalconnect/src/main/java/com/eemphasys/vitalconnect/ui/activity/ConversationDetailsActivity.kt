@@ -165,7 +165,10 @@ class ConversationDetailsActivity : AppCompatActivity() {
                 }
             }
 
-            override fun afterTextChanged(s: Editable?) {}
+            override fun afterTextChanged(s: Editable?) {
+                if(s!!.length < 3){
+                    setAdapter(emptyList())
+            }}
         })
     }
 
@@ -348,7 +351,11 @@ class ConversationDetailsActivity : AppCompatActivity() {
 //add chat participant through this button
         binding.addChatParticipantSheet.addChatParticipantIdButton.setOnClickListener {
             addChatParticipantSheetBehavior.hide()
-            conversationDetailsViewModel.addChatParticipant(binding.addChatParticipantSheet.identity.text.toString())
+            if (adapter.itemCount == 0) {
+                conversationDetailsViewModel.addChatParticipant("")
+            } else {
+                conversationDetailsViewModel.addChatParticipant(binding.addChatParticipantSheet.identity.text.toString())
+            }
         }
 
         binding.addNonChatParticipantSheet.addNonChatParticipantIdCancelButton.setOnClickListener {
@@ -369,6 +376,22 @@ class ConversationDetailsActivity : AppCompatActivity() {
             } else {
 //                progressDialog.hide()
                 progressDialog.dismiss()
+            }
+        }
+
+        conversationDetailsViewModel.onConversationMuted.observe(this) { show ->
+            if (show) {
+                binding.conversationDetailsLayout.showSnackbar(
+                    getString(
+                        R.string.conversation_muted,
+                    )
+                )
+            } else {
+                binding.conversationDetailsLayout.showSnackbar(
+                    getString(
+                        R.string.conversation_unmuted,
+                    )
+                )
             }
         }
 
@@ -396,9 +419,12 @@ class ConversationDetailsActivity : AppCompatActivity() {
 
         conversationDetailsViewModel.onConversationLeft.observe(this) {
 //            ConversationListActivity.start(this)
+            binding.progressBarID.visibility = View.VISIBLE
+            binding.conversationDetailsLayout.showSnackbar(getString(R.string.conversation_left))
             conversationListViewModel.savePinnedConversationToDB {
                 ConversationListActivity.start(this, 2)
                 finish()
+                binding.progressBarID.visibility = View.GONE
             }
         }
 

@@ -9,6 +9,7 @@ import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.enums.Reaction
 import com.eemphasys.vitalconnect.common.enums.Reactions
 import com.eemphasys.vitalconnect.common.extensions.applicationContext
+import com.eemphasys.vitalconnect.repository.ConversationsRepositoryImpl
 import kotlin.properties.Delegates
 
 class EditReactionsView @JvmOverloads constructor(

@@ -143,7 +143,7 @@ class ContactListViewModel(
         Log.d("attributes",attributes.toString())
         val conversationSid = conversationListManager.createConversation(friendlyName,attributes)
         //add participants to conversation
-        addWebParticipants(contact,conversationSid)
+        addWebParticipants(contact,conversationSid,friendlyName)
 //        conversationListManager.removeConversation("CH79e0c9e7195a4494b091e7bfccf3934f")
 
     }
@@ -188,6 +188,7 @@ class ContactListViewModel(
                     val conversationList: List<ConversationSidFromFriendlyNameResponse>? =
                         response.body()
                     var conversationSid = ""
+                    var conversationFriendlyName = ""
                     if (!conversationList.isNullOrEmpty()) {
                         for (conversation in conversationList) {
                             Log.d(
@@ -195,9 +196,10 @@ class ContactListViewModel(
                                 conversation.conversationSid
                             )
                             conversationSid = conversation.conversationSid
+                            conversationFriendlyName = conversation.friendlyName
                         }
                         //add participants to conversation
-                        addWebParticipants(contact,conversationSid)
+                        addWebParticipants(contact,conversationSid,conversationFriendlyName)
                     }
                     else{
                         //Create new conversation and add participant to it
@@ -221,12 +223,12 @@ class ContactListViewModel(
         })
     }
 
-    fun addWebParticipants(contact:ContactListViewItem,conversationSid: String){
+    fun addWebParticipants(contact:ContactListViewItem,conversationSid: String,friendlyName: String){
         val webUser = ArrayList<webParticipant>()
         val isAutoRegistrationEnabled = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"isAutoRegistrationEnabled") == "true"
         webUser.add(webParticipant(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"friendlyName")!!,""))
         webUser.add(webParticipant(contact.email,contact.name,""))
-        val request = addParticipantToWebConversationRequest(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,webUser,conversationSid,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"context")!!,isAutoRegistrationEnabled,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"proxyNumber")!!)
+        val request = addParticipantToWebConversationRequest(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!, Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,webUser,conversationSid,friendlyName,isAutoRegistrationEnabled,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"proxyNumber")!!)
         val participantDetails = RetrofitClient.getRetrofitWithToken().addParticipantToWebToWebConversation(request)
 
         participantDetails.enqueue(object: Callback<List<webParticipant>> {

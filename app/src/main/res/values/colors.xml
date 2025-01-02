@@ -25,5 +25,5 @@
     <color name="message_failed_icon_tint">#FEECEC</color>
     <color name="participant_background">#aaa</color>
     <color name="divider">#aaa</color>
-    <color name="swipe_mute_background">#4B5671</color>
+    <color name="swipe_mute_background">#EFEBEB</color>
 </resources>

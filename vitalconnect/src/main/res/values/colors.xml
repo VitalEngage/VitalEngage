@@ -25,7 +25,8 @@
     <color name="message_failed_icon_tint">#FEECEC</color>
     <color name="participant_background">#e0e4e3</color>
     <color name="divider">#36AAAAAA</color>
-    <color name="swipe_mute_background">#4B5671</color>
+    <color name="swipe_mute_background">#EFEBEB</color>
+    <color name="roles_heading">#4B5671</color>
     <color name="outgoing_msg">#7990A5</color>
     <color name="activity_title_back_color">#d3d3d3</color>
     <color name="completed">#6D9346</color>

@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:maxHeight="500dp"
     android:background="@color/dialog_background"
     android:elevation="5dp"
     app:behavior_hideable="true"
@@ -14,15 +15,32 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:paddingRight="16dp"
+        android:paddingLeft="16dp"
+        android:paddingBottom="16dp">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scrollbars="vertical"
+            app:layout_constraintBottom_toTopOf="@id/addParticpantLabel"
+            app:layout_constraintHeight_max="200dp"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/add_chat_participant_id_input_holder" />
+            app:layout_constraintVertical_bias="1.0" />
+
+        <TextView
+            android:id="@+id/addParticpantLabel"
+            style="@style/TextViewChildTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Add Participant"
+            app:layout_constraintBottom_toTopOf="@id/add_chat_participant_id_input_holder"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/recyclerView" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/add_chat_participant_id_input_holder"
@@ -30,7 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             app:boxBackgroundColor="@color/white"
-            app:layout_constraintTop_toBottomOf="@+id/recyclerView"
+            app:layout_constraintTop_toBottomOf="@+id/addParticpantLabel"
             app:layout_constraintBottom_toTopOf="@id/add_chat_participant_id_cancel_button"
             app:layout_goneMarginTop="17dp"
             app:hintEnabled="false"
@@ -57,8 +75,8 @@
         </com.google.android.material.textfield.TextInputLayout>
         <ImageView
             android:id="@+id/logo_warning"
-            android:layout_width="15dp"
-            android:layout_height="15dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:src="@drawable/warning"
             android:layout_marginTop="5dp"
             app:layout_constraintStart_toStartOf="@id/add_chat_participant_id_input_holder"
@@ -70,6 +88,10 @@
             android:layout_marginLeft="5dp"
             app:layout_constraintTop_toTopOf="@id/logo_warning"
             app:layout_constraintStart_toEndOf="@id/logo_warning"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:inputType="textMultiLine"
+            app:layout_constraintHorizontal_bias="0"
+            android:maxLines="2"
             android:text="@string/history_disclaimer"
             style="@style/Disclaimer"
             />

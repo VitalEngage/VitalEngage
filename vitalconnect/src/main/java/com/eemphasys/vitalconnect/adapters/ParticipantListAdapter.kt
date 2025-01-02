@@ -54,7 +54,7 @@ class ParticipantListAdapter(private val onParticipantClicked: (participant: Par
             iconDrawable?.setBounds(0, 0, iconDrawable.intrinsicWidth, iconDrawable.intrinsicHeight)  // Set icon size
 
             // Create an ImageSpan to embed the drawable inside the text
-            val imageSpan = ImageSpan(iconDrawable!!, ImageSpan.ALIGN_BOTTOM)
+            val imageSpan = ImageSpan(iconDrawable!!, ImageSpan.ALIGN_BASELINE)
 
             // Append the ImageSpan to the text (at the end, in this case)
             spannableString.setSpan(imageSpan, text.length, spannableString.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)

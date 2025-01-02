@@ -35,7 +35,7 @@ class ConversationListActivity:AppCompatActivity() {
         super.onCreate(savedInstanceState)
         EETLog.saveUserJourney("vitaltext: " +this::class.java.simpleName + " onCreate Called")
 
-        mainViewModel.create(applicationContext)
+//        mainViewModel.create(applicationContext)
         val binding = ActivityConversationListBinding.inflate(layoutInflater)
         mainViewModel.getUserAlertStatus(applicationContext)
         setContentView(binding.root)

@@ -89,67 +89,70 @@ class ExternalFragment : Fragment() {
 
             override fun onQueryTextChange(newText: String?): Boolean {
                 if(isAdded) {
-                    if (newText != null && newText.length >= 3) {
+                    val text = newText.orEmpty()
+                    Log.d("length", text.length.toString())
+                    if (text.length >= 3) {
                         if (Constants.getStringFromVitalTextSharedPreferences(applicationContext,"withContext")!! == "false") {
                             //Search using SearchedUsers api
-                            lifecycleScope.launch {
-                                val listOfSearchedContacts = mutableListOf<ContactListViewItem>()
-                                var request =
-                                    SearchContactRequest(
-                                        Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,
-                                        Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
-                                        newText!!
-                                    )
-                                var response = RetrofitClient.getRetrofitWithToken().getSearchedContact(request)
-
-                                response.enqueue(object : Callback<List<SearchContactResponse>> {
-                                    override fun onResponse(
-                                        call: Call<List<SearchContactResponse>>,
-                                        response: Response<List<SearchContactResponse>>
-                                    ) {
-                                        if (response.isSuccessful) {
-                                            var contactsResponse: List<SearchContactResponse>? =
-                                                response.body()
-                                            if (!contactsResponse.isNullOrEmpty()) {
-
-                                                for (response in contactsResponse) {
-                                                    var contactItem =
-                                                        ContactListViewItem(
-                                                            response.fullName,
-                                                            "",
-                                                            response.mobileNumber,
-                                                            "SMS",
-                                                            Constants.getInitials(response.fullName.trim { it <= ' ' }),
-                                                            response.designation,
-                                                            response.department,
-                                                            response.customerName,
-                                                            "",
-                                                            true,
-                                                            response.bpId,
-                                                            response.role
-                                                        )
-
-                                                    listOfSearchedContacts.add(contactItem)
-                                                }
-                                                setAdapter(listOfSearchedContacts)
-                                            }
-                                        }
-                                    }
-
-                                    override fun onFailure(
-                                        call: Call<List<SearchContactResponse>>,
-                                        t: Throwable
-                                    ) {
-
-                                    }
-
-                                })
-
-                            }
+//                            lifecycleScope.launch {
+//                                val listOfSearchedContacts = mutableListOf<ContactListViewItem>()
+//                                var request =
+//                                    SearchContactRequest(
+//                                        Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,
+//                                        Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
+//                                        newText!!
+//                                    )
+//                                var response = RetrofitClient.getRetrofitWithToken().getSearchedContact(request)
+//
+//                                response.enqueue(object : Callback<List<SearchContactResponse>> {
+//                                    override fun onResponse(
+//                                        call: Call<List<SearchContactResponse>>,
+//                                        response: Response<List<SearchContactResponse>>
+//                                    ) {
+//                                        if (response.isSuccessful) {
+//                                            var contactsResponse: List<SearchContactResponse>? =
+//                                                response.body()
+//                                            if (!contactsResponse.isNullOrEmpty()) {
+//
+//                                                for (response in contactsResponse) {
+//                                                    var contactItem =
+//                                                        ContactListViewItem(
+//                                                            response.fullName,
+//                                                            "",
+//                                                            response.mobileNumber,
+//                                                            "SMS",
+//                                                            Constants.getInitials(response.fullName.trim { it <= ' ' }),
+//                                                            response.designation,
+//                                                            response.department,
+//                                                            response.customerName,
+//                                                            "",
+//                                                            true,
+//                                                            response.bpId,
+//                                                            response.role
+//                                                        )
+//
+//                                                    listOfSearchedContacts.add(contactItem)
+//                                                }
+//                                                setAdapter(listOfSearchedContacts)
+//                                            }
+//                                        }
+//                                    }
+//
+//                                    override fun onFailure(
+//                                        call: Call<List<SearchContactResponse>>,
+//                                        t: Throwable
+//                                    ) {
+//
+//                                    }
+//
+//                                })
+//
+//                            }
+                            setAdapter(listOfContacts)
                         } else {
                             setAdapter(originalList)
                         }
-                        adapter.filter(newText.orEmpty())
+                        adapter.filter(text)
                         return true
                     } else {
                         if (Constants.getStringFromVitalTextSharedPreferences(applicationContext,"withContext")!! == "false") {

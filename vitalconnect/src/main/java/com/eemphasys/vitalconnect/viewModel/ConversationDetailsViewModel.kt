@@ -36,7 +36,7 @@ class ConversationDetailsViewModel(
     val conversationDetails = MutableLiveData<ConversationDetailsViewItem>()
     val isShowProgress = MutableLiveData<Boolean>()
     val onDetailsError = SingleLiveEvent<ConversationsError>()
-    private val onConversationMuted = SingleLiveEvent<Boolean>()
+    val onConversationMuted = SingleLiveEvent<Boolean>()
     val onConversationLeft = SingleLiveEvent<Unit>()
     private val onConversationRenamed = SingleLiveEvent<Unit>()
     val onParticipantAdded = SingleLiveEvent<String>()

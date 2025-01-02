@@ -234,6 +234,7 @@
     <string name="notification_media">Media</string>
 
 <!--    Webuser conversations-->
+    <string name="self_error">Can\'t start chat with yourself</string>
     <string name="empty_username">Username doesn\'t exist</string>
     <string name="user_not_registered">User not registered</string>
     <string name="online">Online</string>

@@ -69,7 +69,6 @@ class MessageListViewModel(
 ) : ViewModel() {
 
     val conversationName = MutableLiveData<String>()
-    var conversationFriendlyName : String = ""
 
     var isWebChat = MutableLiveData<String>()
 
@@ -98,7 +97,20 @@ class MessageListViewModel(
 
     val isNetworkAvailable = connectivityMonitor.isNetworkAvailable.asLiveData(viewModelScope.coroutineContext)
 
-    val selectedMessage: MessageListViewItem? get() = messageItems.value?.firstOrNull { it.index == selectedMessageIndex }
+//    val selectedMessage: MessageListViewItem? get() = messageItems.value?.firstOrNull { it.index == selectedMessageIndex }
+    val selectedMessage: MessageListViewItem?
+        get() {
+            val items = messageItems.value
+            if (items.isNullOrEmpty()) {
+                Log.e("SelectedMessage", "messageItems.value is null or empty")
+                return null
+            }
+            if (selectedMessageIndex == null) {
+                Log.e("SelectedMessage", "selectedMessageIndex is null")
+                return null
+            }
+            return items.firstOrNull { it.index == selectedMessageIndex }
+        }
 
     val typingParticipantsList = conversationsRepository.getTypingParticipants(conversationSid)
         .map { participants -> participants.map { it.typingIndicatorName } }
@@ -135,9 +147,12 @@ class MessageListViewModel(
                 return@collect
             }
             isWebChat.value = try{JSONObject(result.data?.attributes).optString("isWebChat", "")}catch(e: Exception){""}
-            conversationName.value = result.data?.friendlyName?.takeIf { it.isNotEmpty() } ?: result.data?.sid
-            conversationName.value?.let { Log.d("conversationname", it) }
-            conversationFriendlyName = result.data?.friendlyName?.takeIf { it.isNotEmpty() }.toString()
+//            conversationName.value = result.data?.friendlyName?.takeIf { it.isNotEmpty() } ?: result.data?.sid
+            if(!result.data?.friendlyName.isNullOrBlank()){
+                conversationName.value = result.data?.friendlyName
+            }else{
+                conversationName.value = result.data?.sid
+            }
         }
     }
 

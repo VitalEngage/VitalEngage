@@ -638,6 +638,7 @@ class ConversationsRepositoryImpl(
             val uuid = localCache.messagesDao().getMessageBySid(message.sid)?.uuid ?: ""
             localCache.messagesDao().insertOrReplace(message.toMessageDataItem(identity, uuid))
             updateConversationLastMessage(message.conversationSid)
+            updateFriendlyName()
         }
     }
 
