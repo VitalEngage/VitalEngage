@@ -90,6 +90,9 @@ class InternalFragment : Fragment() {
 
         val searchItem = menu.findItem(R.id.filter_contacts)
         val searchView = searchItem?.actionView as SearchView
+        (searchItem.actionView as SearchView).apply {
+            queryHint = getString(R.string.search_contacts)
+        }
         searchView.setOnSearchClickListener {
             ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_Contacts_SearchBtnClick",
                 "Contacts",
@@ -564,10 +567,14 @@ class InternalFragment : Fragment() {
 
         //Generate A-Z scrollbar
         val alphabet = ('A'..'Z').toList()
+
+        // Clear previous views before adding new ones
+        binding!!.azScrollbar.removeAllViews()
+
         for (letter in alphabet) {
             val textView = TextView(applicationContext).apply {
                 text = letter.toString()
-                setPadding(4, 4, 4, 4)
+                setPadding(4, 2, 4, 2)
                 isClickable = true
                 isFocusable = true
                 setTextColor(Color.LTGRAY)

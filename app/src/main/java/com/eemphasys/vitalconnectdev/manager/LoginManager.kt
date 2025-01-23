@@ -88,7 +88,9 @@ class LoginManagerImpl(
             val twilioToken = RetrofitClient.getRetrofitWithToken().getTwilioToken(
                 LoginConstants.TENANT_CODE,
                 LoginConstants.CURRENT_USER,
-                LoginConstants.FRIENDLY_NAME
+                LoginConstants.FRIENDLY_NAME,
+                "Android",
+                "VC"
             )
             if(twilioToken.isSuccessful) {
                 Log.d("twiliotoken", twilioToken.body()!!.token)

@@ -43,7 +43,7 @@ interface TwilioApi {
     suspend fun getRenewedAuthToken(@Body requestData : RenewTokenRequest) : Response<RenewToken>
 
     @GET("Notification/getTwilioToken")
-     suspend fun getTwilioToken(@Query("tenantCode") tenantCode : String,@Query("user") user : String, @Query("friendlyName") friendlyName: String) : Response<Token>
+     suspend fun getTwilioToken(@Query("tenantCode") tenantCode : String,@Query("user") user : String, @Query("friendlyName") friendlyName: String, @Query("deviceType") deviceType: String, @Query("productCode") productCode: String, ) : Response<Token>
 
      @GET("Conversation/FetchParticipantConversations")
      fun fetchExistingConversation(@Query("tenantCode") tenantCode : String,@Query("identity") identity : String,@Query("isWebUser") isWebUser : Boolean,@Query("page") page : Int,@Query("proxyNumber") proxyNumber: String) : Call<List<ParticipantExistingConversation>>

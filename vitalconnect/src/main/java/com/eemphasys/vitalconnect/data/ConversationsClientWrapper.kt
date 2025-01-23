@@ -105,7 +105,9 @@ class ConversationsClientWrapper(private val applicationContext: Context) {
             val TwilioToken = RetrofitClient.getRetrofitWithToken().getTwilioToken(
                 Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
                 username,
-                Constants.getStringFromVitalTextSharedPreferences(applicationContext,"friendlyName")!!
+                Constants.getStringFromVitalTextSharedPreferences(applicationContext,"friendlyName")!!,
+                "Android",
+                Constants.getStringFromVitalTextSharedPreferences(applicationContext,"product")!!
             )
 //            Constants.TWILIO_TOKEN = TwilioToken.body()!!.token
             return@withContext TwilioToken.body()!!.token

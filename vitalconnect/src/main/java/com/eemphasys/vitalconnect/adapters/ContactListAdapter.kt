@@ -22,6 +22,7 @@ import com.eemphasys.vitalconnect.databinding.RowContactItemBinding
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
+import java.util.logging.Handler
 
 class ContactListAdapter(
     private var itemList: List<ContactListViewItem>,
@@ -31,6 +32,11 @@ class ContactListAdapter(
 ) : RecyclerView.Adapter<ContactListAdapter.ViewHolder>() {
 
     val sizeChange = SingleLiveEvent<Int>()
+
+    // Add a flag to track if an item has been clicked
+    private var isItemClicked = false
+    private val clickDelayMillis: Long = 5000 // 2 seconds delay to re-enable clicks
+
     inner class ViewHolder(private val itemBinding: RowContactItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root), View.OnClickListener, View.OnLongClickListener {
 
@@ -41,7 +47,7 @@ class ContactListAdapter(
 
             itemBinding.participantIcon.setOnClickListener {
                 val position = adapterPosition
-                if (position != RecyclerView.NO_POSITION) {
+                if (position != RecyclerView.NO_POSITION  && !isItemClicked) {
                     val contact = itemList[position]
                     itemClickListener.onParticipantIconClick(contact)
                     ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_Contacts_AvatarClick",
@@ -54,15 +60,24 @@ class ContactListAdapter(
 
         override fun onClick(view: View?) {
             val position = adapterPosition
-            if (position != RecyclerView.NO_POSITION) {
+            if (position != RecyclerView.NO_POSITION && !isItemClicked) {
                 val contact = itemList[position]
                 itemClickListener.onContactItemClick(contact)
+                // Set flag to prevent further clicks
+                isItemClicked = true
+//                notifyDataSetChanged() // Update UI to reflect changes
+
+                // Re-enable clicks after the specified delay
+                android.os.Handler().postDelayed({
+                    isItemClicked = false
+//                    notifyDataSetChanged() // Update the UI after enabling clicks again
+                }, clickDelayMillis)
             }
         }
 
         override fun onLongClick(v: View?): Boolean {
             val position = adapterPosition
-            if (position != RecyclerView.NO_POSITION) {
+            if (position != RecyclerView.NO_POSITION  && !isItemClicked) {
                 val contact = itemList[position]
                 itemClickListener.onContactItemLongClick(contact) // Notify long click
                 return true // Return true to indicate the event was handled
@@ -112,6 +127,10 @@ class ContactListAdapter(
                 ParticipantColorManager.getColorForParticipant(item.name),
                 ParticipantColorManager.getDarkColorForParticipant(item.name)
             )
+            // If an item is clicked, disable all click interactions
+            if (isItemClicked) {
+                itemBinding.root.isClickable = false
+            }
         }
     }
 
