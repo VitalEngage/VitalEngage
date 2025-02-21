@@ -48,6 +48,7 @@ class NewConversationDialog: BaseBottomSheetDialogFragment() {
         binding.createConversation.setOnClickListener {
             binding.progressBarID.visibility = View.VISIBLE
             binding.createConversation.isEnabled = false
+            binding.cancelButton.isEnabled = false
             createConversation()
             ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_Contacts_NewConversationDialog_ConfirmClick",
                 "Contacts",
@@ -66,6 +67,7 @@ class NewConversationDialog: BaseBottomSheetDialogFragment() {
         val friendlyName = binding.newConversationNameInput.text.toString().trim()
         if (friendlyName.isBlank()) {
             binding.createConversation.isEnabled = true
+            binding.cancelButton.isEnabled = true
             binding.progressBarID.visibility = View.GONE
             binding.newConversationNameInputHolder.error = getString(R.string.blank_conversation_name)
             return
@@ -77,14 +79,16 @@ class NewConversationDialog: BaseBottomSheetDialogFragment() {
                     binding.newConversationNameInputHolder.error = getString(R.string.name_exists)
                     binding.newConversationNameInputHolder.enableErrorResettingOnTextChanged()
                     binding.createConversation.isEnabled = true
+                    binding.cancelButton.isEnabled = true
                     binding.progressBarID.visibility = View.GONE
                 } else {
                     // The conversation does not exist
                     val attributes = mapOf("isWebChat" to true)
                         val jsonObject = JSONObject(attributes)
-                        contactListViewModel.createWebConversation(friendlyName, Attributes(jsonObject),Constants.CURRENT_CONTACT)
-                        binding.progressBarID.visibility = View.GONE
-                        dismiss()
+                        contactListViewModel.createWebConversation(friendlyName, Attributes(jsonObject),Constants.CURRENT_CONTACT){
+                            binding.progressBarID.visibility = View.GONE
+                            dismiss()
+                        }
                 }
             }
         })

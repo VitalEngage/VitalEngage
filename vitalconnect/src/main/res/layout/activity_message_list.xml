@@ -179,11 +179,11 @@
                 />
             <TextView
                 android:id="@+id/messageCharCount"
-                style="@style/Size_note"
+                style="@style/character_limit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="10dp"
-                app:layout_constraintEnd_toEndOf="@+id/messageInputHolder"
+                app:layout_constraintEnd_toEndOf="@+id/messageSendButton"
                 app:layout_constraintTop_toBottomOf="@+id/messageInputHolder"
                 android:text="0 / 300"
                 />

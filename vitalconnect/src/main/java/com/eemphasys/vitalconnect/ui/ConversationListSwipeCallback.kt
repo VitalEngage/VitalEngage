@@ -2,6 +2,7 @@ package com.eemphasys.vitalconnect.ui
 
 import android.content.Context
 import android.graphics.Canvas
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
@@ -59,12 +60,16 @@ class ConversationListSwipeCallback(val context: Context, val adapter: Conversat
         }
 
         val position = viewHolder.adapterPosition
+        Log.d("SwipeCallback", "adapterPosition: $position, adapterPosition from viewHolder: ${viewHolder.adapterPosition}")
+        if (position == RecyclerView.NO_POSITION) {
+            return  // Invalid position, so return early
+        }
         val conversationSid = adapter.conversations[position].sid
 
         when {
-            dX > swipeLimit && adapter.isMuted(position) -> onSwipeBackAction = { onUnMute(conversationSid) }
+            dX > swipeLimit && adapter.isMuted(position) -> onSwipeBackAction = { onUnMute(conversationSid!!) }
 
-            dX > swipeLimit && !adapter.isMuted(position) -> onSwipeBackAction = { onMute(conversationSid) }
+            dX > swipeLimit && !adapter.isMuted(position) -> onSwipeBackAction = { onMute(conversationSid!!) }
 
             dX < -swipeLimit -> onSwipeBackAction = { onLeave(conversationSid) }
 

@@ -177,7 +177,7 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
             adapter.notifyDataSetChanged()
             adapter.conversations = it
             adapter.allConversations = it
-            binding.conversationList.scrollToPosition(0)
+//            binding.conversationList.scrollToPosition(0)
             binding.conversationRefresh.isRefreshing = false
         }
 

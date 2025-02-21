@@ -63,6 +63,7 @@ class ContactListViewModel(
 
     private val isShowProgress = MutableLiveData<Boolean>()
     val onParticipantAdded = SingleLiveEvent<String>()
+    val stopLoader = MutableLiveData<Boolean>()
     val onDetailsError = SingleLiveEvent<ConversationsError>()
     val isNetworkAvailable = connectivityMonitor.isNetworkAvailable.asLiveData(viewModelScope.coroutineContext)
 
@@ -139,12 +140,19 @@ class ContactListViewModel(
         }
     }
 
-    fun createWebConversation(friendlyName: String,attributes: Attributes,contact: ContactListViewItem)= viewModelScope.launch {
-        Log.d("attributes",attributes.toString())
-        val conversationSid = conversationListManager.createConversation(friendlyName,attributes)
-        //add participants to conversation
-        addWebParticipants(contact,conversationSid,friendlyName)
+    fun createWebConversation(friendlyName: String,attributes: Attributes,contact: ContactListViewItem,callback: () -> Unit)= viewModelScope.launch {
+        try {
+            Log.d("attributes", attributes.toString())
+            val conversationSid =
+                conversationListManager.createConversation(friendlyName, attributes)
+            //add participants to conversation
+            addWebParticipants(contact, conversationSid, friendlyName){
+                callback.invoke()
+            }
 //        conversationListManager.removeConversation("CH79e0c9e7195a4494b091e7bfccf3934f")
+        }catch (e:Exception){
+            callback.invoke()
+        }
 
     }
     fun checkName(friendlyName: String, callback: CheckNameCallback) {
@@ -199,7 +207,7 @@ class ContactListViewModel(
                             conversationFriendlyName = conversation.friendlyName
                         }
                         //add participants to conversation
-                        addWebParticipants(contact,conversationSid,conversationFriendlyName)
+                        addWebParticipants(contact,conversationSid,conversationFriendlyName){}
                     }
                     else{
                         //Create new conversation and add participant to it
@@ -207,7 +215,7 @@ class ContactListViewModel(
                             "isWebChat" to true
                         )
                         val jsonObject = JSONObject(attributes)
-                        createWebConversation(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"context")!!,Attributes(jsonObject),contact)
+                        createWebConversation(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"context")!!,Attributes(jsonObject),contact){}
                     }
                 }
 
@@ -223,7 +231,7 @@ class ContactListViewModel(
         })
     }
 
-    fun addWebParticipants(contact:ContactListViewItem,conversationSid: String,friendlyName: String){
+    fun addWebParticipants(contact:ContactListViewItem,conversationSid: String,friendlyName: String,callback: () -> Unit){
         val webUser = ArrayList<webParticipant>()
         val isAutoRegistrationEnabled = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"isAutoRegistrationEnabled") == "true"
         webUser.add(webParticipant(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"friendlyName")!!,""))
@@ -242,6 +250,11 @@ class ContactListViewModel(
                     }
                     //Redirect to messageList activity after adding participant to existing conversation
                     MessageListActivity.startfromFragment(applicationContext,conversationSid)
+                    stopLoader.value = true
+                callback.invoke()
+                }
+                else{
+                    callback.invoke()
                 }
             }
 
@@ -249,7 +262,7 @@ class ContactListViewModel(
                 call: Call<List<webParticipant>>,
                 t: Throwable
             ) {
-
+                callback.invoke()
             }
 
         })

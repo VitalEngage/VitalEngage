@@ -19,6 +19,7 @@ import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.size
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.findFragment
 import androidx.lifecycle.lifecycleScope
@@ -207,6 +208,9 @@ class InternalFragment : Fragment() {
         }
     }
     override fun onResume() {
+        // Enable interaction
+        binding?.userList?.isClickable = true
+        binding?.userList?.isEnabled = true
         super.onResume()
         ChatAppModel.FirebaseLogEventListener?.screenLogEvent(requireContext(),"VC_InternalUsers","InternalFragment")
     }
@@ -285,6 +289,11 @@ class InternalFragment : Fragment() {
 //            if(!isNetworkAvailable)
 //                activity?.finish()
         }
+        contactListViewModel.stopLoader.observe(viewLifecycleOwner){value ->
+            if(value) {
+                binding?.progressBarID?.visibility = View.GONE
+            }
+        }
         webuserList = ArrayList<WebUser>()
 
         if(!Constants.getStringFromVitalTextSharedPreferences(applicationContext,"webUsers")!!.isNullOrEmpty()) {
@@ -350,6 +359,9 @@ class InternalFragment : Fragment() {
         adapter = ContactListAdapter(list,list,applicationContext,object : OnContactItemClickListener {
             @SuppressLint("SuspiciousIndentation")
             override fun onContactItemClick(contact: ContactListViewItem) {
+                // Disable interaction
+                binding?.userList?.isClickable = false
+                binding?.userList?.isEnabled = false
                 Log.d(
                     "WebUserClicked",contact.name)
 //                  Web to web chat
@@ -386,7 +398,7 @@ class InternalFragment : Fragment() {
                             }
 
 
-                            binding?.progressBarID?.visibility = View.GONE
+//                            binding?.progressBarID?.visibility = View.GONE
                         } else {
                             Constants.CURRENT_CONTACT = contact
                             contactListViewModel.checkTwilioUser(contact) { isTwilioUser ->
@@ -399,6 +411,7 @@ class InternalFragment : Fragment() {
                                         getString(R.string.user_not_registered)
                                     )
                                 }
+                                binding?.progressBarID?.visibility = View.GONE
                             }
 
                         }
@@ -415,6 +428,9 @@ class InternalFragment : Fragment() {
                             getString(R.string.empty_username)
                     )
                 }
+                // Enable interaction
+                        binding?.userList?.isClickable = true
+                        binding?.userList?.isEnabled = true
                 ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_Contacts_InternalUserClick",
                     "Contacts",
                     "InternalFragment"

@@ -190,6 +190,9 @@ class ExternalFragment : Fragment() {
         }
     }
     override fun onResume() {
+        // enable interaction
+        binding?.contactList?.isClickable = true
+        binding?.contactList?.isEnabled = true
         super.onResume()
         ChatAppModel.FirebaseLogEventListener?.screenLogEvent(requireContext(),"VC_CustomerContacts","ExternalFragment")
     }
@@ -247,6 +250,7 @@ class ExternalFragment : Fragment() {
         contactListViewModel.onDetailsError.observe(viewLifecycleOwner){ error ->
             Log.d("snackbar",error.toString())
             binding!!.azScrollbar.showSnackbar(applicationContext.getErrorMessage(error))
+            binding?.progressBarID?.visibility = View.GONE
         }
         binding?.contactList?.addItemDecoration(DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL))
 
@@ -317,6 +321,9 @@ class ExternalFragment : Fragment() {
         adapter = ContactListAdapter(list,list,applicationContext,object : OnContactItemClickListener {
             @SuppressLint("SuspiciousIndentation")
             override fun onContactItemClick(contact: ContactListViewItem) {
+                // disable interaction
+                binding?.contactList?.isClickable = false
+                binding?.contactList?.isEnabled = false
                 var phone  = Constants.cleanedNumber(Constants.formatPhoneNumber(applicationContext,contact.number,contact.countryCode!!))
 //                    if(Constants.isValidPhoneNumber(phone, Locale.getDefault().country)) {
                         binding?.progressBarID?.visibility = View.VISIBLE
@@ -506,6 +513,7 @@ class ExternalFragment : Fragment() {
                                                     }",
                                                     Attributes(jsonObject)
                                                 )
+                                                binding?.progressBarID?.visibility = View.GONE
                                             }
 
                                         }
@@ -580,6 +588,9 @@ class ExternalFragment : Fragment() {
 //                    else{
 //                        binding!!.contactList .showSnackbar("Invalid Phone number.")
 //                    }
+                // enable interaction
+                binding?.contactList?.isClickable = true
+                binding?.contactList?.isEnabled = true
                 ChatAppModel.FirebaseLogEventListener?.buttonLogEvent(applicationContext, "VC_Contacts_ExternalContactClick",
                     "Contacts",
                     "ExternalFragment"
