@@ -208,6 +208,14 @@ class InternalFragment : Fragment() {
         }
     }
     override fun onResume() {
+        if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"withContext").equals("true",ignoreCase = true)) {
+            binding?.contextLabelLayout?.visibility = View.VISIBLE
+            binding?.contextLabel?.text =
+                Constants.getStringFromVitalTextSharedPreferences(applicationContext, "context")
+        }
+        else{
+            binding?.contextLabelLayout?.visibility = View.GONE
+        }
         // Enable interaction
         binding?.userList?.isClickable = true
         binding?.userList?.isEnabled = true

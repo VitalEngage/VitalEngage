@@ -12,6 +12,7 @@
     <color name="colorPrimaryDark">#001489</color>
     <color name="colorAccent">#d92337</color>
     <color name="colorEet">#d92337</color>
+    <color name="colorEetDisabled">#e0e4e3</color>
     <color name="colorEetOpacity">#57D92337</color>
     <color name="splashBottom">#06033A</color>
     <color name="white">#fff</color>

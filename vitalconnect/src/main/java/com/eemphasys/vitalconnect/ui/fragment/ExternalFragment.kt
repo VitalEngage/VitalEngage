@@ -190,6 +190,14 @@ class ExternalFragment : Fragment() {
         }
     }
     override fun onResume() {
+        if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"withContext").equals("true",ignoreCase = true)) {
+            binding?.contextLabelLayout?.visibility = View.VISIBLE
+            binding?.contextLabel?.text =
+                Constants.getStringFromVitalTextSharedPreferences(applicationContext, "context")
+        }
+        else{
+            binding?.contextLabelLayout?.visibility = View.GONE
+        }
         // enable interaction
         binding?.contactList?.isClickable = true
         binding?.contactList?.isEnabled = true

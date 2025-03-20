@@ -16,11 +16,16 @@ class LoginConstants   {
         var BASE_URL = ""
         var TENANT_CODE = ""
         //fields to be change as per tenant(clientid, secret, proxy)
-        var CLIENT_ID = "VitalConnect-sQz2LmzcRLU07nnod9MlJJcJdcQj6iFZTg6uSnPbjxZ9Vssm9qONFhbPh64hmUYLxbKWpURQ0JesgZTvhNsFj3ca67lDuIWwyir4rS6GWFK5dxaHQ/4kqh8aCmB6JJP0"
-        var CLIENT_SECRET = "+QXNy5ItEjPCSDG6sF7R23oy7M9sDjfFJuNcizgyRXYKjcTc98EFye7g4G5CTiee7QCLaEfQhd2i1mihW9tOTaFxsO077LlciZyNCWpoUYjH5LLoPiqYIw7Ux/JYF3gP"
+        //tenant: VitalEdge
+//        var CLIENT_ID = "VitalConnect-sQz2LmzcRLU07nnod9MlJJcJdcQj6iFZTg6uSnPbjxZ9Vssm9qONFhbPh64hmUYLxbKWpURQ0JesgZTvhNsFj3ca67lDuIWwyir4rS6GWFK5dxaHQ/4kqh8aCmB6JJP0"
+//        var CLIENT_SECRET = "+QXNy5ItEjPCSDG6sF7R23oy7M9sDjfFJuNcizgyRXYKjcTc98EFye7g4G5CTiee7QCLaEfQhd2i1mihW9tOTaFxsO077LlciZyNCWpoUYjH5LLoPiqYIw7Ux/JYF3gP"
+//        var PROXY_NUMBER = "+16503895687"
+        //tenant: e-emphasys
+        var CLIENT_ID = "VitalConnect-ed809a52bf53819f48db"
+        var CLIENT_SECRET = "695e7f7d285a6edf6383"
         var PROXY_NUMBER = "+16503895687"
         var SHOW_CONTACTS = "false"
-        var PRODUCT = "eLog"
+        var PRODUCT = "VC"
         var CURRENT_USER =""
         var FRIENDLY_NAME = ""
         var TWILIO_TOKEN = ""
@@ -35,7 +40,7 @@ class LoginConstants   {
         var MOBILENUMBER = ""
         var WITH_CONTEXT = "false"
         var OPEN_CHAT = "false"
-        var CONTEXT = "QWERTY"
+        var CONTEXT = ""
         var DEALER_NAME = ""
         var PINNED_CONVO : ArrayList<String> = arrayListOf()
         var SHOW_INTERNAL_CONTACTS = "true"

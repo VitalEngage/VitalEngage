@@ -19,9 +19,12 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.room.util.appendPlaceholders
 import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.adapters.ConversationListAdapter
 import com.eemphasys.vitalconnect.adapters.OnConversationEvent
@@ -39,8 +42,10 @@ import com.eemphasys.vitalconnect.databinding.FragmentConversationListBinding
 import com.eemphasys.vitalconnect.ui.ConversationListSwipeCallback
 import com.eemphasys.vitalconnect.ui.activity.ConversationListActivity
 import com.eemphasys.vitalconnect.ui.activity.MessageListActivity
+import com.eemphasys.vitalconnect.viewModel.CheckConversationCallback
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.launch
 
 class ConversationListFragment:Fragment(), OnConversationEvent {
     lateinit var binding: FragmentConversationListBinding
@@ -58,7 +63,6 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
         super.onCreate(savedInstanceState)
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onCreate Called")
         setHasOptionsMenu(true)
-
         binding = FragmentConversationListBinding.inflate(layoutInflater)
         if(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"withContext")!! == "true") {
             binding.lblContext?.let {
@@ -66,6 +70,21 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
                 it.setTextColor(resources.getColorStateList(R.color.white))
                 // Perform logic on deselection
                 onLabelSelect(it)
+            }
+        }
+
+        binding.staticCard.setOnClickListener{
+            binding.progressBarID.visibility = View.VISIBLE
+            binding.root.isClickable = false
+            binding.root.isEnabled = false
+            val sid = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"conversationSid")
+            val conversationContext = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"context")!!
+            if (sid != null) {
+                conversationListViewModel.addWebParticipants(sid,conversationContext){
+                    binding.progressBarID.visibility = View.GONE
+                    binding.root.isClickable = true
+                    binding.root.isEnabled = true
+                }
             }
         }
 
@@ -117,8 +136,39 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
 
     override fun onResume() {
         super.onResume()
-        Log.d("onResume","onResumeCalled")
+        Log.d("ConversationListFragment","onResumeCalled")
         conversationListViewModel.getUserConversations()
+        val withContext = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"withContext")
+        val conversationContext = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"context")!!
+        binding.root.isClickable = true
+        binding.root.isEnabled = true
+        if(withContext.equals("true",ignoreCase = true)) {
+            checkIfExistsInMyConversations(conversationContext) { isAvailable ->
+                Log.d("contextualConversation", "availableinDB" + isAvailable)
+                if (!isAvailable) {
+                    conversationListViewModel.checkIfConversationAlreadyCreated(conversationContext,
+                        object : CheckConversationCallback {
+                            override fun onResult(exists: Boolean) {
+                                Log.d("contextualConversation", "existsinVCDB" + exists)
+                                if (exists) {
+                                    binding.staticCard.visibility = View.VISIBLE
+                                    binding.conversationName.text = conversationContext
+                                    binding.line.visibility = View.VISIBLE
+                                } else {
+                                    binding.staticCard.visibility = View.GONE
+                                    binding.conversationName.text = ""
+                                    binding.line.visibility = View.GONE
+                                }
+                            }
+
+                        })
+                } else {
+                    binding.staticCard.visibility = View.GONE
+                    binding.conversationName.text = ""
+                    binding.line.visibility = View.GONE
+                }
+            }
+        }
         ChatAppModel.FirebaseLogEventListener?.screenLogEvent(requireContext(),"VC_Conversations","ConversationListFragment")
     }
 
@@ -182,7 +232,7 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
         }
 
         conversationListViewModel.isNoConversationsVisible.observe(viewLifecycleOwner) { visible ->
-            binding.noConversations.root.visibility = if (visible) View.VISIBLE else View.GONE
+            binding.noConversations.root.visibility = if (visible && binding.staticCard.isVisible) View.VISIBLE else View.GONE
         }
 
         conversationListViewModel.isNoResultsFoundVisible.observe(viewLifecycleOwner) { visible ->
@@ -531,6 +581,14 @@ class ConversationListFragment:Fragment(), OnConversationEvent {
             noInternetSnackBar.show()
         } else {
             noInternetSnackBar.dismiss()
+        }
+    }
+
+    private fun checkIfExistsInMyConversations(friendlyName: String, callback: (Boolean) -> Unit) {
+        EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " checkIfExistsInMyConversations Called")
+        lifecycleScope.launch {
+            val isAvailable = conversationListViewModel.isConversationAvailable(friendlyName)
+            callback(isAvailable)
         }
     }
 }

@@ -7,19 +7,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.eemphasys.vitalconnect.adapters.ConversationListAdapter
-import com.eemphasys.vitalconnect.api.AuthInterceptor
 import com.eemphasys.vitalconnect.api.RetrofitClient
-import com.eemphasys.vitalconnect.api.RetrofitHelper
-import com.eemphasys.vitalconnect.api.RetryInterceptor
-import com.eemphasys.vitalconnect.api.TwilioApi
+import com.eemphasys.vitalconnect.api.data.ConversationSidFromFriendlyNameRequest
+import com.eemphasys.vitalconnect.api.data.ConversationSidFromFriendlyNameResponse
 import com.eemphasys.vitalconnect.api.data.SavePinnedConversationRequest
+import com.eemphasys.vitalconnect.api.data.addParticipantToWebConversationRequest
+import com.eemphasys.vitalconnect.api.data.webParticipant
 import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.SingleLiveEvent
 import com.eemphasys.vitalconnect.common.asConversationListViewItems
 import com.eemphasys.vitalconnect.common.call
 import com.eemphasys.vitalconnect.common.enums.ConversationsError
-import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.common.merge
 import com.eemphasys.vitalconnect.data.models.ConversationListViewItem
 import com.eemphasys.vitalconnect.manager.ConnectivityMonitor
@@ -31,12 +30,13 @@ import kotlin.properties.Delegates
 import com.eemphasys.vitalconnect.data.models.RepositoryRequestStatus
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceHelper
+import com.eemphasys.vitalconnect.ui.activity.MessageListActivity
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
-import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import okhttp3.OkHttpClient
-import java.util.concurrent.TimeUnit
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class ConversationListViewModel(
     private val applicationContext: Context,
@@ -347,4 +347,135 @@ class ConversationListViewModel(
             callback.invoke()
         }
     }
+
+    suspend fun isConversationAvailable(friendlyName: String): Boolean {
+        EETLog.saveUserJourney("vitaltext:  ConversationListViewModel isConversationAvailable Called")
+        val convo = conversationsRepository.isConversationAvailable(friendlyName)
+        if (convo != null){
+            return true
+        }
+        else return false
+    }
+
+
+    fun checkIfConversationAlreadyCreated(friendlyName: String, callback: CheckConversationCallback) {
+        EETLog.saveUserJourney("vitaltext:  ConversationListViewModel checkIfConversationAlreadyCreated Called")
+        try {
+            val request = ConversationSidFromFriendlyNameRequest(
+                Constants.getStringFromVitalTextSharedPreferences(
+                    applicationContext,
+                    "tenantCode"
+                )!!,
+                Constants.getStringFromVitalTextSharedPreferences(
+                    applicationContext,
+                    "currentUser"
+                )!!,
+                friendlyName
+            )
+            val existingWebConversation = RetrofitClient.getRetrofitWithToken()
+                .getTwilioConversationSidFromFriendlyName(request)
+
+            existingWebConversation.enqueue(object :
+                Callback<List<ConversationSidFromFriendlyNameResponse>> {
+                override fun onResponse(
+                    call: Call<List<ConversationSidFromFriendlyNameResponse>>,
+                    response: Response<List<ConversationSidFromFriendlyNameResponse>>
+                ) {
+                    val exists = if (response.isSuccessful) {
+                        val conversationList = response.body()
+                        if (conversationList != null) {
+                            for (convo in conversationList) {
+                                Constants.saveStringToVitalTextSharedPreferences(
+                                    applicationContext,
+                                    "conversationSid",
+                                    convo.conversationSid
+                                )
+                            }
+                        }
+                        !conversationList.isNullOrEmpty()
+                    } else {
+                        false
+                    }
+
+                    callback.onResult(exists)
+                }
+
+                override fun onFailure(
+                    call: Call<List<ConversationSidFromFriendlyNameResponse>>,
+                    t: Throwable
+                ) {
+                    callback.onResult(false) // Handle failure case appropriately
+                }
+            })
+        }catch (e: Exception){
+            e.printStackTrace()
+
+            EETLog.error(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    AppContextHelper.appContext!!
+                )!!
+            )
+        }
+    }
+
+    fun addWebParticipants(conversationSid: String, friendlyName: String, callback: () -> Unit){
+        EETLog.saveUserJourney("vitaltext:  ConversationListViewModel addWebParticipants Called")
+        try {
+        val webUser = ArrayList<webParticipant>()
+        val isAutoRegistrationEnabled = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"isAutoRegistrationEnabled") == "true"
+        webUser.add(webParticipant(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"friendlyName")!!,""))
+        val request = addParticipantToWebConversationRequest(Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!, Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,webUser,conversationSid,friendlyName,isAutoRegistrationEnabled,Constants.getStringFromVitalTextSharedPreferences(applicationContext,"proxyNumber")!!)
+        val participantDetails = RetrofitClient.getRetrofitWithToken().addParticipantToWebToWebConversation(request)
+
+        participantDetails.enqueue(object: Callback<List<webParticipant>> {
+            override fun onResponse(
+                call: Call<List<webParticipant>>,
+                response: Response<List<webParticipant>>
+            ) {
+                if(response.isSuccessful){
+                    for (i in response.body()!!){
+                        Log.d("ParticipantSID",i.fullName + i.participantSid)
+                    }
+                    //Redirect to messageList activity after adding participant to existing conversation
+                    MessageListActivity.startfromFragment(applicationContext,conversationSid)
+                    callback.invoke()
+                }
+                else{
+                    callback.invoke()
+                }
+            }
+
+            override fun onFailure(
+                call: Call<List<webParticipant>>,
+                t: Throwable
+            ) {
+                callback.invoke()
+            }
+
+        })
+        }catch (e:Exception){
+            e.printStackTrace()
+
+            EETLog.error(
+                AppContextHelper.appContext!!, LogConstants.logDetails(
+                    e,
+                    LogConstants.LOG_LEVEL.ERROR.toString(),
+                    LogConstants.LOG_SEVERITY.HIGH.toString()
+                ),
+                Constants.EX, LogTraceConstants.getUtilityData(
+                    AppContextHelper.appContext!!
+                )!!
+            )
+    }
+    }
+
+}
+
+interface CheckConversationCallback {
+    fun onResult(exists: Boolean)
 }

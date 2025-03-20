@@ -11,8 +11,11 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -21,8 +24,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.adapters.SuggestionAdapter
 import com.eemphasys.vitalconnect.api.RetrofitClient
+import com.eemphasys.vitalconnect.api.data.AddAzureAdParticipantConversationRequest
+import com.eemphasys.vitalconnect.api.data.GetAzureADUserAndGroupListRequest
+import com.eemphasys.vitalconnect.api.data.GetAzureADUserAndGroupListResponse
 import com.eemphasys.vitalconnect.api.data.SearchContactRequest
 import com.eemphasys.vitalconnect.api.data.SearchUsersResponse
+import com.eemphasys.vitalconnect.api.data.webParticipant
 import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.Constants
@@ -45,6 +52,8 @@ import com.eemphasys.vitalconnect.repository.ConversationsRepositoryImpl
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -80,7 +89,10 @@ class ConversationDetailsActivity : AppCompatActivity() {
     private lateinit var editText: EditText
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: SuggestionAdapter
+//    private var isManualTextChange = false
 
+    private val _isManualTextChange = MutableLiveData<Boolean>()
+    val isManualTextChange: LiveData<Boolean> get() = _isManualTextChange
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onCreate Called")
@@ -95,89 +107,248 @@ class ConversationDetailsActivity : AppCompatActivity() {
 
         initViews()
 
+//        // Initialize the LiveData with a default value
+//        _isManualTextChange.value = false
+
+//        isManualTextChange.observe(this) { isChanged ->
+//            if (isChanged) {
+//                binding.addChatParticipantSheet.addChatParticipantIdButton.isEnabled = isChanged
+//            } else {
+//                binding.addChatParticipantSheet.addChatParticipantIdButton.isEnabled = isChanged
+//            }
+//        }
+
+        if (Constants.getStringFromVitalTextSharedPreferences(
+                applicationContext,
+                "isAzureAdEnabled"
+            )!!.equals("true", ignoreCase = true)
+        ) {
+            binding.addChatParticipantSheet.addParticpantLabel.text =
+                getString(R.string.details_add_azure_participant)
+            binding.addChatParticipantButton.text = getString(R.string.details_add_azure_participant)
+        }
+        else {
+            binding.addChatParticipantSheet.addParticpantLabel.text =
+                getString(R.string.details_add_chat_participant)
+            binding.addChatParticipantButton.text = getString(R.string.details_add_chat_participant)
+        }
+
         editText = findViewById(R.id.add_chat_participant_id_input)
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         editText.addTextChangedListener(object : TextWatcher {
+            var listOfSearchedUsers = mutableListOf<ContactListViewItem>()
+            var lastSearchText = ""  // Keep track of the last search text
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if(s!!.length >= 3){
-                lifecycleScope.launch {
-                    val listOfSearchedUsers = mutableListOf<ContactListViewItem>()
-                    var request =
-                        SearchContactRequest(
-                            Constants.getStringFromVitalTextSharedPreferences(applicationContext,"currentUser")!!,
-                            Constants.getStringFromVitalTextSharedPreferences(applicationContext,"tenantCode")!!,
-                            s.toString()
+                if (_isManualTextChange.value == true) {
+                    // Don't trigger search logic if the change is manual
+                    return
+                }
+                val text = s.toString().orEmpty()
+                Log.d("setadapter", text.length.toString())
+                lastSearchText = text // Saving the text before making the API call
+                if( text.length >= 3) {
+                    binding.addChatParticipantSheet.progressBarID.visibility = View.VISIBLE
+                    if (Constants.getStringFromVitalTextSharedPreferences(
+                            applicationContext,
+                            "isAzureAdEnabled"
+                        )!!.equals("true", ignoreCase = true)
+                    ) {
+                        val request = GetAzureADUserAndGroupListRequest(
+                            Constants.getStringFromVitalTextSharedPreferences(
+                                applicationContext,
+                                "tenantCode"
+                            )!!,
+                            Constants.getStringFromVitalTextSharedPreferences(
+                                applicationContext,
+                                "currentUser"
+                            )!!,
+                            text
                         )
-                    var response = RetrofitClient.getRetrofitWithToken().getSearchedUsers(request)
+                        val apiResponse =
+                            RetrofitClient.getRetrofitWithToken().getAzureADUserAndGroupList(request)
+                        apiResponse.enqueue(object : Callback<List<GetAzureADUserAndGroupListResponse>> {
+                            override fun onResponse(
+                                call: Call<List<GetAzureADUserAndGroupListResponse>>,
+                                response: Response<List<GetAzureADUserAndGroupListResponse>>
+                            ) {
+                                if (response.isSuccessful && text == lastSearchText) {
+                                    val contactsResponse: List<GetAzureADUserAndGroupListResponse>? =
+                                        response.body()
+                                    if (!contactsResponse.isNullOrEmpty()) {
+                                        listOfSearchedUsers.clear()
+                                        for (res in contactsResponse) {
+                                            val contactItem =
+                                                ContactListViewItem(
+                                                    res.fullName,
+                                                    if(res.isGroup) "" else res.userName,
+                                                    "",
+                                                    "Web",
+                                                    Constants.getInitials(res.fullName.trim { it <= ' ' }),
+                                                    "",
+                                                    if(res.isGroup) "Group" else "",
+                                                    "",
+                                                    "",
+                                                    true,
+                                                    "",
+                                                    "",
+                                                    res.isGroup,
+                                                    res.objectId
+                                                )
 
-                    response.enqueue(object : Callback<List<SearchUsersResponse>> {
-                        override fun onResponse(
-                            call: Call<List<SearchUsersResponse>>,
-                            response: Response<List<SearchUsersResponse>>
-                        ) {
-                            if (response.isSuccessful) {
-                                var contactsResponse: List<SearchUsersResponse>? =
-                                    response.body()
-                                if (!contactsResponse.isNullOrEmpty()) {
-
-                                    for (response in contactsResponse) {
-                                        var contactItem =
-                                            ContactListViewItem(
-                                                response.fullName,
-                                                response.userName,
-                                                response.mobileNumber,
-                                                "Web",
-                                                Constants.getInitials(response.fullName.trim { it <= ' ' }),
-                                                "",
-                                                response.department,
-                                                "",
-                                                "",
-                                                true,
-                                                "",
-                                                ""
-                                            )
-
-                                        listOfSearchedUsers.add(contactItem)
+                                            listOfSearchedUsers.add(contactItem)
+                                        }
+                                        setAdapter(listOfSearchedUsers)
+                                        binding.addChatParticipantSheet.progressBarID.visibility = View.GONE
                                     }
-                                    setAdapter(listOfSearchedUsers)
+                                    else{
+                                        binding.addChatParticipantSheet.progressBarID.visibility = View.GONE
+                                    }
+                                }
+                                else{
+                                    binding.addChatParticipantSheet.progressBarID.visibility = View.GONE
                                 }
                             }
+
+                            override fun onFailure(
+                                call: Call<List<GetAzureADUserAndGroupListResponse>>,
+                                t: Throwable
+                            ) {
+                                binding.addChatParticipantSheet.progressBarID.visibility = View.GONE
+                            }
+
+                        })
+                    } else {
+                        lifecycleScope.launch {
+                            val request =
+                                SearchContactRequest(
+                                    Constants.getStringFromVitalTextSharedPreferences(
+                                        applicationContext,
+                                        "currentUser"
+                                    )!!,
+                                    Constants.getStringFromVitalTextSharedPreferences(
+                                        applicationContext,
+                                        "tenantCode"
+                                    )!!,
+                                    text
+                                )
+                            val apiResponse =
+                                RetrofitClient.getRetrofitWithToken().getSearchedUsers(request)
+
+                            apiResponse.enqueue(object : Callback<List<SearchUsersResponse>> {
+                                override fun onResponse(
+                                    call: Call<List<SearchUsersResponse>>,
+                                    response: Response<List<SearchUsersResponse>>
+                                ) {
+                                    if (response.isSuccessful && text == lastSearchText) {
+                                        val contactsResponse: List<SearchUsersResponse>? =
+                                            response.body()
+                                        if (!contactsResponse.isNullOrEmpty()) {
+                                            listOfSearchedUsers.clear()
+                                            for (res in contactsResponse) {
+                                                val contactItem =
+                                                    ContactListViewItem(
+                                                        res.fullName,
+                                                        res.userName,
+                                                        res.mobileNumber,
+                                                        "Web",
+                                                        Constants.getInitials(res.fullName.trim { it <= ' ' }),
+                                                        "",
+                                                        res.department,
+                                                        "",
+                                                        "",
+                                                        true,
+                                                        "",
+                                                        ""
+                                                    )
+
+                                                listOfSearchedUsers.add(contactItem)
+                                            }
+                                            setAdapter(listOfSearchedUsers)
+                                            binding.addChatParticipantSheet.progressBarID.visibility = View.GONE
+                                        }
+                                        else{
+                                            binding.addChatParticipantSheet.progressBarID.visibility = View.GONE
+                                        }
+                                    }
+                                    else{
+                                        binding.addChatParticipantSheet.progressBarID.visibility = View.GONE
+                                    }
+                                }
+
+                                override fun onFailure(
+                                    call: Call<List<SearchUsersResponse>>,
+                                    t: Throwable
+                                ) {
+                                    binding.addChatParticipantSheet.progressBarID.visibility = View.GONE
+                                }
+
+                            })
+
                         }
-
-                        override fun onFailure(
-                            call: Call<List<SearchUsersResponse>>,
-                            t: Throwable
-                        ) {
-
-                        }
-
-                    })
-
-                }
+                    }
                 }
                 else{
+                    listOfSearchedUsers.clear()
                     setAdapter(emptyList())
+                    binding.addChatParticipantSheet.progressBarID.visibility = View.GONE
+                    binding.addChatParticipantSheet.recyclerView.visibility = View.GONE // Hide RecyclerView
                 }
+                // Disable the button if user is typing after the suggestion click
+                binding.addChatParticipantSheet.addChatParticipantIdButton.isEnabled = false
+                binding.addChatParticipantSheet.identity.text = ""
+                Constants.CURRENT_CONTACT = ContactListViewItem(
+                    name = "",
+                    email = "",
+                    number = "",
+                    type = "",
+                    initials = "",
+                    designation = null,
+                    department = null,
+                    customerName = null,
+                    countryCode = null,
+                    isGlobal = false,
+                    "",
+                    "",
+                    isGroup = null,
+                    objectId = null
+                )
+
             }
 
             override fun afterTextChanged(s: Editable?) {
-                if(s!!.length < 3){
-                    setAdapter(emptyList())
-            }}
+                val text = s
+                if (text.isNullOrEmpty() || text.length < 3) {
+                    listOfSearchedUsers.clear()
+                    setAdapter(emptyList())  // Clear the RecyclerView data when text is less than 3 or empty
+                    binding.addChatParticipantSheet.recyclerView.visibility = View.GONE // Hide RecyclerView
+                }}
         })
     }
 
     private fun onSuggestionClick(suggestion: ContactListViewItem) {
+        _isManualTextChange.value = true
+        binding.addChatParticipantSheet.recyclerView.visibility = View.GONE
+        binding.addChatParticipantSheet.addChatParticipantIdButton.isEnabled = true
         editText.setText(suggestion.name)
-        binding.addChatParticipantSheet.identity.text = suggestion.email
+        if (Constants.getStringFromVitalTextSharedPreferences(
+                applicationContext,
+                "isAzureAdEnabled"
+            )!!.equals("true", ignoreCase = true)
+        ) {
+            Constants.CURRENT_CONTACT = suggestion
+        }else {
+            binding.addChatParticipantSheet.identity.text = suggestion.email
+        }
+
 //        editText.setSelection(suggestion.name.length)
         adapter= SuggestionAdapter(applicationContext,emptyList()){}
-        adapter.notifyDataSetChanged()
+//        adapter.notifyDataSetChanged()
+        _isManualTextChange.value = false
     }
 
     fun setAdapter(list : List<ContactListViewItem>){
@@ -187,6 +358,7 @@ class ConversationDetailsActivity : AppCompatActivity() {
             onSuggestionClick(suggestion)
         }
         recyclerView.adapter = adapter
+        if(recyclerView.adapter?.itemCount!! > 0) recyclerView.visibility = View.VISIBLE else recyclerView.visibility = View.GONE
     }
 
     override fun onStart() {
@@ -351,10 +523,19 @@ class ConversationDetailsActivity : AppCompatActivity() {
 //add chat participant through this button
         binding.addChatParticipantSheet.addChatParticipantIdButton.setOnClickListener {
             addChatParticipantSheetBehavior.hide()
-            if (adapter.itemCount == 0) {
-                conversationDetailsViewModel.addChatParticipant("")
-            } else {
-                conversationDetailsViewModel.addChatParticipant(binding.addChatParticipantSheet.identity.text.toString())
+            if (Constants.getStringFromVitalTextSharedPreferences(
+                    applicationContext,
+                    "isAzureAdEnabled"
+                )!!.equals("true", ignoreCase = true)
+            ) {
+                conversationDetailsViewModel.addAzureAdParticipant(binding.details)
+            }
+            else {
+                if (adapter.itemCount == 0) {
+                    conversationDetailsViewModel.addChatParticipant("")
+                } else {
+                    conversationDetailsViewModel.addChatParticipant(binding.addChatParticipantSheet.identity.text.toString())
+                }
             }
         }
 
@@ -396,12 +577,13 @@ class ConversationDetailsActivity : AppCompatActivity() {
         }
 
         messageListViewModel.isWebChat.observe(this){ isWebChat ->
-            if(isWebChat.toLowerCase() == "true") {
-                binding.addChatParticipantButton.visibility = View.VISIBLE
-            }
-            else{
-                binding.addChatParticipantButton.visibility = View.GONE
-            }
+            Constants.saveStringToVitalTextSharedPreferences(applicationContext,"isWebChat",isWebChat)
+//            if(isWebChat.toLowerCase() == "true") {
+//                binding.addChatParticipantButton.visibility = View.VISIBLE
+//            }
+//            else{
+//                binding.addChatParticipantButton.visibility = View.GONE
+//            }
         }
 
         conversationDetailsViewModel.conversationDetails.observe(this) { conversationDetails ->
@@ -429,6 +611,14 @@ class ConversationDetailsActivity : AppCompatActivity() {
         }
 
         conversationDetailsViewModel.onParticipantAdded.observe(this) { identity ->
+            if(identity.equals("failed")){
+                binding.conversationDetailsLayout.showSnackbar(
+                    getString(
+                        R.string.failed_to_add_participant
+                    )
+                )
+            }
+            else
             binding.conversationDetailsLayout.showSnackbar(
                 getString(
                     R.string.participant_added_message,

@@ -4,6 +4,9 @@ import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.ShapeDrawable
 import android.os.Build
 import android.text.TextUtils
 import android.util.Log
@@ -23,6 +26,9 @@ import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.data.models.ContactListViewItem
 import com.eemphasys.vitalconnect.data.models.ConversationListViewItem
 import com.eemphasys.vitalconnect.data.models.ParticipantListViewItem
+import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
+import com.eemphasys_enterprise.commonmobilelib.EETLog
+import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.google.i18n.phonenumbers.NumberParseException
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import java.io.ByteArrayInputStream
@@ -79,7 +85,9 @@ class Constants   {
             countryCode = null,
             isGlobal = false,
             "",
-            ""
+            "",
+            isGroup = null,
+            objectId = null
         )
 
         var URI : String = ""
@@ -320,6 +328,35 @@ class Constants   {
                     }
                 }
                 false
+            }
+        }
+
+        @JvmStatic
+         fun changeButtonBackgroundColor(textView: TextView?, colorid: Int,coloridText:Int) {
+            try {
+                val background = textView!!.background
+                if (background is ShapeDrawable) {
+                    background.paint.color = colorid
+                    textView.setTextColor(coloridText)
+                } else if (background is GradientDrawable) {
+                    background.setColor(colorid)
+                    textView.setTextColor(coloridText)
+                } else if (background is ColorDrawable) {
+                    background.color = colorid
+                    textView.setTextColor(coloridText)
+                }
+            } catch (e: Exception) {
+                Log.e("Catchmessage", Log.getStackTraceString(e))
+                EETLog.error(
+                    AppContextHelper.appContext, LogConstants.logDetails(
+                        e,
+                        LogConstants.LOG_LEVEL.ERROR.toString(),
+                        LogConstants.LOG_SEVERITY.HIGH.toString()
+                    ),
+                    Constants.EX, LogTraceConstants.getUtilityData(
+                        AppContextHelper.appContext!!
+                    )!!
+                )
             }
         }
     }

@@ -23,6 +23,9 @@ interface ConversationsDao {
 """)
     fun getUserConversations(): Flow<List<ConversationDataItem>>
 
+    @Query("SELECT * FROM conversation_table WHERE friendlyName = :friendlyName LIMIT 1")
+    suspend fun getConversationFromFriendlyName(friendlyName: String): ConversationDataItem?
+
     // Get Conversation by sid
     @Query("SELECT * FROM conversation_table WHERE sid = :sid")
     fun getConversation(sid: String): Flow<ConversationDataItem?>

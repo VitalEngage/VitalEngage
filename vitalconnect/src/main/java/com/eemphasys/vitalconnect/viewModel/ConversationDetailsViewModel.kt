@@ -6,6 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.eemphasys.vitalconnect.api.RetrofitClient
+import com.eemphasys.vitalconnect.api.data.AddAzureAdParticipantConversationRequest
+import com.eemphasys.vitalconnect.api.data.webParticipant
 import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.SingleLiveEvent
@@ -23,6 +26,9 @@ import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.twilio.util.TwilioException
 import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class ConversationDetailsViewModel(
     val conversationSid: String,
@@ -240,6 +246,87 @@ class ConversationDetailsViewModel(
             setShowProgress(false)
         }
     }
+
+fun addAzureAdParticipant(details: ConversationDetailsViewItem?) {
+    EETLog.saveUserJourney("vitaltext:  ConversationDetailsViewModel addAzureAdParticipant Called")
+    try {
+        setShowProgress(true)
+        val isWebChat =
+            Constants.getStringFromVitalTextSharedPreferences(applicationContext, "isWebChat")
+        val tenantCode =
+            Constants.getStringFromVitalTextSharedPreferences(applicationContext, "tenantCode")
+                ?: ""
+        val currentUser =
+            Constants.getStringFromVitalTextSharedPreferences(applicationContext, "currentUser")
+                ?: ""
+        val isAutoRegistrationEnabled = Constants.getStringFromVitalTextSharedPreferences(
+            applicationContext,
+            "isAutoRegistrationEnabled"
+        ) ?: ""
+        val proxyNumber =
+            Constants.getStringFromVitalTextSharedPreferences(applicationContext, "proxyNumber")
+                ?: ""
+
+        val email = if (Constants.CURRENT_CONTACT.isGroup.toString()
+                .equals("true", ignoreCase = true)
+        ) "" else Constants.CURRENT_CONTACT.email
+        val name = if (Constants.CURRENT_CONTACT.isGroup.toString()
+                .equals("true", ignoreCase = true)
+        ) "" else Constants.CURRENT_CONTACT.name
+
+        val request = AddAzureAdParticipantConversationRequest(
+            tenantCode,
+            currentUser,
+            email,
+            name,
+            Constants.CURRENT_CONTACT.objectId,
+            isAutoRegistrationEnabled,
+            proxyNumber,
+            details?.conversationSid,
+            details?.friendlyName,
+            isWebChat
+        )
+
+        val response =
+            RetrofitClient.getRetrofitWithToken().addAzureAdParticipantConversation(request)
+
+        response.enqueue(object : Callback<List<webParticipant>> {
+            override fun onResponse(
+                call: Call<List<webParticipant>>,
+                response: Response<List<webParticipant>>
+            ) {
+                if (response.isSuccessful) {
+                    Log.d("response", response.body().toString())
+                    if (response.body()!!.size > 0) {
+                        onParticipantAdded.value = ""
+                    } else {
+                        onParticipantAdded.value = "failed"
+                    }
+                    setShowProgress(false)
+                }
+            }
+
+            override fun onFailure(call: Call<List<webParticipant>>, t: Throwable) {
+                setShowProgress(false)
+            }
+        })
+    }catch (e: Exception){
+        setShowProgress(false)
+        e.printStackTrace()
+
+        EETLog.error(
+            AppContextHelper.appContext!!, LogConstants.logDetails(
+                e,
+                LogConstants.LOG_LEVEL.ERROR.toString(),
+                LogConstants.LOG_SEVERITY.HIGH.toString()
+            ),
+            Constants.EX, LogTraceConstants.getUtilityData(
+                AppContextHelper.appContext!!
+            )!!
+        )
+    }
+}
+
 
     fun getFriendlyName(identity : String): String {
         return conversationsRepository.getFriendlyName(identity)

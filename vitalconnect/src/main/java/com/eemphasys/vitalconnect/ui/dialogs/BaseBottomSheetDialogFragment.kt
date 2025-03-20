@@ -12,5 +12,8 @@ open class BaseBottomSheetDialogFragment: BottomSheetDialogFragment() {
         // https://stackoverflow.com/questions/41591733/bottom-sheet-landscape-issue
         val behavior = BottomSheetBehavior.from(requireView().parent as View)
         behavior.state = BottomSheetBehavior.STATE_EXPANDED
+
+        dialog?.setCancelable(false)
+        dialog?.setCanceledOnTouchOutside(false)
     }
 }

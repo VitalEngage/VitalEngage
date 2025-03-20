@@ -12,6 +12,8 @@ import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.Constants
+import com.eemphasys.vitalconnect.common.extensions.applicationContext
+import com.eemphasys.vitalconnect.common.extensions.lazyActivityViewModel
 import com.eemphasys.vitalconnect.common.extensions.lazyViewModel
 import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.data.ConversationsClientWrapper
@@ -21,6 +23,7 @@ import com.eemphasys.vitalconnect.repository.ConversationsRepositoryImpl
 import com.eemphasys.vitalconnect.ui.fragment.ContactListFragment
 import com.eemphasys.vitalconnect.ui.fragment.ConversationListFragment
 import com.eemphasys.vitalconnect.ui.fragment.ProfileFragment
+import com.eemphasys.vitalconnect.viewModel.CheckConversationCallback
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -30,12 +33,14 @@ import kotlinx.coroutines.launch
 
 class ConversationListActivity:AppCompatActivity() {
     private val mainViewModel by lazyViewModel { injector.createMainViewModel(application) }
+    val conversationListViewModel by lazyViewModel { injector.createConversationListViewModel(applicationContext) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         EETLog.saveUserJourney("vitaltext: " +this::class.java.simpleName + " onCreate Called")
 
 //        mainViewModel.create(applicationContext)
+        conversationListViewModel.getUserConversations()
         val binding = ActivityConversationListBinding.inflate(layoutInflater)
         mainViewModel.getUserAlertStatus(applicationContext)
         setContentView(binding.root)

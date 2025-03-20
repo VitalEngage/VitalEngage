@@ -15,6 +15,7 @@ import com.eemphasys.vitalconnect.common.Constants
 import com.eemphasys.vitalconnect.common.ParticipantColorManager
 import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.ChatAppModel
+import com.eemphasys.vitalconnect.common.Constants.Companion.changeButtonBackgroundColor
 import com.eemphasys.vitalconnect.common.SingleLiveEvent
 import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.data.models.ContactListViewItem
@@ -103,14 +104,26 @@ class ContactListAdapter(
             if (item.department.isNullOrBlank() || Constants.getStringFromVitalTextSharedPreferences(applicationContext,"showDepartment") == "false") {
                 itemBinding.department.visibility = View.GONE
             }
+            else{
+                itemBinding.department.visibility = View.VISIBLE
+            }
             if (item.designation.isNullOrBlank() || Constants.getStringFromVitalTextSharedPreferences(applicationContext,"showDesignation") == "false") {
                 itemBinding.designation.visibility = View.GONE
+            }
+            else{
+                itemBinding.designation.visibility = View.VISIBLE
             }
             if (itemBinding.contactNumber.text.isNullOrBlank()) {
                 itemBinding.contactNumber.visibility = View.GONE
             }
+            else{
+                itemBinding.contactNumber.visibility = View.VISIBLE
+            }
             if (itemBinding.customerName.text.isNullOrBlank()) {
                 itemBinding.customerName.visibility = View.GONE
+            }
+            else{
+                itemBinding.customerName.visibility = View.VISIBLE
             }
             if(!item.isGlobal && isFirst && item.type == "SMS"){
                 Log.d("default", "${item.name} $isFirst")
@@ -178,34 +191,6 @@ class ContactListAdapter(
             }
         }
         return RecyclerView.NO_POSITION
-    }
-
-    private fun changeButtonBackgroundColor(textView: TextView?, colorid: Int,coloridText: Int) {
-        try {
-            val background = textView?.background
-            if (background is ShapeDrawable) {
-                background.paint.color = colorid
-                textView.setTextColor(coloridText)
-            } else if (background is GradientDrawable) {
-                background.setColor(colorid)
-                textView.setTextColor(coloridText)
-            } else if (background is ColorDrawable) {
-                background.color = colorid
-                textView.setTextColor(coloridText)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            EETLog.error(
-                AppContextHelper.appContext, LogConstants.logDetails(
-                    e,
-                    LogConstants.LOG_LEVEL.ERROR.toString(),
-                    LogConstants.LOG_SEVERITY.HIGH.toString()
-                ),
-                Constants.EX, LogTraceConstants.getUtilityData(
-                    AppContextHelper.appContext!!
-                )!!
-            )
-        }
     }
 }
 

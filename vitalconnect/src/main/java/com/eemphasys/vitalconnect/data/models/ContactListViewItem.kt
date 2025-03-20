@@ -14,5 +14,7 @@ data class ContactListViewItem(
     val countryCode: String?,
     val isGlobal : Boolean,
     val bpId : String?,
-    val role : String?
+    val role : String?,
+    val isGroup : Boolean? = null,
+    val objectId : String? = null
 )

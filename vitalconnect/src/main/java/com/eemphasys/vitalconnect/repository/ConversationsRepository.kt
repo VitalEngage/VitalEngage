@@ -32,6 +32,7 @@ import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.asMessageDataItems
 import com.eemphasys.vitalconnect.common.asMessageListViewItems
 import com.eemphasys.vitalconnect.common.asParticipantDataItem
+import com.eemphasys.vitalconnect.common.enums.ConversationsError
 import com.eemphasys.vitalconnect.common.enums.CrashIn
 import com.eemphasys.vitalconnect.common.toMessageDataItem
 
@@ -60,11 +61,14 @@ import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.twilio.conversations.ConversationsClient
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+
 interface ConversationsRepository {
     fun getUserConversations(): Flow<RepositoryResult<List<ConversationDataItem>>>
     fun getConversation(conversationSid: String): Flow<RepositoryResult<ConversationDataItem?>>
@@ -100,6 +104,8 @@ interface ConversationsRepository {
 
     fun updateFriendlyName()
     fun getUnreadMessageCount(): LiveData<Long>
+
+    suspend fun isConversationAvailable(friendlyName : String): ConversationDataItem?
 }
 
 class ConversationsRepositoryImpl(
@@ -648,6 +654,10 @@ class ConversationsRepositoryImpl(
             localCache.messagesDao().updateByUuidOrInsert(message.toMessageDataItem(identity, message.attributes.string ?: ""))
             updateConversationLastMessage(message.conversationSid)
         }
+    }
+
+    override suspend fun isConversationAvailable(friendlyName: String): ConversationDataItem? {
+            return  localCache.conversationsDao().getConversationFromFriendlyName(friendlyName)
     }
 
     companion object {

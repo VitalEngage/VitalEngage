@@ -67,6 +67,7 @@ class LoginManagerImpl(
             Constants.saveStringToVitalTextSharedPreferences(applicationContext,"authTokenTimeStamp",Constants.getTimeStamp())
             Constants.saveStringToVitalTextSharedPreferences(applicationContext,"expirationDuration",result.body()!!.expirationTime.toString())
             Constants.saveStringToVitalTextSharedPreferences(applicationContext,"userSMSAlert",result.body()!!.enableNotification.toString())
+            Constants.saveStringToVitalTextSharedPreferences(applicationContext,"isAzureAdEnabled",result.body()!!.isAzureAdEnabled.toString())
             LoginConstants.AUTH_TOKEN = result.body()!!.jwtToken
             LoginConstants.PROXY_NUMBER = result.body()!!.proxyNumber
 //            LoginConstants.USER_SMS_ALERT = result.body()!!.enableNotification.toString()
@@ -78,7 +79,7 @@ class LoginManagerImpl(
             LoginConstants.PINNED_CONVO = result.body()?.pinedConversation ?: arrayListOf()
             LoginConstants.EXPIRATION_DURATION =result.body()!!.expirationTime
             LoginConstants.REFRESH_TOKEN=result.body()!!.refreshToken
-            Log.d("pinnedconvo",result.body()!!.pinedConversation.toString())
+            Log.d("pinnedconvo",result.body()?.pinedConversation.toString())
             credentialStorage.storeCredentials(identity,password)
         }
     }

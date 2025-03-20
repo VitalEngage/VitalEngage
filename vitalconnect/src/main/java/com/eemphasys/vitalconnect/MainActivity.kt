@@ -16,6 +16,8 @@ import com.eemphasys.vitalconnect.common.injector
 import com.eemphasys.vitalconnect.databinding.ActivityMainBinding
 import com.eemphasys.vitalconnect.misc.log_trace.LogTraceConstants
 import com.eemphasys.vitalconnect.ui.activity.ConversationListActivity
+import com.eemphasys.vitalconnect.ui.fragment.ConversationListFragment
+import com.eemphasys.vitalconnect.viewModel.CheckConversationCallback
 import com.eemphasys_enterprise.commonmobilelib.EETLog
 import com.eemphasys_enterprise.commonmobilelib.LogConstants
 import com.google.gson.Gson
@@ -29,6 +31,7 @@ class MainActivity : AppCompatActivity() {
 
     private val mainViewModel by lazyViewModel { injector.createMainViewModel(application) }
     val contactListViewModel by lazyViewModel { injector.createContactListViewModel(applicationContext) }
+    val conversationListViewModel by lazyViewModel { injector.createConversationListViewModel(applicationContext) }
     override fun onCreate(savedInstanceState: Bundle?) {
         EETLog.saveUserJourney("vitaltext: " + this::class.java.simpleName + " onCreate Called")
         val username = intent.getStringExtra("username")
@@ -326,8 +329,28 @@ class MainActivity : AppCompatActivity() {
         else
         {
             try {
-                val intent = Intent(this, ConversationListActivity::class.java)
-                startActivity(intent)
+                if(!Constants.getStringFromVitalTextSharedPreferences(applicationContext,"withContext").equals("true",ignoreCase = true)) {
+                    val intent = Intent(this, ConversationListActivity::class.java)
+                    startActivity(intent)
+                }
+                else{
+                    val withContext = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"withContext")
+                    val conversationContext = Constants.getStringFromVitalTextSharedPreferences(applicationContext,"context")!!
+                    if(withContext.equals("true",ignoreCase = true)) {
+                        conversationListViewModel.checkIfConversationAlreadyCreated(conversationContext,
+                            object : CheckConversationCallback {
+                                override fun onResult(exists: Boolean) {
+                                    Log.d("contextualConversation", "existsinVCDB" + exists)
+                                    if (exists) {
+                                        ConversationListActivity.start(this@MainActivity, 2)
+                                    } else {
+                                        ConversationListActivity.start(this@MainActivity, 1)
+                                    }
+                                }
+
+                            })
+                    }
+                }
             }
             catch(e:Exception)
             {

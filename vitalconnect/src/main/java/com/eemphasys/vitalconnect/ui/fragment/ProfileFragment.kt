@@ -17,6 +17,7 @@ import com.eemphasys.vitalconnect.R
 import com.eemphasys.vitalconnect.common.AppContextHelper
 import com.eemphasys.vitalconnect.common.ChatAppModel
 import com.eemphasys.vitalconnect.common.Constants
+import com.eemphasys.vitalconnect.common.Constants.Companion.changeButtonBackgroundColor
 import com.eemphasys.vitalconnect.common.ParticipantColorManager
 import com.eemphasys.vitalconnect.common.extensions.applicationContext
 import com.eemphasys.vitalconnect.common.extensions.getErrorMessage
@@ -167,34 +168,6 @@ class ProfileFragment:Fragment() {
             noInternetSnackBar.show()
         } else {
             noInternetSnackBar.dismiss()
-        }
-    }
-
-    private fun changeButtonBackgroundColor(textView: TextView?, colorid: Int, coloridText:Int) {
-        try {
-            val background = textView!!.background
-            if (background is ShapeDrawable) {
-                background.paint.color = colorid
-                textView.setTextColor(coloridText)
-            } else if (background is GradientDrawable) {
-                background.setColor(colorid)
-                textView.setTextColor(coloridText)
-            } else if (background is ColorDrawable) {
-                background.color = colorid
-                textView.setTextColor(coloridText)
-            }
-        } catch (e: Exception) {
-            Log.e("Catchmessage", Log.getStackTraceString(e))
-            EETLog.error(
-                AppContextHelper.appContext, LogConstants.logDetails(
-                    e,
-                    LogConstants.LOG_LEVEL.ERROR.toString(),
-                    LogConstants.LOG_SEVERITY.HIGH.toString()
-                ),
-                Constants.EX, LogTraceConstants.getUtilityData(
-                    AppContextHelper.appContext!!
-                )!!
-            )
         }
     }
 }

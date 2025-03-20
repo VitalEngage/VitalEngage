@@ -27,6 +27,8 @@ data class AuthToken(
     val showDesignation: Boolean,
     val showDepartment: Boolean,
     val dealerName: String,
-    val pinedConversation: ArrayList<String> = arrayListOf()
+    val pinedConversation: ArrayList<String> = arrayListOf(),
+    val userSID : String,
+    val isAzureAdEnabled : Boolean
 
 )

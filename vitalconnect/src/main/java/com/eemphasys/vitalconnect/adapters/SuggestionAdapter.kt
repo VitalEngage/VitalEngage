@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.eemphasys.vitalconnect.common.Constants
+import com.eemphasys.vitalconnect.common.Constants.Companion.changeButtonBackgroundColor
+import com.eemphasys.vitalconnect.common.ParticipantColorManager
 import com.eemphasys.vitalconnect.data.models.ContactListViewItem
 import com.eemphasys.vitalconnect.databinding.RowContactItemBinding
 
@@ -24,23 +26,58 @@ class SuggestionAdapter(
             itemBinding.department.text = "(" + item.department + ")"
             itemBinding.customerName.text = item.customerName
 
-            if(item.type == "SMS"){
-                itemBinding.contactNumber.text = item.number
-            }else {
-                itemBinding.contactNumber.text = item.email
+//            if(item.type == "SMS"){
+//                itemBinding.contactNumber.text = item.number
+//            }else {
+//                itemBinding.contactNumber.text = item.email
+//            }
+            itemBinding.contactNumber.text = ""
+
+            if (item.type == "SMS") {
+                if (!item.number.isNullOrBlank()) {
+                    itemBinding.contactNumber.text = item.number
+                    itemBinding.contactNumber.visibility = View.VISIBLE
+                } else {
+                    itemBinding.contactNumber.visibility = View.GONE
+                }
+            } else {
+                if (!item.email.isNullOrBlank()) {
+                    itemBinding.contactNumber.text = item.email
+                    itemBinding.contactNumber.visibility = View.VISIBLE
+                } else {
+                    itemBinding.contactNumber.visibility = View.GONE
+                }
             }
             if (item.department.isNullOrBlank() || Constants.getStringFromVitalTextSharedPreferences(applicationContext,"showDepartment")!! == "false") {
                 itemBinding.department.visibility = View.GONE
             }
+            else{
+                itemBinding.department.visibility = View.VISIBLE
+            }
             if (item.designation.isNullOrBlank() || Constants.getStringFromVitalTextSharedPreferences(applicationContext,"showDesignation")!! == "false") {
                 itemBinding.designation.visibility = View.GONE
+            }
+            else{
+                itemBinding.designation.visibility = View.VISIBLE
             }
             if (itemBinding.contactNumber.text.isNullOrBlank()) {
                 itemBinding.contactNumber.visibility = View.GONE
             }
+            else{
+                itemBinding.contactNumber.visibility = View.VISIBLE
+            }
             if (itemBinding.customerName.text.isNullOrBlank()) {
                 itemBinding.customerName.visibility = View.GONE
             }
+            else{
+                itemBinding.customerName.visibility = View.VISIBLE
+            }
+
+            changeButtonBackgroundColor(
+                itemBinding.participantIcon,
+                ParticipantColorManager.getColorForParticipant(item.name),
+                ParticipantColorManager.getDarkColorForParticipant(item.name)
+            )
         }
 //        val textView: TextView = itemView.findViewById(android.R.id.text1)
 
@@ -71,4 +108,9 @@ override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SuggestionAda
     }
 
     override fun getItemCount() = suggestions.size
+
+    override fun onViewRecycled(holder: ViewHolder) {
+        super.onViewRecycled(holder)
+        // Reset the view state here if necessary
+    }
 }

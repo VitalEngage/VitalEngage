@@ -1,11 +1,14 @@
 package com.eemphasys.vitalconnect.api
 
+import com.eemphasys.vitalconnect.api.data.AddAzureAdParticipantConversationRequest
 import com.eemphasys.vitalconnect.api.data.AuthToken
 import com.eemphasys.vitalconnect.api.data.ContactListRequest
 import com.eemphasys.vitalconnect.api.data.ContactListResponse
 import com.eemphasys.vitalconnect.api.data.ConversationSidFromFriendlyNameRequest
 import com.eemphasys.vitalconnect.api.data.ConversationSidFromFriendlyNameResponse
 import com.eemphasys.vitalconnect.api.data.EncryptionRequest
+import com.eemphasys.vitalconnect.api.data.GetAzureADUserAndGroupListRequest
+import com.eemphasys.vitalconnect.api.data.GetAzureADUserAndGroupListResponse
 import com.eemphasys.vitalconnect.api.data.GetUserAlertStatusRequest
 import com.eemphasys.vitalconnect.api.data.GetUserAlertStatusResponse
 import com.eemphasys.vitalconnect.api.data.ParticipantExistingConversation
@@ -98,4 +101,10 @@ interface TwilioApi {
 
     @POST("Conversation/SavePinnedConversation")
     suspend fun savePinnedConversation(@Body requestData: SavePinnedConversationRequest) : Response<SavePinnedConversationResponse>
+
+    @POST("User/GetAzureADUserAndGroupList")
+    fun getAzureADUserAndGroupList(@Body requestData : GetAzureADUserAndGroupListRequest) : Call<List<GetAzureADUserAndGroupListResponse>>
+
+    @POST("User/AddAzureAdParticipantConversation")
+    fun addAzureAdParticipantConversation(@Body requestData : AddAzureAdParticipantConversationRequest) : Call<List<webParticipant>>
 }
