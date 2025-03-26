@@ -509,7 +509,7 @@ class LoginActivity : AppCompatActivity(),FirebaseLogEventListener {
             intent.putExtra("showExternalContacts",LoginConstants.SHOW_EXTERNAL_CONTACTS)
             intent.putExtra("role","")
             intent.putExtra("bpId","")
-            intent.putExtra("isAutoRegistrationEnabled","false")
+            intent.putExtra("isAutoRegistrationEnabled","true")
             intent.putExtra("refreshToken",LoginConstants.REFRESH_TOKEN)
             intent.putExtra("expirationDuration",LoginConstants.EXPIRATION_DURATION)
             context.startActivity(intent)

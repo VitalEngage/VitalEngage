@@ -273,17 +273,20 @@ fun addAzureAdParticipant(details: ConversationDetailsViewItem?) {
         val name = if (Constants.CURRENT_CONTACT.isGroup.toString()
                 .equals("true", ignoreCase = true)
         ) "" else Constants.CURRENT_CONTACT.name
+        val groupID = if (Constants.CURRENT_CONTACT.isGroup.toString()
+                .equals("true", ignoreCase = true)
+        ) Constants.CURRENT_CONTACT.objectId else ""
 
         val request = AddAzureAdParticipantConversationRequest(
             tenantCode,
             currentUser,
             email,
             name,
-            Constants.CURRENT_CONTACT.objectId,
+            groupID,
             isAutoRegistrationEnabled,
             proxyNumber,
             details?.conversationSid,
-            details?.friendlyName,
+            details?.conversationName,
             isWebChat
         )
 
@@ -304,9 +307,13 @@ fun addAzureAdParticipant(details: ConversationDetailsViewItem?) {
                     }
                     setShowProgress(false)
                 }
+                else{
+                    onParticipantAdded.value = "failed"
+                }
             }
 
             override fun onFailure(call: Call<List<webParticipant>>, t: Throwable) {
+                onParticipantAdded.value = "failed"
                 setShowProgress(false)
             }
         })
