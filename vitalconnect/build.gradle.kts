@@ -2,6 +2,7 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     kotlin("kapt")
+    id("maven-publish")
 //    id("com.google.devtools.ksp")
 }
 
@@ -53,8 +54,20 @@ android {
         }
     }
 }
+publishing {
+    publications {
+        register<MavenPublication>("release") {
+            afterEvaluate {
+                from(components["release"])  // Use 'components["kotlin"]' for a Kotlin project
+                groupId = "com.eemphasys"
+                artifactId = "vitalconnect"  // Change this to match your library name
+                version = "1.1"  // Change this to the version of your library
+            }
+        }
+    }
+}
 
-version = "1.1.0012"
+version = "1.1"
 
 dependencies {
 
