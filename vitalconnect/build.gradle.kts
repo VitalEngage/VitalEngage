@@ -62,7 +62,20 @@ publishing {
                 groupId = "com.eemphasys"
                 artifactId = "vitalconnect"  // Change this to match your library name
                 version = "1.1"  // Change this to the version of your library
+
+                pom {
+                    name = "vitalconnect"
+                    description = "Chat Library"
+                    url = "https://github.com/VitalEngage/VitalEngage"
+                }
+
             }
+        }
+    }
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/VitalEngage/VitalEngage")
         }
     }
 }
